@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>phpseclib: SFTP Examples and Notes</title>
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+<link rel="stylesheet" href="../css/prettify.css"/>
+
+<script src="../js/prettify.js"></script>
+<script src="../js/jquery-1.7.2.min.js"></script>
+
+<script>
+var manageSelects = function() {
+  options = $('select option');
+  for (var i = 0; i < options.length; i++) {
+   $('.' + options[i].value).hide();
+  }
+
+  options = $('select option:selected');
+  for (var i = 0; i < options.length; i++) {
+   $('.' + options[i].value).show();
+  }
+};
+
+var highlight = function() {
+  if ($('.' + this.value).closest('#notes').length == 0) {
+    $('.' + this.value).css('background-color', '#ffa');
+  }
+};
+
+var unhighlight = function() {
+  if ($('.' + this.value).closest('#notes').length == 0) {
+    $('.' + this.value).css('background-color', '#f5f4ee');
+  }
+};
+
+var toggleButton = function() {
+  buttons = $('button[value="' + this.value + '"]');
+  buttons.eq(0).toggle();
+  buttons.eq(1).toggle();
+  $('.' + this.value).toggle();
+};
+
+var permLink = function() {
+  attrs = '';
+  selected = $('select option:selected,.disableCode:visible');
+  for (i = 0; i < selected.length; i++) {
+    attrs+= selected[i].value + ',';
+  }
+  hashPos = window.location.href.indexOf('#');
+  newURL = hashPos == -1 ? window.location.href : window.location.href.substring(0, hashPos);
+  window.location.href = newURL + '#' + attrs;
+};
+
+$(document).ready(function() {
+  //$('pre span[id]').hide();
+  //$('#notes div[id]').hide();
+
+  buttons = $('button:visible');
+  for (var i = 0; i < buttons.length; i++) {
+   $('.' + buttons[i].value).hide();
+  }
+
+  options = window.location.href.split('#');
+  options = options.length > 1 ? options[1].split(',') : new Array();
+  for (var i = 0; i < options.length; i++) {
+    options[i] = options[i].replace(/%20/g, ' ');
+    $('select option[value="' + options[i] +'"]').prop('selected', true);
+    button = $('button[value="' + options[i] +'"]');
+    if (button.length) {
+      toggleButton.apply(button[0]);
+    }
+  }
+
+  manageSelects();
+
+  $('select').change(manageSelects);
+  //$('select').change(highlight);
+  $('select').keyup(manageSelects);
+  //$('select').focus(highlight);
+  //$('select').blur(unhighlight);
+  $('button').click(toggleButton);
+  $('#permlink span').click(permLink);
+});
+</script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }
+.red { color: #e11 }
+.prettyprint, .pre { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+</style>
+</head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: SFTP Examples and Notes</h1>
+    <div id="pgup">(return to <a href="intro.html">phpseclib: SFTP Feature List</a>)</div>
+  </div>
+  <div class="clear"></div>
+  <div class="grid_3">
+    <p>
+      Login:<br />
+      <select>
+        <option value="password">Password</option>
+        <option value="rsakey">RSA Key</option>
+        <option value="encrsakey">Password Protected RSA Key</option>
+      </select>
+    </p>
+    <p>
+      Action:<br />
+      <select>
+        <option value="put">Upload File (from string)</option>
+        <option value="putfile">Upload File (from filesystem)</option>
+        <option value="get">Download File (to string)</option>
+        <option value="getfile">Download File (to filesystem)</option>
+        <option value="dir">Directory Management</option>
+        <option value="list">Directory Listing</option>
+        <option value="chmod">Change Permissions</option>
+        <option value="stat">File Information</option>
+        <option value="delete">Delete and Rename</option>
+      </select>
+    </p>
+    <p>
+      <button value="logging" class="buttonOn">Enable Logging</button>
+      <button value="logging" class="buttonOff disableCode">Disable Logging</button>
+    </p>
+  </div>
+  <!-- end .grid_3 -->
+  <div class="grid_9">
+    <div>
+<pre class="prettyprint" style="margin-bottom: 0">&lt;?php
+include('Net/SFTP.php');<span class="rsakey encrsakey">
+include('Crypt/RSA.php');</span>
+<span class="logging">
+define('NET_SFTP_LOGGING', NET_SFTP_LOG_COMPLEX);
+</span>
+$sftp = new Net_SFTP('www.domain.tld');
+<span class="password">if (!$sftp-&gt;login('username', 'password')) {
+    exit('Login Failed');
+}</span><span class="rsakey">$key = new Crypt_RSA();
+$key-&gt;loadKey(file_get_contents('privatekey'));
+if (!$sftp-&gt;login('username', $key)) {
+    exit('Login Failed');
+}</span><span class="encrsakey">$key = new Crypt_RSA();
+$key-&gt;setPassword('whatever');
+$key-&gt;loadKey(file_get_contents('privatekey'));
+if (!$sftp-&gt;login('username', $key)) {
+    exit('Login Failed');
+}</span>
+
+<span class="put">// puts a three-byte file named filename.remote on the SFTP server
+$sftp->put('filename.remote', 'xxx');</span><span class="putfile">// copies filename.local to filename.remote on the SFTP server
+$sftp->put('filename.remote', 'filename.local', NET_SFTP_LOCAL_FILE);</span><span class="get">// outputs the contents of filename.remote to the screen
+echo $sftp->get('filename.remote');</span><span class="getfile">// copies filename.remote to filename.local from the SFTP server
+$sftp->get('filename.remote', 'filename.local');</span><span class="dir">$sftp->mkdir('test'); // create directory 'test'
+$sftp->chdir('test'); // open directory 'test'
+echo $sftp->pwd(); // show that we're in the 'test' directory
+$sftp->chdir('..'); // go back to the parent directory
+$sftp->rmdir('test'); // delete the directory
+// if the directory had files in it we'd need to do a recursive delete
+//$sftp->delete('test', true);</span><span style="display: none">
+</span><span class="list">print_r($sftp->nlist()); // == $sftp->nlist('.')
+print_r($sftp->rawlist()); // == $sftp->rawlist('.')</span><span style="display: none">
+</span><span class="chmod">$sftp->chmod(0777, 'filename.remote');
+//$sftp->chmod(0777, 'dirname.remote', true); // recursively change permissions on a directory</span><span style="display: none">
+</span><span class="stat">echo $sftp->size('filename.remote');
+print_r($sftp->stat('filename.remote'));
+print_r($sftp->lstat('filename.remote'));</span><span class="delete">$sftp->delete('filename.remote'); // doesn't delete directories
+// recursive delete
+$sftp->delete('dirname.remote', true); // deletes a directory and all its contents
+$sftp->rename('filename.remote', 'newname.remote');</span><span class="logging">
+
+echo $ssh->getSFTPLog();</span>
+?&gt;</pre>
+    </div>
+    <div id="permlink"><span>permanent link</span></div>
+    <div id="notes">
+      <div class="list">
+        <h2>Output of nlist() and rawlist()</h2>
+        <b>$sftp->nlist():</b>
+<pre class="pre">Array
+(
+    [0] => uploads
+    [1] => ..
+    [2] => .
+    [3] => .profile
+    [4] => .bashrc
+    [5] => .bash_logout
+)</pre>
+        <b>$sftp->rawlist():</b>
+<pre class="pre">Array
+(
+    [uploads] => Array
+        (
+            [size] => 4096
+            [uid] => 1001
+            [gid] => 1002
+            [permissions] => 16877
+            [atime] => 1338498490
+            [mtime] => 1338497853
+            [type] => 2
+        )
+
+    [..] => Array
+        (
+            [size] => 4096
+            [uid] => 0
+            [gid] => 0
+            [permissions] => 16877
+            [atime] => 1338499576
+            [mtime] => 1338497853
+            [type] => 2
+        )
+
+    [.] => Array
+        (
+            [size] => 4096
+            [uid] => 0
+            [gid] => 0
+            [permissions] => 16877
+            [atime] => 1338499576
+            [mtime] => 1338497853
+            [type] => 2
+        )
+
+    [.profile] => Array
+        (
+            [size] => 675
+            [uid] => 1012
+            [gid] => 1013
+            [permissions] => 33188
+            [atime] => 1338497357
+            [mtime] => 1338497357
+            [type] => 1
+        )
+
+    [.bashrc] => Array
+        (
+            [size] => 3353
+            [uid] => 1012
+            [gid] => 1013
+            [permissions] => 33188
+            [atime] => 1338497357
+            [mtime] => 1338497357
+            [type] => 1
+        )
+
+    [.bash_logout] => Array
+        (
+            [size] => 220
+            [uid] => 1012
+            [gid] => 1013
+            [permissions] => 33188
+            [atime] => 1338497357
+            [mtime] => 1338497357
+            [type] => 1
+        )
+
+)</pre>
+        The type index corresponds to one of the following named constants:
+        <ul>
+          <li>NET_SFTP_TYPE_REGULAR</li>
+          <li>NET_SFTP_TYPE_DIRECTORY</li>
+          <li>NET_SFTP_TYPE_SYMLINK</li>
+          <li>NET_SFTP_TYPE_SPECIAL</li>
+        </ul>
+      </div>
+      <div class="stat">
+        <h2>stat() vs. lstat() vs. size()</h2>
+        <p>stat() and lstat() return associative arrays with misc information about the files. lstat() and stat() are identical with the caveat that when the file in question is a <a href="http://en.wikipedia.org/wiki/Symbolic_link">symbolic link</a> the information returned refers to the link itself and not the file (or directory) being linked to.</p>
+        <p>size() returns the 'size' index of the associative array returned by lstat()</p>
+      </div>
+    </div>
+  </div>
+  <!-- end .grid_9 -->
+</div>
+<!-- end .container_16 -->
+</body>
+</html>

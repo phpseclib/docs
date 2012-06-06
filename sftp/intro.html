@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>phpseclib: SFTP Introduction</title>
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }
+.red { color: #e11 }
+.prettyprint { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+</style>
+</head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: SFTP Feature List</h1>
+    <div id="pgup">(return to <a href="../index.html">phpseclib Feature List</a>)</div>
+    <p>Click on any of the following for examples.</p>
+  </div>
+  <div class="grid_4">
+    <h2>SFTP extends SSH2</h2>
+    <p>SFTP has <a href="../ssh/intro.html">all the functions SSH2 has</a> and then some.</p>
+  </div>
+  <div class="grid_8">
+    <h2>Features</h2>
+    <ul>
+      <li>
+        Upload File (<code>put</code>)
+        <ul>
+          <li><a href="examples.html#put">from string</a></li>
+          <li><a href="examples.html#putfile">from filesystem</a></li>
+        </ul>
+      </li>
+      <li>
+        Download File (<code>get</code>)
+        <ul>
+          <li><a href="examples.html#get">to string</a></li>
+          <li><a href="examples.html#getfile">to filesystem</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="examples.html#getfile">Directory Management</a>
+        <ul>
+          <li>Change the directory (<code>chdir</code>)</li>
+          <li>Create a directory (<code>mkdir</code>)</li>
+          <li>Delete a directory (<code>rmdir</code> or <code>delete</code>)</li>
+          <li>Return the current directory (<code>pwd</code>)</li>
+        </ul>
+      </li>
+      <li><a href="examples.html#list">Directory Listing</a> (<code>nlist</code> and <code>rawlist</code>)</li>
+      <li><a href="examples.html#chmod">Change Permissions</a> (<code>chmod</code>)</li>
+      <li><a href="examples.html#stat">File Information</a> (<code>stat</code>, <code>lstat</code> and <code>size</code>)</li>
+      <li><a href="examples.html#delete">Delete and Rename</a> (<code>delete</code> and <code>rename</code>)</li>
+      <li>
+        <a href="examples.html#logging">Logging</a>
+        <ul>
+          <li>See a <a href="log.txt">sample log file</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</body>
+</html>

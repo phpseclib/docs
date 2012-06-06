@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>phpseclib: RSA Introduction</title>
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }
+.red { color: #e11 }
+.prettyprint { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+</style>
+</head>
+<body>
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: RSA Feature List</h1>
+    <div id="pgup">(return to <a href="../index.html">phpseclib Feature List</a>)</div>
+    <p>Click on any of the following for examples.</p>
+  </div>
+  <div class="grid_4">
+    <h2>Supported Private Key Formats</h2>
+    <ul>
+      <li><a href="examples.html#convert">PKCS#1</a></li>
+      <li><a href="examples.html#convert,encpkcs1">PKCS#1</a> (with password)</li>
+      <li><a href="examples.html#convert,putty">PuTTY</a> (<a href="http://en.wikipedia.org/wiki/PuTTY">more info</a>)</li>
+      <li><a href="examples.html#convert,encputty">PuTTY</a> (with password)</li>
+      <li><a href="examples.html#convert,xml">XML Signature</a> (<a href="http://en.wikipedia.org/wiki/XML_Signature">more info</a>)</li>
+    </ul>
+    <p>
+    <h2>Supported Public Key Formats</h2>
+    <ul>
+      <li><a href="examples.html#public">PKCS#1</a></li>
+      <li><a href="examples.html#public,openssh">OpenSSH</a></li>
+      <li><a href="examples.html#public,xmlpub">XML Signature</a></li>
+    </ul>
+    </p>
+  </div>
+  <div class="grid_8">
+    <h2>Features</h2>
+    <ul>
+      <li><a href="examples.html">Create Key Pairs</a></li>
+      <li><a href="examples.html#convert">Convert keys to different formats</a></li>
+      <li>
+        Create / verify signatures
+        <ul>
+          <li>Using the <a href="examples.html#sign,sign2">PKCS#1</a> scheme</li>
+          <li>Using the <a href="examples.html#sign,sign1">Probabilistic Signature Scheme</a></li>
+        </ul>
+      </li>
+      <li>
+        Encrypt / decrypt strings
+        <ul>
+          <li>Using the <a href="examples.html#encrypt,enc2">PKCS#1</a> scheme</li>
+          <li>Using the <a href="examples.html#encrypt,enc1">Optimal Asymmetric Encryption Padding</a> (<a href="http://en.wikipedia.org/wiki/Optimal_asymmetric_encryption_padding">more info</a>)</li>
+        </ul>
+      </li>
+      <li>Utilizes <a href="http://en.wikipedia.org/wiki/Blinding_%28cryptography%29">RSA Blinding</a></li>
+    </ul>
+  </div>
+</body>
+</html>

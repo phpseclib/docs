@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>phpseclib: X.509 Tutorial</title>
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+<link rel="stylesheet" href="../css/prettify.css"/>
+<link rel="stylesheet" href="../css/jquery.treeview.css" />
+<link rel="stylesheet" href="../css/jquery-ui-1.8.20.custom.css" />
+
+<script src="../js/prettify.js"></script>
+<script src="../js/jquery-1.7.2.min.js"></script>
+<script src="../js/jquery-ui-1.8.20.custom.min.js"></script>
+<script src="../js/jquery.cookie.js"></script>
+<script src="../js/jquery.treeview.js"></script>
+
+<script>
+function showSignature() {
+  if ($('#signature li').is(':hidden')) {
+    $('#signature span').trigger('click');
+  }
+}
+
+function showPublicKey() {
+  if ($('#tbsCertificate > ul > li').is(':hidden')) {
+    $('#tbsCertificate > span').trigger('click');
+  }
+  if ($('#subjectPublicKeyInfo > ul > li').is(':hidden')) {
+    $('#subjectPublicKeyInfo > span').trigger('click');
+  }
+  if ($('#subjectPublicKey > ul > li').is(':hidden')) {
+    $('#subjectPublicKey > span').trigger('click');
+  }
+}
+
+function showIssuer() {
+  if ($('#tbsCertificate > ul > li').is(':hidden')) {
+    $('#tbsCertificate > span').trigger('click');
+  }
+  if ($('#issuer > ul > li').is(':hidden')) {
+    $('#issuer > span').trigger('click');
+  }
+}
+
+function showSubject() {
+  if ($('#tbsCertificate > ul > li').is(':hidden')) {
+    $('#tbsCertificate > span').trigger('click');
+  }
+  if ($('#subject > ul > li').is(':hidden')) {
+    $('#subject > span').trigger('click');
+  }
+}
+
+var showPath = function() {
+  path = '';
+  parents = $(this).parents('li:visible');
+  for (var i = parents.length - 1; i >= 0; i--) {
+    name = $('.name', parents[i])[0].textContent;
+    delimiter = isNaN(name) ? '\'' : '';
+    path+= '[' + delimiter + name + delimiter + ']';
+  }
+  $('#path').html('<code id="path">$cert' + path + '</code>:');
+};
+
+$(document).ready(function(){
+  $('.printr').treeview({
+    persist: "location",
+    collapsed: true,
+    unique: true
+  });
+  $('.name,.hitarea').click(showPath);
+  $('.certopen,.cert').accordion({
+    collapsible: true
+  });
+  $('.cert').accordion('activate', 0);
+});
+</script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }
+.red { color: #e11 }
+.prettyprint, .pre { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+</style>
+</head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: X.509 Tutorial</h1>
+    <div id="pgup">(return to <a href="../index.html">phpseclib Feature List</a>)</div>
+  </div>
+  <div class="grid_3">
+    <h2>Contents</h2>
+    <ul>
+      <li><a href="#reading">Reading an X.509 cert</a></li>
+      <li><a href="#understanding">Understanding an X.509 cert</a></li>
+      <li><a href="#creating">Creating an X.509 cert fail</a></li>
+      <li><a href="#validating">Validating a certificate</a></li>
+      <li><a href="#selfsigning">Creating a self-signed cert</a><ul><li><a href="#example1">Sample Code</a></li></ul></li>
+      <li><a href="#dns">Distinguished Names</a></li>
+      <li><a href="#casigned">Creating a CA cert and a cert signed by the CA</a><ul><li><a href="#example2">Sample Code</a></li></ul></li>
+    </ul>
+  </div>
+  <div class="grid_9">
+    <p>To understand phpseclib's X.509 API it first helps to consider what an X.509 certificate aims to do.  So let's start off by decoding one.</p>
+    <h2 id="reading">Reading an X.509 cert</h2>
+    <p>Here's google.com's X.509 cert:</p>
+
+    <div id="cert1" class="certopen" style="font-size: 12px">
+      <h3><a href="#">Certificate 1: google.com's X.509 cert</a></h3>
+      <div>
+        <pre>-----BEGIN CERTIFICATE-----
+MIIDITCCAoqgAwIBAgIQT52W2WawmStUwpV8tBV9TTANBgkqhkiG9w0BAQUFADBM
+MQswCQYDVQQGEwJaQTElMCMGA1UEChMcVGhhd3RlIENvbnN1bHRpbmcgKFB0eSkg
+THRkLjEWMBQGA1UEAxMNVGhhd3RlIFNHQyBDQTAeFw0xMTEwMjYwMDAwMDBaFw0x
+MzA5MzAyMzU5NTlaMGgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlh
+MRYwFAYDVQQHFA1Nb3VudGFpbiBWaWV3MRMwEQYDVQQKFApHb29nbGUgSW5jMRcw
+FQYDVQQDFA53d3cuZ29vZ2xlLmNvbTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkC
+gYEA3rcmQ6aZhc04pxUJuc8PycNVjIjujI0oJyRLKl6g2Bb6YRhLz21ggNM1QDJy
+wI8S2OVOj7my9tkVXlqGMaO6hqpryNlxjMzNJxMenUJdOPanrO/6YvMYgdQkRn8B
+d3zGKokUmbuYOR2oGfs5AER9G5RqeC1prcB6LPrQ2iASmNMCAwEAAaOB5zCB5DAM
+BgNVHRMBAf8EAjAAMDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwudGhhd3Rl
+LmNvbS9UaGF3dGVTR0NDQS5jcmwwKAYDVR0lBCEwHwYIKwYBBQUHAwEGCCsGAQUF
+BwMCBglghkgBhvhCBAEwcgYIKwYBBQUHAQEEZjBkMCIGCCsGAQUFBzABhhZodHRw
+Oi8vb2NzcC50aGF3dGUuY29tMD4GCCsGAQUFBzAChjJodHRwOi8vd3d3LnRoYXd0
+ZS5jb20vcmVwb3NpdG9yeS9UaGF3dGVfU0dDX0NBLmNydDANBgkqhkiG9w0BAQUF
+AAOBgQAhrNWuyjSJWsKrUtKyNGadeqvu5nzVfsJcKLt0AMkQH0IT/GmKHiSgAgDp
+ulvKGQSy068Bsn5fFNum21K5mvMSf3yinDtvmX3qUA12IxL/92ZzKbeVCq3Yi7Le
+IOkKcGQRCMha8X2e7GmlpdWC1ycenlbN0nbVeSv3JUMcafC4+Q==
+-----END CERTIFICATE-----</pre>
+      </div>
+    </div>
+    <p>Let's use phpseclib to decode that:</p>
+    <pre class="prettyprint">&lt;?php
+include('File/X509.php');
+
+$x509 = new File_X509();
+$cert = $x509->loadX509('...');
+
+print_r($cert);
+?></pre>
+    <p>Specific values can be retrieved by accessing the appropriate array indices in <code>$cert</code> or with the following (self-explanatory) functions:
+    <ul>
+      <li><code>getDNProp()</code>: See <a href="#dns">Distinguished Names</a> for more information.</li>
+      <li><code>getDN()</code></li>
+      <li><code>getIssuerDN()</code></li>
+      <li><code>getPublicKey()</code>: Returns a Crypt_RSA object</li>
+    </ul></p>
+    <p>The contents of <code>$cert</code> are as follows:</p>
+<code id="path">$cert</code>:
+<ul class="printr"><li id="tbsCertificate"><span class="name">tbsCertificate</span><ul><li><span class="name">version</span><ul><li>v3</li></ul></li><li><span class="name">serialNumber</span><ul><li>105827261859531100510423749949966875981</li></ul></li><li><span class="name">signature</span><ul><li><span class="name">algorithm</span><ul><li>sha1WithRSAEncryption</li></ul></li></ul></li><li id="issuer"><span class="name">issuer</span><ul><li><span class="name">rdnSequence</span><ul><li><span class="name">0</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-countryName</li></ul></li><li><span class="name">value</span><ul><li>ZA</li></ul></li></ul></li></ul></li><li><span class="name">1</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-organizationName</li></ul></li><li><span class="name">value</span><ul><li>Thawte Consulting (Pty) Ltd.</li></ul></li></ul></li></ul></li><li><span class="name">2</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-commonName</li></ul></li><li><span class="name">value</span><ul><li>Thawte SGC CA</li></ul></li></ul></li></ul></li></ul></li></ul></li><li><span class="name">validity</span><ul><li><span class="name">notBefore</span><ul><li><span class="name">utcTime</span><ul><li>Oct 25 19:00:00 2011 CDT</li></ul></li></ul></li><li><span class="name">notAfter</span><ul><li><span class="name">utcTime</span><ul><li>Sep 30 18:59:59 2013 CDT</li></ul></li></ul></li></ul></li><li id="subject"><span class="name">subject</span><ul><li><span class="name">rdnSequence</span><ul><li><span class="name">0</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-countryName</li></ul></li><li><span class="name">value</span><ul><li>US</li></ul></li></ul></li></ul></li><li><span class="name">1</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-stateOrProvinceName</li></ul></li><li><span class="name">value</span><ul><li>California</li></ul></li></ul></li></ul></li><li><span class="name">2</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-localityName</li></ul></li><li><span class="name">value</span><ul><li>Mountain View</li></ul></li></ul></li></ul></li><li><span class="name">3</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-organizationName</li></ul></li><li><span class="name">value</span><ul><li>Google Inc</li></ul></li></ul></li></ul></li><li><span class="name">4</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-commonName</li></ul></li><li><span class="name">value</span><ul><li>www.google.com</li></ul></li></ul></li></ul></li></ul></li></ul></li><li id="subjectPublicKeyInfo"><span class="name">subjectPublicKeyInfo</span><ul><li><span class="name">algorithm</span><ul><li><span class="name">algorithm</span><ul><li>rsaEncryption</li></ul></li></ul></li><li id="subjectPublicKey"><span class="name">subjectPublicKey</span><ul><li><pre>-----BEGIN PUBLIC KEY-----
+MIGJAoGBAN63JkOmmYXNOKcVCbnPD8nDVYyI7oyNKCckSypeoNgW+mEYS89tYIDTNUAycsCPEtjl
+To+5svbZFV5ahjGjuoaqa8jZcYzMzScTHp1CXTj2p6zv+mLzGIHUJEZ/AXd8xiqJFJm7mDkdqBn7
+OQBEfRuUangtaa3Aeiz60NogEpjTAgMBAAE=
+-----END PUBLIC KEY-----</pre></li></ul></li></ul></li><li><span class="name">extensions</span><ul><li><span class="name">0</span><ul><li><span class="name">extnId</span><ul><li>id-ce-basicConstraints</li></ul></li><li><span class="name">critical</span><ul><li>true</li></ul></li><li><span class="name">extnValue</span><ul></ul></li></ul></li><li><span class="name">1</span><ul><li><span class="name">extnId</span><ul><li>id-ce-cRLDistributionPoints</li></ul></li><li><span class="name">critical</span><ul><li>false</li></ul></li><li><span class="name">extnValue</span><ul><li><span class="name">0</span><ul><li><span class="name">distributionPoint</span><ul><li><span class="name">fullName</span><ul><li><span class="name">0</span><ul><li><span class="name">uniformResourceIdentifier</span><ul><li>http://crl.thawte.com/ThawteSGCCA.crl</li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li><span class="name">2</span><ul><li><span class="name">extnId</span><ul><li>id-ce-extKeyUsage</li></ul></li><li><span class="name">critical</span><ul><li>false</li></ul></li><li><span class="name">extnValue</span><ul><li><span class="name">0</span><ul><li>id-kp-serverAuth</li></ul></li><li><span class="name">1</span><ul><li>id-kp-clientAuth</li></ul></li><li><span class="name">2</span><ul><li>2.16.840.1.113730.4.1</li></ul></li></ul></li></ul></li><li><span class="name">3</span><ul><li><span class="name">extnId</span><ul><li>id-pe-authorityInfoAccess</li></ul></li><li><span class="name">critical</span><ul><li>false</li></ul></li><li><span class="name">extnValue</span><ul><li><span class="name">0</span><ul><li><span class="name">accessMethod</span><ul><li>id-ad-ocsp</li></ul></li><li><span class="name">accessLocation</span><ul><li><span class="name">uniformResourceIdentifier</span><ul><li>http://ocsp.thawte.com</li></ul></li></ul></li></ul></li><li><span class="name">1</span><ul><li><span class="name">accessMethod</span><ul><li>id-ad-caIssuers</li></ul></li><li><span class="name">accessLocation</span><ul><li><span class="name">uniformResourceIdentifier</span><ul><li>http://www.thawte.com/repository/Thawte_SGC_CA.crt</li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li><span class="name">signatureAlgorithm</span><ul><li><span class="name">algorithm</span><ul><li>sha1WithRSAEncryption</li></ul></li></ul></li><li id="signature"><span class="name">signature</span><ul><li>ACGs1a7KNIlawqtS0rI0Zp16q+7mfNV+wlwou3QAyRAfQhP8aYoeJKACAOm6W8oZBLLTrwGyfl8U26bbUrma8xJ/fKKcO2+ZfepQDXYjEv/3ZnMpt5UKrdiLst4g6QpwZBEIyFrxfZ7saaWl1YLXJx6eVs3SdtV5K/clQxxp8Lj5</li></ul></li></ul>
+    <h2 id="understanding">Understanding an X.509 cert</h2>
+    <p>When you connect to an <a href="http://en.wikipedia.org/wiki/HTTP_Secure">HTTPS</a> website you're given that website's public key via an X.509 certificate. The question is... how do you know that that public key hasn't, itself, been tampered with? SSH asks you if the certificate is valid upon your first connection attempt and alerts you when the certificate changes on subsequent connection attempts.  HTTPS uses <a href="http://en.wikipedia.org/wiki/Certificate_authority">certificate authorities</a> to verify the legitimacy of a public key. Certificate authorities have public keys as well, that are distributed via X.509 certificates. A website's X.509 certificate is signed by a certificate authorities private key and then verified by the certificate authorities public key.</p>
+    <ul>
+      <li><a href="#" onclick="showIssuer(); return false"><code>$cert['tbsCertificate']['issuer']</code></a>:<br />Identifies the certificate authority that signed the current certificate.
+      <li><a href="#" onclick="showSubject(); return false"><code>$cert['tbsCertificate']['subject']</code></a>:<br />Identifies the current certificate. If this and the issuer match the certificate is <i>self-signed</i>.
+      <li><a href="#" onclick="showPublicKey(); return false"><code>$cert['tbsCertificate']['subjectPublicKeyInfo']['subjectPublicKey']</code></a>:<br />Contains the current certificates public key. If the current certificate is, itself, a certificate authority, this is what is used to verify another certificates signature.
+      <li><a href="#" onclick="showSignature(); return false"><code>$cert['signature']</code></a>:<br />The result of <a href="../rsa/examples.html#sign,sign2"><code>$rsa->sign($cert['tbsCertificate'])</code></a> with the certificate authorities private key.
+    </ul>
+    <h2 id="creating">Creating an X.509 cert fail</h2>
+    <p>Let's try to save that X.509 cert as is:</p>
+    <pre class="prettyprint">&lt;?php
+include('File/X509.php');
+
+$x509 = new File_X509();
+$cert = $x509->loadX509('...');
+echo $x509->saveX509($cert);
+?></pre>
+  <p>Here's the result:</p>
+    <div id="cert2" class="cert" style="font-size: 12px">
+      <h3><a href="#">Certificate 2: google.com's re-encoded cert</a></h3>
+      <div>
+        <pre>-----BEGIN CERTIFICATE-----
+MIIDITCCAoqgAwIBAgIQT52W2WawmStUwpV8tBV9TTANBgkqhkiG9w0BAQUFADBM
+MQswCQYDVQQGEwJaQTElMCMGA1UEChMcVGhhd3RlIENvbnN1bHRpbmcgKFB0eSkg
+THRkLjEWMBQGA1UEAxMNVGhhd3RlIFNHQyBDQTAeFw0xMTEwMjYwMDAwMDBaFw0x
+MzA5MzAyMzU5NTlaMGgxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlh
+MRYwFAYDVQQHFA1Nb3VudGFpbiBWaWV3MRMwEQYDVQQKFApHb29nbGUgSW5jMRcw
+FQYDVQQDFA53d3cuZ29vZ2xlLmNvbTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkC
+gYEA3rcmQ6aZhc04pxUJuc8PycNVjIjujI0oJyRLKl6g2Bb6YRhLz21ggNM1QDJy
+wI8S2OVOj7my9tkVXlqGMaO6hqpryNlxjMzNJxMenUJdOPanrO/6YvMYgdQkRn8B
+d3zGKokUmbuYOR2oGfs5AER9G5RqeC1prcB6LPrQ2iASmNMCAwEAAaOB5zCB5DAM
+BgNVHRMBAf8EAjAAMDYGA1UdHwQvMC0wK6ApoCeGJWh0dHA6Ly9jcmwudGhhd3Rl
+LmNvbS9UaGF3dGVTR0NDQS5jcmwwKAYDVR0lBCEwHwYIKwYBBQUHAwEGCCsGAQUF
+BwMCBglghkgBhvhCBAEwcgYIKwYBBQUHAQEEZjBkMCIGCCsGAQUFBzABhhZodHRw
+Oi8vb2NzcC50aGF3dGUuY29tMD4GCCsGAQUFBzAChjJodHRwOi8vd3d3LnRoYXd0
+ZS5jb20vcmVwb3NpdG9yeS9UaGF3dGVfU0dDX0NBLmNydDANBgkqhkiG9w0BAQUF
+AAOBgQAhrNWuyjSJWsKrUtKyNGadeqvu5nzVfsJcKLt0AMkQH0IT/GmKHiSgAgDp
+ulvKGQSy068Bsn5fFNum21K5mvMSf3yinDtvmX3qUA12IxL/92ZzKbeVCq3Yi7Le
+IOkKcGQRCMha8X2e7GmlpdWC1ycenlbN0nbVeSv3JUMcafC4+Q==
+-----END CERTIFICATE-----</pre>
+      </div>
+    </div>
+    <p>Great! So we have a valid X.509 cert, right? Not quite. Although it'll decode as one it's not going to properly validate. Even though nothing in the certificate has been changed (which one could do by editing the associative array) X.509 certificates have certain optional fields that when not present default to certain values. Some encoders may save these values explicitly, which would change the DER encoding of the tbsCertificate portion of the certificate which is what the signature is based off of.</p>
+    <h2 id="validating">Validating a certificate</h2>
+    <p>To validate a cert that certs signing cert needs to be loaded. This can be done by calling <code>$x509->loadCA('...')</code>. After that one need simply call <code>$x509->validateSignature()</code>. Here's an example:</p>
+    <pre class="prettyprint">&lt;?php
+include('File/X509.php');
+
+$x509 = new File_X509();
+$x509->loadCA('...');
+$cert = $x509->loadX509('...');
+echo $x509->validateSignature() ? 'valid' : 'invalid';
+?></pre>
+    <p>The certificate used to sign google.com's certificate is as follows:</p>
+    <div id="cert3" class="cert" style="font-size: 12px">
+      <h3><a href="#">Certificate 3: google.com's signing cert</a></h3>
+      <div>
+        <pre>-----BEGIN CERTIFICATE-----
+MIIDIzCCAoygAwIBAgIEMAAAAjANBgkqhkiG9w0BAQUFADBfMQswCQYDVQQGEwJV
+UzEXMBUGA1UEChMOVmVyaVNpZ24sIEluYy4xNzA1BgNVBAsTLkNsYXNzIDMgUHVi
+bGljIFByaW1hcnkgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwHhcNMDQwNTEzMDAw
+MDAwWhcNMTQwNTEyMjM1OTU5WjBMMQswCQYDVQQGEwJaQTElMCMGA1UEChMcVGhh
+d3RlIENvbnN1bHRpbmcgKFB0eSkgTHRkLjEWMBQGA1UEAxMNVGhhd3RlIFNHQyBD
+QTCBnzANBgkqhkiG9w0BAQEFAAOBjQAwgYkCgYEA1NNn0I0Vf67NMf59HZGhPwtx
+PKzMyGT7Y/wySweUvW+Aui/hBJPAM/wJMyPpC3QrccQDxtLN4i/1CWPN/0ilAL/g
+5/OIty0y3pg25gqtAHvEZEo7hHUD8nCSfQ5i9SGraTaEMXWQ+L/HbIgbBpV8yeWo
+3nWhLHpo39XKHIdYYBkCAwEAAaOB/jCB+zASBgNVHRMBAf8ECDAGAQH/AgEAMAsG
+A1UdDwQEAwIBBjARBglghkgBhvhCAQEEBAMCAQYwKAYDVR0RBCEwH6QdMBsxGTAX
+BgNVBAMTEFByaXZhdGVMYWJlbDMtMTUwMQYDVR0fBCowKDAmoCSgIoYgaHR0cDov
+L2NybC52ZXJpc2lnbi5jb20vcGNhMy5jcmwwMgYIKwYBBQUHAQEEJjAkMCIGCCsG
+AQUFBzABhhZodHRwOi8vb2NzcC50aGF3dGUuY29tMDQGA1UdJQQtMCsGCCsGAQUF
+BwMBBggrBgEFBQcDAgYJYIZIAYb4QgQBBgpghkgBhvhFAQgBMA0GCSqGSIb3DQEB
+BQUAA4GBAFWsY+reod3SkF+fC852vhNRj5PZBSvIG3dLrWlQoe7e3P3bB+noOZTc
+q3J5Lwa/q4FwxKjt6lM07e8eU9kGx1Yr0Vz00YqOtCuxN5BICEIlxT6Ky3/rbwTR
+bcV0oveifHtgPHfNDs5IAn8BL7abN+AqKjbc1YXWrOU/VG+WHgWv
+-----END CERTIFICATE-----</pre>
+      </div>
+    </div>
+    <p>Pass that cert into <code>$x509->loadCA()</code> and then pass <a href="#cert1">Certificate 1</a> into <code>$x509->loadX509()</code> and the above code will output "valid". Use <a href="#cert2">Certificate 2</a> and the above code will output "invalid".</p>
+    <p>Other validation methods are as follows:</code>
+    <p>
+      <ul>
+        <li><code>$x509->validateSignature(FILE_X509_VALIDATE_SIGNATURE_BY_CA)</code> does not accept self-signed certs as being valid.</li>
+        <li><code>$x509->validateURL()</code></li>
+        <li><code>$x509->validateDate()</code> validates against the current date.</li>
+        <li><code>$x509->validateDate('June 1, 1983')</code> validates against June 1, 1983</li>
+      </ul>
+    </p>
+    <h2 id="selfsigning">Creating a self-signed cert</h2>
+    <p>As <a href="#creating">Creating an X.509 cert fail</a> demonstrated, simply saving an X.509 associative array is insufficient. The array needs to be properly signed. This can be done by calling <code>$x509->sign($issuer, $subject)</code>.</p>
+    <p>The following is a discussion of the various options that can be set on each of the parameters in the <code>$x509->sign($issuer, $subject)</code> call. Feel free to skip ahead to <a href="#example1">the example</a>.</p>
+    <p><code>$issuer</code> properties consist of the following:
+    <ul>
+      <li>The distinguished name.
+        <ul>
+          <li>See <a href="#dns">Distinguished Names</a> to see how to set the distinguished name</li>
+          <li>Corresponds to <code>$cert['tbsCertificate']['issuer']</code></li>
+        </ul></li>
+      <li>The private key.
+        <ul>
+          <li>Set by <code>$issuer->setPrivateKey()</code></li>
+          <li>Used to create <code>$cert['signature']</code>)</li>
+        </ul></li>
+      <li>The key identifier.
+        <ul>
+          <li>Set by <code>$issuer->setKeyIdentifier()</code>. It's purpose is beyond the scope of this tutorial.</li>
+          <li>Corresponds to the <code>id-ce-authorityKeyIdentifier</code> extension</li>
+        </ul></li>
+    </ul>
+    </p>
+    <p><code>$subject</code> properties consist of the following:
+    <ul>
+      <li>The distinguished name.
+        <ul>
+          <li>See <a href="#dns">Distinguished Names</a> to see how to set the distinguished name</li>
+          <li>Corresponds to <code>$cert['tbsCertificate']['subject']</code></li>
+        </ul></li>
+      <li>The public key.
+        <ul>
+          <li>Set by <code>$subject->setPublicKey()</code></li>
+          <li>Corresponds to <code>$cert['tbsCertificate']['subjectPublicKeyInfo']</code></li>
+        </ul></li>
+      <li>The domain name.
+        <ul>
+          <li>Set by <code>$subject->setDomain()</code></li>
+          <li>Corresponds to <code>$cert['tbsCertificate']['subject']</code> (id-at-commonName) and potentially the <code>id-ce-subjectAltName</code> extension.</li>
+        </ul></li>
+      <li>The key identifier.
+        <ul>
+          <li>Set by <code>$issuer->setKeyIdentifier()</code>. It's purpose is beyond the scope of this tutorial.</li>
+          <li>Corresponds to the <code>id-ce-subjectKeyIdentifier</code> extension</li>
+        </ul></li>
+    </ul>
+    </p>
+    <p><code>$x509</code> properties (ie. those that don't belong to either the <code>$issuer</code> or <code>$subject</code> consist of the following:
+    <ul>
+      <li>The start date.
+        <ul>
+          <li>Set by <code>$x509->setStartDate()</code>. Accepts anything <code>strtotime()</code> accepts. Defaults to the current time.</li>
+          <li>Corresponds to <code>$cert['tbsCertificate']['validity']['notBefore']['utcTime']</code></li>
+        </ul></li>
+      <li>The end date.
+        <ul>
+          <li>Set by <code>$x509->setEndDate()</code>. Accepts anything <code>strtotime()</code> accepts. Defaults to one year from now</li>
+          <li>Corresponds to <code>$cert['tbsCertificate']['validity']['notAfter']['utcTime']</code></li>
+        </ul></li>
+      <li>The serial number.
+        <ul>
+          <li>Set by <code>$x509->setSerialNumber()</code>. Defaults to 0.</li>
+          <li>Corresponds to <code>$cert['tbsCertificate']['serialNumber']</code></li>
+        </ul></li>
+      <li>Certificate Authority flag
+        <ul>
+          <li>Set by <code>$x509->makeCA()</code>. Needs to be set if you want to import cert into browser as CA.</li>
+          <li>Corresponds to <code>id-ce-keyUsage</code> and <code>id-ce-basicConstraints</code></li>
+        </ul></li>
+    </ul>
+    </p>
+    <pre class="prettyprint" id="example1">&lt;?php
+include('File/X509.php');
+include('Crypt/RSA.php');
+
+// create private key / x.509 cert for stunnel / website
+$privKey = new Crypt_RSA();
+extract($privKey->createKey());
+$privKey->loadKey($privatekey);
+
+$pubKey = new Crypt_RSA();
+$pubKey->loadKey($publickey);
+$pubKey->setPublicKey();
+
+$subject = new File_X509();
+$subject->setPublicKey($pubKey);
+$subject->setDNProp('id-at-organizationName', 'phpseclib demo cert');
+$subject->setDomain('www.whatever.com');
+
+$issuer = new File_X509();
+$issuer->setPrivateKey($privKey);
+$issuer->setDN($subject->getDN());
+
+$x509 = new File_X509();
+//$x509->setStartDate('-1 month'); // default: now
+//$x509->setEndDate('+1 year'); // default: +1 year
+//$x509->setSerialNumber(chr(1)); // default: 0
+
+$result = $x509->sign($issuer, $subject);
+echo "the stunnel.pem contents are as follows:\r\n\r\n";
+echo $privKey->getPrivateKey();
+echo "\r\n";
+echo $x509->saveX509($result);
+echo "\r\n";</pre>
+    <p>The output of the above is as follows:</p>
+    <div id="cert4" class="cert" style="font-size: 12px">
+      <h3><a href="#">Certificate 4: RSA Private Key and self-signed X.509 cert</a></h3>
+      <div>
+        <pre>the stunnel.pem contents are as follows:
+
+-----BEGIN RSA PRIVATE KEY-----
+MIICXQIBAAKBgQCtYr+TcpSQ043ZZi+akC1LR5Q6MJPJ6/0MQ7IFPt/SCywaxsdFsNQ40+TOSFNk
+G68nscyB5nEPDkNzLJ7AklNSRHItqxTwohuW4a+fBfzAi0vXS9IrM2iep13cHE9r5QW9pouRQiYf
+bi5FegEWbtIc5SrmAxHAH9K3KGRaXEeufwIDAQABAoGAFijgwz+JrVjccESXIPH8V/q1/xnmSZBX
+rxGX1wPKJ1Y2NNXi8g0/kmPCgnrL7ad8I16d/JwvJvVzuWyifYo2C7++wHjPKvqTXgg7OiCai3KV
+O0y3r3xhVdvKOOmD42zPuPkHXSORrWP0wgH07pPThKRLmc2I1EuRtXzLvGrCOMECQQDbD7YRotnC
+biL7OzoFuzUKEpSN464LhdkTcDWeRUEvQQa/hTiKIeJ5aTdvyEOKBpuYzPTh6/79nBkgS7Lg5KtV
+AkEAyp9X06ZMXiOIFZszARddoALM1FXJkAVsa5T+pUJAscKU5JHFrgckk+D9snnYvR7eN5OMHOkP
+fH9yzKS4Zif6gwJABojicoY8HruwWXQ7193syB8jxVPMZlWY0yaewtjoB+PVsrLjq+M04VBNMg10
+TlLCI33BtFeY5LHaYgdAD8tifQJBAKnBGZmuR2jPJ+HCJtcRNlUqQ2TZgobwpEb1iun1ObIzrP5Z
+yl3kihaCdsmiH51CUTYKnWZTM7BALnOYxQyBDfUCQQCI1JOGXOveAxsr4sP6vornAU/G7ekX2n9x
+LAjktKBd0pX25L9fdqrZPH61bOvF9S3VjuiX5vSp8OyUxoWMPbPn
+-----END RSA PRIVATE KEY-----
+-----BEGIN CERTIFICATE-----
+MIIB4zCCAU6gAwIBAgIAMAsGCSqGSIb3DQEBBTA5MRwwGgYDVQQKDBNwaHBzZWNsaWIgZGVtbyBj
+ZXJ0MRkwFwYDVQQDDBB3d3cud2hhdGV2ZXIuY29tMCIYDzIwMTIwNjA0MDMxMDMxWhgPMjAxMzA2
+MDQwMzEwMzFaMDkxHDAaBgNVBAoME3BocHNlY2xpYiBkZW1vIGNlcnQxGTAXBgNVBAMMEHd3dy53
+aGF0ZXZlci5jb20wgZ0wCwYJKoZIhvcNAQEBA4GNADCBiQKBgQCtYr+TcpSQ043ZZi+akC1LR5Q6
+MJPJ6/0MQ7IFPt/SCywaxsdFsNQ40+TOSFNkG68nscyB5nEPDkNzLJ7AklNSRHItqxTwohuW4a+f
+BfzAi0vXS9IrM2iep13cHE9r5QW9pouRQiYfbi5FegEWbtIc5SrmAxHAH9K3KGRaXEeufwIDAQAB
+MAsGCSqGSIb3DQEBBQOBgQBYEsMuWBA9ie4ulXxeLhLoQvEo6vgl5LDRFMuP+AhkKzfXUo2yEMWP
+/QxbSglcPT/ycb+5+FhYGWxGatM5V+sB43ZBHZD14ZWPN35ePmDIfqXdRmphhXuhdNU7DWwp97ZR
+c26CQXzHurRf29VloV8k5JKwsfnLRPVCrbJySMB6dg==
+-----END CERTIFICATE-----</pre>
+      </div>
+    </div>
+    <h2 id="dns">Distinguished Names</h2>
+    <p>Distinguished Names can be set by any of the following functions:</p>
+    <ul>
+      <li><code>$subject->loadX509('...')</code> will set the <code>$subject</code> object to use the certificate subject's distinguished name as its own</li>
+      <li><code>$subject->setDNProp('propName', 'propValue')</code> accepts propName's like <code>id-at-commonName</code> (used in the X.509 specs) or <code>CN</code> (used by OpenSSL as short hand)</li>
+      <li><code>$subject->setDN('...')</code> takes stuff like <code>$cert['tbsCertificate']['subject']</code>, the <code>$code['subject']</code> output of <a href="http://php.net/openssl-x509-parse"><code>$cert = openssl_x509_parse('...')</code></a> and full-on DN strings. eg:
+          <pre style="margin-bottom: 0">C=US, ST=California, L=Mountain View, O=Google Inc, CN=www.google.com</pre></li>
+      <li><code>$subject->loadCSR('...')</code> gets the distinguished name from a <a href="http://en.wikipedia.org/wiki/Certificate_signing_request">certificate signing request</a></li>
+      <li><code>$subject->removeDNProp('propName')</code>
+    </ul>
+    <h2 id="casigned">Creating a CA cert and a cert signed by the CA</h2>
+    <p>Here we just create a self-signed cert and its corresponding private key, as above, that'll serve as the CA, and then another cert, signed by the CA, with a second private key to correspond to this second cert.</p>
+    <p>CA certs need to have <code>$x509->makeCA()</code> called on them for browsers to accept them as certificate authorities.</p>
+    <pre class="prettyprint" id="example2">&lt;?php
+include('File/X509.php');
+include('Crypt/RSA.php');
+
+// create private key for CA cert
+// (you should probably print it out if you want to reuse it)
+$CAPrivKey = new Crypt_RSA();
+extract($CAPrivKey->createKey());
+$CAPrivKey->loadKey($privatekey);
+
+$pubKey = new Crypt_RSA();
+$pubKey->loadKey($publickey);
+$pubKey->setPublicKey();
+
+echo "the private key for the CA cert (can be discarded):\r\n\r\n";
+echo $privatekey;
+echo "\r\n\r\n";
+
+
+
+
+
+
+
+// create a self-signed cert that'll serve as the CA
+$subject = new File_X509();
+$subject->setPublicKey($pubKey);
+$subject->setDNProp('id-at-organizationName', 'phpseclib demo CA');
+
+$issuer = new File_X509();
+$issuer->setPrivateKey($CAPrivKey);
+$issuer->setDN($CASubject = $subject->getDN());
+
+$x509 = new File_X509();
+$x509->setStartDate('-1 month');
+$x509->setEndDate('+1 year');
+$x509->setSerialNumber(chr(1));
+$x509->makeCA();
+
+$result = $x509->sign($issuer, $subject);
+echo "the CA cert to be imported into the browser is as follows:\r\n\r\n";
+echo $x509->saveX509($result);
+echo "\r\n\r\n";
+
+
+
+
+
+
+
+
+// create private key / x.509 cert for stunnel / website
+$privKey = new Crypt_RSA();
+extract($privKey->createKey());
+$privKey->loadKey($privatekey);
+
+$pubKey = new Crypt_RSA();
+$pubKey->loadKey($publickey);
+$pubKey->setPublicKey();
+
+$subject = new File_X509();
+$subject->setPublicKey($pubKey);
+$subject->setDNProp('id-at-organizationName', 'phpseclib demo cert');
+$subject->setDomain('www.google.com');
+
+$issuer = new File_X509();
+$issuer->setPrivateKey($CAPrivKey);
+$issuer->setDN($CASubject);
+
+$x509 = new File_X509();
+$x509->setStartDate('-1 month');
+$x509->setEndDate('+1 year');
+$x509->setSerialNumber(chr(1));
+
+$result = $x509->sign($issuer, $subject);
+echo "the stunnel.pem contents are as follows:\r\n\r\n";
+echo $privKey->getPrivateKey();
+echo "\r\n";
+echo $x509->saveX509($result);
+echo "\r\n";</pre>
+    <p>The output of the above is as follows:</p>
+    <div id="cert5" class="cert" style="font-size: 12px">
+      <h3><a href="#">Certificate 5: A CA cert and a cert signed by that CA</a></h3>
+      <div>
+        <pre>the private key for the CA cert (can be discarded):
+
+-----BEGIN RSA PRIVATE KEY-----
+MIICXAIBAAKBgQCeSAGfM4nHdIaBwThHYGW3MABTvrSMrawnGN/Mx5ttyLQF4YcUJFSpGAJ8y2hV
+iak3irbLtc6nlpJFOHtMB4VsuG7S+MySYKBm5l7eApfWynHMLKVml3URXCMVMXju4SxiI+D10nNO
+aq+eSEIFlPOY+7LgSdIAka6/9+z2hgoITQIDAQABAoGADS1RdT+FKOW6jPLZDJgp36ZPYKlvvoZ2
+3opjl1jGx8z9r7+mzzZ3Fdy52EnW1cgwHj+eGDd6jNksNDcPjLTTlqfwoKMZhf1gpYBKA5PtnqFU
+rxM5eW3SzLWkPOZoS/i8fxze0uvoh0zcm6u1nictcjkj0Hqql4hbTrDRENxTfgECQQC9qYFWsH8q
+r/ztbl6WBxW1NT9JgthvteiINpAjeN9tmuP9BgTGPk4j3MhTVsPp5ogzdn3MLch2YJ9cJuEeHon1
+AkEA1aSiiZwGH9tCI8EFJrDqbCqDgeOmlkgMp5YQ8TqBg6/nkM4wWz9cXSmFPO3L9BQhvXE8RlGJ
+DChCksbBcjnV+QJBALXZ7w+lz2iosYUejEahqGjFE1dyw//olXr1hiLc5K39E5kpyi4i012Ddfii
+etqsle9yL5A0Xb9TSblb9gGhGnkCQDyj8Gay3KIqMAnJ/dZPnRp6rr0titlZNg5TcBeojZ59TXMy
+s1MTFvpykJkMvjlXhYQqIfurpQTIYK0csUfk1rECQBPVqVAG45VBn6yV1cDaqvg/0aQ6yZc7nQTr
+7aLuUCTaf/xP4wSWiQpGiRFdTLt3pkkI3XdngV6j8RCcpgED6qU=
+-----END RSA PRIVATE KEY-----
+
+the CA cert to be imported into the browser is as follows:
+
+-----BEGIN CERTIFICATE-----
+MIIBzzCCATqgAwIBAgIBATALBgkqhkiG9w0BAQUwHDEaMBgGA1UECgwRcGhwc2VjbGliIGRlbW8g
+Q0EwIhgPMjAxMjA1MDQwMzQxNDhaGA8yMDEzMDYwNDAzNDE0OFowHDEaMBgGA1UECgwRcGhwc2Vj
+bGliIGRlbW8gQ0EwgZ0wCwYJKoZIhvcNAQEBA4GNADCBiQKBgQCeSAGfM4nHdIaBwThHYGW3MABT
+vrSMrawnGN/Mx5ttyLQF4YcUJFSpGAJ8y2hViak3irbLtc6nlpJFOHtMB4VsuG7S+MySYKBm5l7e
+ApfWynHMLKVml3URXCMVMXju4SxiI+D10nNOaq+eSEIFlPOY+7LgSdIAka6/9+z2hgoITQIDAQAB
+oyMwITAOBgNVHQ8BAQAEBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zALBgkqhkiG9w0BAQUDgYEAc31s
+EL3tWfwFIHYK+96wzvAS7F/4FCMcZOdrW9LZ1IniXUSf601MIOVy0pAc17Xf6QjlVOhziA3cLMi3
+3CWwEDgnhXU8s6YRAa6WD8eeHwmJKE3vIU0+klscIdOO+14BrC+mRUoPaZ1hmixMvrK/pVhXAkef
+XTSk5kq9f2Bfm+M=
+-----END CERTIFICATE-----
+
+the stunnel.pem contents are as follows:
+
+-----BEGIN RSA PRIVATE KEY-----
+MIICWwIBAAKBgQCBsisUty8OFR2gz3sweCoIfyzFWcvaTA55noaI6LXZMebI3iB7u5dJjsbI2yRh
+IgDaHBDVyu6R9W/NA9QFkKGoHmnnvHsEo8Jc9Ca3nVIfjVBUj+kGMnadUtHoxZaRXLdwV9nX+LCa
+rfEz9VDS21BOJJ6OzUmvvkM0AUkGQlmcnwIDAQABAoGAN2+c63dbNRVAe0aEHNUX/lbBn79Am5fL
+zh882RNC+0nRoAUV9F1cDpRpElxdAemjXJcHeSKK87dpaMOcoh5Ogi2rXXgB++igxNdx19+z4Ku1
+A1JG0O08Z/n7DQQb5g+V4Z9oIorpfufh7lIj4HgDLoznCj2lWq6SpzWobmtYnC0CQQDJDjYDRJRR
+ujepI6yz+9ckD6Jr2AwjSrdQKUPMzeexlTQgDqW/Jec5k3dS1zcvM+FctzNfnp9LyK/CABFYLb6r
+AkEApSOpwpzAsL1rDUqdV3iBEPPBmLLeTef4+pyggGGYFeu+TR3hNrHZPphXi6F/c+kmt7kDWgq1
+K3QZPQkadXgJ3QJAF5Bb0jw6ae26Uk+FET8l8usGLT+QBJ7gJzv+30UOr6h+CHfPAz0tAXmAFax1
+okmhUx2BnuZXYyltN/6MCdqqqwJAVqU5owTADXu1OYoWuBhgD9b1kvr2rQWzmzqm8/VA6O+CL9An
+pJz4EWG5PWgFCXoheHA4k/veRuhpfZ7TJSNQeQJAFVH1RQYAYOTVyyXYbUJnXEbVnEYeTVUKLJmx
+VSmAwFxx6s/EHVmiDH/WPgV4NkZt7gW7epkqoz3gfTDWYfx8Qg==
+-----END RSA PRIVATE KEY-----
+-----BEGIN CERTIFICATE-----
+MIIBxTCCATCgAwIBAgIBATALBgkqhkiG9w0BAQUwHDEaMBgGA1UECgwRcGhwc2VjbGliIGRlbW8g
+Q0EwIhgPMjAxMjA1MDQwMzQxNDhaGA8yMDEzMDYwNDAzNDE0OFowNzEcMBoGA1UECgwTcGhwc2Vj
+bGliIGRlbW8gY2VydDEXMBUGA1UEAwwOd3d3Lmdvb2dsZS5jb20wgZ0wCwYJKoZIhvcNAQEBA4GN
+ADCBiQKBgQCBsisUty8OFR2gz3sweCoIfyzFWcvaTA55noaI6LXZMebI3iB7u5dJjsbI2yRhIgDa
+HBDVyu6R9W/NA9QFkKGoHmnnvHsEo8Jc9Ca3nVIfjVBUj+kGMnadUtHoxZaRXLdwV9nX+LCarfEz
+9VDS21BOJJ6OzUmvvkM0AUkGQlmcnwIDAQABMAsGCSqGSIb3DQEBBQOBgQBzWpz47IfG6vWf5WlN
+R+iTEBwr8kKJOop38otzxwGBvYk7YBHI2DZW0tivpceN7JjkhpkBUNd+vg/qQSp0UVp38MrVR0cw
+ZP0iAJmLHTq/Jpymrqpz3Cn0bvKFvmYvzHgy9bjS5dy8AuFZY16qieNJovrV2c4dnCh4xo2c+MbK
+Ig==
+-----END CERTIFICATE-----</pre>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end .container_16 -->
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>phpseclib: SSH2 Examples and Notes</title>
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+<link rel="stylesheet" href="../css/prettify.css"/>
+
+<script src="../js/prettify.js"></script>
+<script src="../js/jquery-1.7.2.min.js"></script>
+
+<script>
+var manageSelects = function() {
+  options = $('select option');
+  for (var i = 0; i < options.length; i++) {
+   $('.' + options[i].value).hide();
+  }
+
+  options = $('select option:selected');
+  for (var i = 0; i < options.length; i++) {
+   $('.' + options[i].value).show();
+  }
+};
+
+var highlight = function() {
+  if ($('.' + this.value).closest('#notes').length == 0) {
+    $('.' + this.value).css('background-color', '#ffa');
+  }
+};
+
+var unhighlight = function() {
+  if ($('.' + this.value).closest('#notes').length == 0) {
+    $('.' + this.value).css('background-color', '#f5f4ee');
+  }
+};
+
+var toggleButton = function() {
+  buttons = $('button[value="' + this.value + '"]');
+  buttons.eq(0).toggle();
+  buttons.eq(1).toggle();
+  $('.' + this.value).toggle();
+};
+
+var permLink = function() {
+  attrs = '';
+  selected = $('select option:selected,.disableCode:visible');
+  for (i = 0; i < selected.length; i++) {
+    attrs+= selected[i].value + ',';
+  }
+  hashPos = window.location.href.indexOf('#');
+  newURL = hashPos == -1 ? window.location.href : window.location.href.substring(0, hashPos);
+  window.location.href = newURL + '#' + attrs;
+};
+
+$(document).ready(function() {
+  //$('pre span[id]').hide();
+  //$('#notes div[id]').hide();
+
+  buttons = $('button:visible');
+  for (var i = 0; i < buttons.length; i++) {
+   $('.' + buttons[i].value).hide();
+  }
+
+  options = window.location.href.split('#');
+  options = options.length > 1 ? options[1].split(',') : new Array();
+  for (var i = 0; i < options.length; i++) {
+    options[i] = options[i].replace(/%20/g, ' ');
+    $('select option[value="' + options[i] +'"]').prop('selected', true);
+    button = $('button[value="' + options[i] +'"]');
+    if (button.length) {
+      toggleButton.apply(button[0]);
+    }
+  }
+
+  manageSelects();
+
+  $('select').change(manageSelects);
+  //$('select').change(highlight);
+  $('select').keyup(manageSelects);
+  //$('select').focus(highlight);
+  //$('select').blur(unhighlight);
+  $('button').click(toggleButton);
+  $('#permlink span').click(permLink);
+});
+</script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }
+.red { color: #e11 }
+.prettyprint { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+</style>
+</head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: SSH2 Examples and Notes</h1>
+    <div id="pgup">(return to <a href="intro.html">phpseclib: SSH2 Feature List</a>)</div>
+  </div>
+  <div class="clear"></div>
+  <div class="grid_3">
+    <p>
+      Login:<br />
+      <select>
+        <option value="password">Password</option>
+        <option value="rsakey">RSA Key</option>
+        <option value="encrsakey">Password Protected RSA Key</option>
+      </select>
+    </p>
+    <p>
+      Action:<br />
+      <select>
+        <option value="oneoff">One-off commands</option>
+        <option value="chdir">One-off commands: cd: a note</option>
+        <option value="interactive">Interactive Shell</option>
+        <option value="sudo">Advanced Interactive Shell: sudo</option>
+        <option value="timeout">setTimeout: Identifying the prompt</option>
+        <option value="top">Interactive Shell: ANSI Codes</option>
+      </select>
+    </p>
+    <p>
+      <button value="logging" class="buttonOn">Enable Logging</button>
+      <button value="logging" class="buttonOff disableCode">Disable Logging</button>
+    </p>
+    <p>
+      <button value="hostkey" class="buttonOn">Verify Host Key</button>
+      <button value="hostkey" class="buttonOff disableCode">Ignore Host Key</button>
+    </p>
+  </div>
+  <!-- end .grid_3 -->
+  <div class="grid_9">
+    <div>
+<pre class="prettyprint" style="margin-bottom: 0">&lt;?php
+include('Net/SSH2.php');<span class="rsakey encrsakey">
+include('Crypt/RSA.php');</span><span class="top">
+include('File/ANSI.php');</span>
+<span class="logging">
+define('NET_SSH2_LOGGING', NET_SSH2_LOG_COMPLEX);
+</span>
+$ssh = new Net_SSH2('www.domain.tld');
+<span class="password">if (!$ssh-&gt;login('username', 'password')) {
+    exit('Login Failed');
+}</span><span class="rsakey">$key = new Crypt_RSA();
+$key-&gt;loadKey(file_get_contents('privatekey'));
+if (!$ssh-&gt;login('username', $key)) {
+    exit('Login Failed');
+}</span><span class="encrsakey">$key = new Crypt_RSA();
+$key-&gt;setPassword('whatever');
+$key-&gt;loadKey(file_get_contents('privatekey'));
+if (!$ssh-&gt;login('username', $key)) {
+    exit('Login Failed');
+}</span><span class="hostkey">
+// save $ssh->getServerPublicHostKey() if this is your first time connecting
+// check $ssh->getServerPublicHostKey() against previously saved value on subsequent connections</span>
+
+<span class="oneoff">echo $ssh->exec('pwd');
+echo $ssh->exec('ls -la');</span><span class="chdir">echo $ssh->exec('pwd'); // outputs /home/username
+$ssh->exec('cd /');
+echo $ssh->exec('pwd'); // (despite the previous command) outputs /home/username</span><span style="display: none">
+</span><span class="interactive">echo $ssh->read('username@username:~$');
+$ssh->write("ls -la\n");
+echo $ssh->read('username@username:~$');</span><span class="sudo">echo $sftp->read('username@username:~$');
+$sftp->write("sudo ls -la\n");
+$output = $sftp->read('#Password:|username@username:~\$#', NET_SSH2_READ_REGEX);
+echo $output;
+if (preg_match('#Password:#', $lines)) {
+    $ssh->write("password\n");
+    echo $sftp->read('username@username:~$');
+}</span><span class="timeout">$ssh->setTimeout(5);
+echo $ssh->read();</span><span class="top">$ansi = new File_ANSI();
+
+$ansi->appendString($ssh->read('username@username:~$'));
+$ssh->write("top\n");
+$ssh->setTimeout(5);
+$ansi->appendString($ssh->read());
+echo $ansi->getScreen(); // or $ansi->getHistory()</span><span class="logging">
+
+echo $ssh->getLog();</span>
+?&gt;</pre>
+    </div>
+    <div id="permlink"><span>permanent link</span></div>
+    <div id="notes">
+      <div class="chdir">
+        <h2>Successive calls to exec()</h2>
+        <p>If done on an interactive shell, the output you'd receive for the first pwd would (depending on how your system is setup) be different than the output of the second pwd. The above code snippet, however, will yield two identical lines.</p>
+        <p>The reason for this is that any "state changes" you make to the one-time shell are gone once the exec() has been ran and the channel has been deleted.</p>
+      </div>
+      <div class="sudo">
+        <h2>sudo with read() / write()</h2>
+        <p>By default, <a href="http://en.wikipedia.org/wiki/Sudo">sudo</a> caches passwords for 5 minutes after they've been entered. So while <code>$ssh->read('Password:')</code> will work the first time you try it, it won't work if you try it within a five minutes after having initially ran it.</p>
+      </div>
+      <div class="top">
+        <h2>ANSI Escape Codes</h2>
+        <p>Some commands issued to a terminal may yield <a href="http://en.wikipedia.org/wiki/ANSI_escape_code">ANSI escape codes</a>.  eg. <code>^[[H</code>.  These provide the terminal with information on the formating of the characters and their positioning.</p>
+        <p>Since Net_SSH2 uses vt100 as the "TERM environment variable value" a <a href="http://en.wikipedia.org/wiki/VT100">VT100</a> <a href="http://en.wikipedia.org/wiki/Terminal_emulator">terminal emulator</a> is needed to properly handle the ANSI escape codes.  File_ANSI aims to be such an emulator.  The default screen size is 80x24.</p>
+        <p><code>$ansi->getScreen()</code> returns what'd be seen on the current screen.  In the case of <a href="http://en.wikipedia.org/wiki/Top_%28software%29">top</a> this is desirable as it'll produce output like this:</p>
+<pre style="color: white; background: black" width="80">top - 23:39:24 up 77 days,  1:13,  1 user,  load average: 0.00, 0.00, 0.00
+Tasks:  45 total,   2 running,  43 sleeping,   0 stopped,   0 zombie
+Cpu(s):  0.0%us,  0.0%sy,  0.0%ni,100.0%id,  0.0%wa,  0.0%hi,  0.0%si,  0.0%st
+Mem:   1740956k total,  1079288k used,   661668k free,   221240k buffers
+Swap:        0k total,        0k used,        0k free,   399940k cached
+
+<span style="color: black; background: white">  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND            </span>
+    1 root      16   0  2128  696  600 S  0.0  0.0   0:01.10 init               
+    2 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/0        
+    3 root      34  19     0    0    0 S  0.0  0.0   0:00.05 ksoftirqd/0        
+    4 root      RT   0     0    0    0 S  0.0  0.0   0:00.01 watchdog/0         
+    5 root      10  -5     0    0    0 S  0.0  0.0   0:00.25 events/0           
+    6 root      11  -5     0    0    0 S  0.0  0.0   0:00.63 khelper            
+    7 root      10  -5     0    0    0 S  0.0  0.0   0:00.00 kthread            
+    8 root      14  -5     0    0    0 S  0.0  0.0   0:00.00 xenwatch           
+    9 root      10  -5     0    0    0 S  0.0  0.0   0:00.00 xenbus             
+   17 root      10  -5     0    0    0 S  0.0  0.0   0:00.00 kblockd/0          
+   46 root      20  -5     0    0    0 S  0.0  0.0   0:00.00 aio/0              
+   45 root      15   0     0    0    0 S  0.0  0.0   0:00.64 kswapd0            
+  562 root      20  -5     0    0    0 S  0.0  0.0   0:00.00 kseriod            
+  657 root      15   0     0    0    0 S  0.0  0.0   0:04.23 kjournald          
+  718 root      13  -4  2360  656  424 S  0.0  0.0   0:00.18 udevd              
+ 1592 root      14  -2  2396  848  560 S  0.0  0.0   0:00.03 dhclient           
+ 1647 root      15   0     0    0    0 S  0.0  0.0   0:00.16 kjournald</pre>
+      <p>In the case of <a href="http://en.wikipedia.org/wiki/Ls">ls</a>, however, it is less desirable.  For commands like ls it may be preferable to do <code>$ansi->getHistory()</code>. For top, that'd return the following:</p>
+<pre style="color: white; background: black" width="80">         __|  __|_  )  Fedora 8
+         _|  (     /    32-bit
+        ___|\___|___|
+
+ Welcome to an EC2 Public Image
+                       :-)
+
+    Base
+
+ --[ see /etc/ec2/release-notes ]--
+
+[username@username:~$]$top
+
+top - 23:51:56 up 77 days,  1:25,  1 user,  load average: 0.00, 0.00, 0.00
+Tasks:  45 total,   2 running,  43 sleeping,   0 stopped,   0 zombie
+Cpu(s):  0.0%us,  0.0%sy,  0.0%ni,100.0%id,  0.0%wa,  0.0%hi,  0.0%si,  0.0%st
+Mem:   1740956k total,  1079256k used,   661700k free,   221240k buffers
+Swap:        0k total,        0k used,        0k free,   399940k cached
+
+<span style="color: black; background: white">  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND            </span>
+    1 root      16   0  2128  696  600 S  0.0  0.0   0:01.10 init               
+    2 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/0        
+    3 root      34  19     0    0    0 S  0.0  0.0   0:00.05 ksoftirqd/0        
+    4 root      RT   0     0    0    0 S  0.0  0.0   0:00.01 watchdog/0         
+    5 root      10  -5     0    0    0 S  0.0  0.0   0:00.25 events/0           
+    6 root      11  -5     0    0    0 S  0.0  0.0   0:00.63 khelper            
+    7 root      10  -5     0    0    0 S  0.0  0.0   0:00.00 kthread            
+    8 root      14  -5     0    0    0 S  0.0  0.0   0:00.00 xenwatch           
+    9 root      10  -5     0    0    0 S  0.0  0.0   0:00.00 xenbus             
+   17 root      10  -5     0    0    0 S  0.0  0.0   0:00.00 kblockd/0          
+   46 root      20  -5     0    0    0 S  0.0  0.0   0:00.00 aio/0              
+   45 root      15   0     0    0    0 S  0.0  0.0   0:00.64 kswapd0            
+  562 root      20  -5     0    0    0 S  0.0  0.0   0:00.00 kseriod            
+  657 root      15   0     0    0    0 S  0.0  0.0   0:04.23 kjournald          
+  718 root      13  -4  2360  656  424 S  0.0  0.0   0:00.18 udevd              
+ 1592 root      14  -2  2396  848  560 S  0.0  0.0   0:00.03 dhclient           
+ 1647 root      15   0     0    0    0 S  0.0  0.0   0:00.16 kjournald</pre>
+      <p>The history, by default, stores 200 lines (not including the current screen).  Both functions return HTML with the various formatting properties specified by HTML.  If you don't want HTML and want just the raw text of the terminal without any formatting do <code>htmlspecialchars_decode(strip_tags($ansi->getScreen()))</code>.
+    </div>
+  </div>
+  <!-- end .grid_9 -->
+</div>
+<!-- end .container_16 -->
+</body>
+</html>

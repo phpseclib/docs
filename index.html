@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>phpseclib: An Introduction</title>
+<link rel="stylesheet" href="css/reset.css" />
+<link rel="stylesheet" href="css/text.css" />
+<link rel="stylesheet" href="css/960.css" />
+<link rel="stylesheet" href="css/prettify.css"/>
+
+<script src="js/prettify.js"></script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }
+.red { color: #e11 }
+.prettyprint { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+</style>
+</head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12" style="margin-bottom: 20px">
+    <h1>php<span class="red">sec</span>lib: An Introduction</h1>
+  </div>
+  <div class="grid_4">
+    <h2>Pure-PHP implementations of:</h2>
+    <ul>
+      <li><a href="rsa/intro.html">RSA</a></li>
+      <li><a href="ssh/intro.html">SSH2</a></li>
+      <li><a href="sftp/intro.html">SFTP</a></li>
+      <li><a href="x509/tutorial.html">X.509</a></li>
+      <li>
+        Symmetric key encryption
+        <ul>
+          <li>AES</li>
+          <li>Rijndael</li>
+          <li>DES</li>
+          <li>3DES</li>
+          <li>RC4</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <div class="grid_8">
+    <h2>Compatibility</h2>
+    <p>php<span class="red">sec</span>lib is designed to be ultra-compatible.  It works on PHP4+ (PHP4, assuming the use of <a href="http://pear.php.net/package/PHP_Compat">PHP_Compat</a>) and doesn't require any extensions.  For purposes of speed, mcrypt is used if it's available as is gmp or bcmath (in that order), but they are not required.</p>
+    <h2>MIT-Licensed</h2>
+    <p>php<span class="red">sec</span>lib is licensed with the <a href="http://en.wikipedia.org/wiki/MIT_License">MIT-license</a>. By virtue of not being <a href="http://en.wikipedia.org/wiki/Copyleft">copyleft</a> it's less restrictive than the GPL, which in turn, means that it's fully <a href="http://www.gnu.org/licenses/license-list.html#X11License">GPL compatible</a>.</p>
+    <h2>Usage</h2>
+    <p>This library is written using the same conventions that libraries in the PHP Extension and Application Repository (PEAR) used to be written in (current requirements break PHP4 compatibility). In particular, this library needs to be in your include_path:</p>
+    <pre class="prettyprint">
+&lt;?php
+set_include_path(get_include_path() . PATH_SEPARATOR . 'phpseclib');
+
+include('Net/SSH2.php');
+?></pre>
+  </div>
+</body>
+</html>

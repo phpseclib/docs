@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>phpseclib: SSH2 Introduction</title>
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }
+.red { color: #e11 }
+.prettyprint { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+</style>
+</head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: SSH2 Feature List</h1>
+    <div id="pgup">(return to <a href="../index.html">phpseclib Feature List</a>)</div>
+    <p>Click on any of the following for examples.</p>
+  </div>
+  <div class="grid_4">
+    <h2>Authentication</h2>
+    <ul>
+      <li><a href="examples.html">Password</a></li>
+      <li><a href="examples.html#rsakey">RSA Key</a></li>
+      <li>
+        <a href="examples.html#encrsakey">Password Protected RSA Key</a>
+        <ul>
+          <li>For a discussion of the supported formats see <a href="../rsa/intro.html">RSA Feature List</a>.</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+  <div class="grid_8">
+    <h2>Features</h2>
+    <ul>
+      <li>
+        Ability to execute one-off commands with <a href="examples.html">exec()</a>
+        <ul>
+          <li><a href="examples.html#chdir">Successive calls</a> may not work as expected</li>
+        </ul>
+      </li>
+      <li>
+        Ability to execute commands via an interactive shell with <a href="examples.html#interactive">read() and write()</a>
+        <ul>
+          <li>read() supports character-for-character string matching and <a href="examples.html#sudo">regular expressions</a></li>
+          <li>If read() returns ANSI escape codes (eg. <code>^[[H</code>) try using <a href="examples.html#top">File_ANSI</a></li>
+        </ul>
+      </li>
+      <li>Ability to place a time limit on how long Net_SSH2 will wait for commands to terminate via <a href="examples.html#timeout">setTimeout()</a></li>
+      <li>
+        <a href="examples.html#logging">Logging</a>
+        <ul>
+          <li>See a <a href="log.txt">sample log file</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</body>
+</html>

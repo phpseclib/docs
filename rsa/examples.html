@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>phpseclib: RSA Examples and Notes</title>
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+<link rel="stylesheet" href="../css/prettify.css"/>
+
+<script src="../js/prettify.js"></script>
+<script src="../js/jquery-1.7.2.min.js"></script>
+
+<script>
+var manageSelects = function() {
+  options = $('select option');
+  for (var i = 0; i < options.length; i++) {
+   $('.' + options[i].value).hide();
+  }
+
+  options = $('select option:selected');
+  for (var i = 0; i < options.length; i++) {
+   $('.' + options[i].value).show();
+  }
+};
+
+var highlight = function() {
+  if ($('.' + this.value).closest('#notes').length == 0) {
+    $('.' + this.value).css('background-color', '#ffa');
+  }
+};
+
+var unhighlight = function() {
+  if ($('.' + this.value).closest('#notes').length == 0) {
+    $('.' + this.value).css('background-color', '#f5f4ee');
+  }
+};
+
+var toggleButton = function() {
+  buttons = $('button[value="' + this.value + '"]');
+  buttons.eq(0).toggle();
+  buttons.eq(1).toggle();
+  $('.' + this.value).toggle();
+};
+
+var permLink = function() {
+  attrs = '';
+  selected = $('select option:selected,.disableCode:visible');
+  for (i = 0; i < selected.length; i++) {
+    attrs+= selected[i].value + ',';
+  }
+  hashPos = window.location.href.indexOf('#');
+  newURL = hashPos == -1 ? window.location.href : window.location.href.substring(0, hashPos);
+  window.location.href = newURL + '#' + attrs;
+};
+
+$(document).ready(function() {
+  //$('pre span[id]').hide();
+  //$('#notes div[id]').hide();
+
+  buttons = $('button:visible');
+  for (var i = 0; i < buttons.length; i++) {
+   $('.' + buttons[i].value).hide();
+  }
+
+  options = window.location.href.split('#');
+  options = options.length > 1 ? options[1].split(',') : new Array();
+  for (var i = 0; i < options.length; i++) {
+    options[i] = options[i].replace(/%20/g, ' ');
+    $('select option[value="' + options[i] +'"]').prop('selected', true);
+    button = $('button[value="' + options[i] +'"]');
+    if (button.length) {
+      toggleButton.apply(button[0]);
+    }
+  }
+
+  manageSelects();
+
+  $('select').change(manageSelects);
+  //$('select').change(highlight);
+  $('select').keyup(manageSelects);
+  //$('select').focus(highlight);
+  //$('select').blur(unhighlight);
+  $('button').click(toggleButton);
+  $('#permlink span').click(permLink);
+});
+</script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }
+.red { color: #e11 }
+.prettyprint, .pre { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+</style>
+</head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: RSA Examples and Notes</h1>
+    <div id="pgup">(return to <a href="intro.html">phpseclib: RSA Feature List</a>)</div>
+  </div>
+  <div class="clear"></div>
+  <div class="grid_3">
+    <p>
+      Action:<br />
+      <select>
+        <option value="create">Create Key Pair</option>
+        <option value="timeout">Create Key Pair (with timeout)</option>
+        <option value="convert">Convert Private Key</option>
+        <option value="public">Convert Public Key</option>
+        <option value="sign">Create / verify signature</option>
+        <option value="encrypt">Encrypt / decrypt message</option>
+      </select>
+    </p>
+    <p class="create convert timeout">
+      RSA Private Key Format:<br />
+      <select>
+        <option value="pkcs1">PKCS#1</option>
+        <option value="encpkcs1">PKCS#1 (with password)</option>
+        <option value="putty">PuTTY</option>
+        <option value="encputty">PuTTY (with password)</option>
+        <option value="xml">XML Signature</option>
+      </select>
+    </p>
+    <p class="create convert public timeout">
+      RSA Public Key Format:<br />
+      <select>
+        <option value="pkcs1pub">PKCS#1</option>
+        <option value="openssh">OpenSSH</option>
+        <option value="xmlpub">XML Signature</option>
+      </select>
+    </p>
+    <p class="sign">
+      Signature Mode:<br />
+      <select>
+        <option value="sign1">PSS</option>
+        <option value="sign2">PKCS#1</option>
+      </select>
+    </p>
+    <p class="encrypt">
+      Encryption Mode:<br />
+      <select>
+        <option value="enc1">OAEP</option>
+        <option value="enc2">PKCS#1</option>
+      </select>
+    </p>
+  </div>
+  <!-- end .grid_3 -->
+  <div class="grid_9">
+    <div>
+<pre class="prettyprint" style="margin-bottom: 0">&lt;?php
+include('Crypt/RSA.php');
+
+$rsa = new Crypt_RSA();
+<span class="timeout">
+<span class="encpkcs1 encputty">$rsa->setPassword('password');
+</span><span class="putty encputty">$rsa->setPrivateKeyFormat(CRYPT_RSA_PRIVATE_FORMAT_PUTTY);
+</span><span class="xml">$rsa->setPrivateKeyFormat(CRYPT_RSA_PRIVATE_FORMAT_XML);
+</span><span class="encpkcs1 pkcs1">//$rsa->setPrivateKeyFormat(CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
+</span><span class="pkcs1pub">//$rsa->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_PKCS1);
+</span><span class="openssh">$rsa->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_OPENSSH);
+</span><span class="xmlpub">$rsa->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_XML);
+</span>
+// initial call
+extract($rsa->createKey(1024, 10));
+// subsequent calls
+extract($rsa->createKey(1024, 10, $partialkey));</span><span class="create">
+<span class="encpkcs1 encputty">$rsa->setPassword('password');
+</span><span class="putty encputty">$rsa->setPrivateKeyFormat(CRYPT_RSA_PRIVATE_FORMAT_PUTTY);
+</span><span class="xml">$rsa->setPrivateKeyFormat(CRYPT_RSA_PRIVATE_FORMAT_XML);
+</span><span class="encpkcs1 pkcs1">//$rsa->setPrivateKeyFormat(CRYPT_RSA_PRIVATE_FORMAT_PKCS1);
+</span><span class="pkcs1pub">//$rsa->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_PKCS1);
+</span><span class="openssh">$rsa->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_OPENSSH);
+</span><span class="xmlpub">$rsa->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_XML);
+</span>
+//define('CRYPT_RSA_EXPONENT', 65537);
+//define('CRYPT_RSA_SMALLEST_PRIME', 64); // makes it so multi-prime RSA is used
+extract($rsa->createKey()); // == $rsa->createKey(1024) where 1024 is the key size</span><span class="convert">//$rsa->setPassword('password');
+$rsa->loadKey('...');
+<span class="putty pkcs1 xml">
+//$rsa->setPassword(); // clear the password if there was one</span><span class="encputty encpkcs1">
+$rsa->setPassword('password'); // presumably this'll be different than the above password</span><span class="pkcs1 encpkcs1">
+$privatekey = $rsa->getPrivateKey(); // could do CRYPT_RSA_PRIVATE_FORMAT_PKCS1 too</span><span class="putty encputty">
+$privatekey = $rsa->getPrivateKey(CRYPT_RSA_PRIVATE_FORMAT_PUTTY);</span><span class="xml">
+$privatekey = $rsa->getPrivateKey(CRYPT_RSA_PRIVATE_FORMAT_XML);</span><span class="pkcs1pub">
+$publickey = $rsa->getPublicKey(); // could do CRYPT_RSA_PUBLIC_FORMAT_PKCS1 too</span><span class="openssh">
+$publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_OPENSSH);</span><span class="xmlpub">
+$publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_XML);</span></span><span class="public">
+$rsa->loadKey('...');
+$rsa->setPublicKey();
+<span class="pkcs1pub">
+$publickey = $rsa->getPublicKey(); // could do CRYPT_RSA_PUBLIC_FORMAT_PKCS1 too</span><span class="openssh">
+$publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_OPENSSH);</span><span class="xmlpub">
+$publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_XML);</span></span><span class="sign encrypt">//$rsa->setPassword('password');
+$rsa->loadKey('...'); // private key
+
+$plaintext = '...';
+<span class="sign">
+<span class="sign2">$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PKCS1);</span><span class="sign1">//$rsa->setSignatureMode(CRYPT_RSA_SIGNATURE_PSS);</span>
+$signature = $rsa->sign($plaintext);
+
+$rsa->loadKey('...'); // public key
+echo $rsa->verify($plaintext, $signature) ? 'verified' : 'unverified';</span></span><span class="encrypt">
+$rsa->loadKey('...'); // public key
+
+<span class="enc2">$rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);</span><span class="enc1">//$rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_OAEP);</span>
+$ciphertext = $rsa->encrypt($plaintext);
+
+$rsa->loadKey('...'); // private key
+echo $rsa->decrypt($ciphertext);</span></span>
+?&gt;</pre>
+    </div>
+    <div id="permlink"><span>permanent link</span></div>
+    <div id="notes">
+      <div class="create convert">
+        <h2>Values of $privatekey and $publickey:</h2>
+        <div class="pkcs1">
+        <b>$privatekey</b>:
+        <pre class="pre">-----BEGIN RSA PRIVATE KEY-----
+MIICXAIBAAKBgQCqGKukO1De7zhZj6+H0qtjTkVxwTCpvKe4eCZ0FPqri0cb2JZfXJ/DgYSF6vUp
+wmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/3j+skZ6UtW+5u09lHNsj6tQ5
+1s1SPrCBkedbNf0Tp0GbMJDyR4e9T04ZZwIDAQABAoGAFijko56+qGyN8M0RVyaRAXz++xTqHBLh
+3tx4VgMtrQ+WEgCjhoTwo23KMBAuJGSYnRmoBZM3lMfTKevIkAidPExvYCdm5dYq3XToLkkLv5L2
+pIIVOFMDG+KESnAFV7l2c+cnzRMW0+b6f8mR1CJzZuxVLL6Q02fvLi55/mbSYxECQQDeAw6fiIQX
+GukBI4eMZZt4nscy2o12KyYner3VpoeE+Np2q+Z3pvAMd/aNzQ/W9WaI+NRfcxUJrmfPwIGm63il
+AkEAxCL5HQb2bQr4ByorcMWm/hEP2MZzROV73yF41hPsRC9m66KrheO9HPTJuo3/9s5p+sqGxOlF
+L0NDt4SkosjgGwJAFklyR1uZ/wPJjj611cdBcztlPdqoxssQGnh85BzCj/u3WqBpE2vjvyyvyI5k
+X6zk7S0ljKtt2jny2+00VsBerQJBAJGC1Mg5Oydo5NwD6BiROrPxGo2bpTbu/fhrT8ebHkTz2epl
+U9VQQSQzY1oZMVX8i1m5WUTLPz2yLJIBQVdXqhMCQBGoiuSoSjafUhV7i1cEGpb88h5NBYZzWXGZ
+37sJ5QsW+sJyoNde3xH8vdXhzU7eT82D6X/scw9RZz+/6rCJ4p0=
+-----END RSA PRIVATE KEY-----</pre>
+        </div>
+        <div class="encpkcs1">
+        <b>$privatekey</b>:
+        <pre class="pre">-----BEGIN RSA PRIVATE KEY-----
+Proc-Type: 4,ENCRYPTED
+DEK-Info: DES-EDE3-CBC,E3B1C06E0D0C2633
+
+gvmXzl6W7eV1a3N5rQNwBWKY9on3IgxZudS33cip5f88FotsPSDJMvqj6LVw2RxobDjhlOOzqmTb
+VrlTnoQ6CogXFZSfiPmixiyyptCUEKJkSiEhYGM5GQm0OoGcLeLbgBb9tRpWh5IlXulKD6XFhx8q
+/eGg5a+mSkX1i7kv2+Ih3jHmEKwrnfzhcA29pBF3OQJo+Ks9IYneuk676pHtsIs7CpFKq1tDvD8Q
+O7URxnVnHLltaFvIxshqyZu92xbUYZR7YzjXl5+3w4TVgeAHUogEV+H9iZTosD/copUsbQO+78w2
+E1D3iDS94wRgx0Tjv4xlwrTpOV38FS5rdL32492DcCRlCYM4VtuwjYeWi5shJg69jCb0EwGRqfAo
+xko+lbKWELTuFKwD7n1rc/2fTarbGuf8S2AEggBLZyfXHC/9N84mXLFO2XKq+0WdiEFhQj2Cze+a
+9qcSK6tPSrjK1LPlnOOppFgDElZaZ0rxsgjtiWSIAEw/Ad+SIM5u+vqwzF8J317JlsdKoBFDw8mS
+MxCMuMksKJ23mgvY+THRIVgH3E7lEDZQzCi1Uy6ldLJcran/6wHwP88pVM2odiHkpnrJGcEBbbIk
+qsxJZhFT8aUt/cUEBj3fnP7cxoNLQfTHMPqUTqKBWaVufFzGU9YB1R+XWFULLddwJHnV7gPheBlk
+MDapowb+Is77+a9Y2VDsOXEvNpqTY0giiSrckG05IZnrhJ24JnSCwyNd99lm7XKdEGGrjBCMqIyI
+Fqox8Ahkv3KWAJPYK1eOCc5d/KwZHlnlFJq7ZYy9u3fEnxQCjOEmeXLkLangKA==
+-----END RSA PRIVATE KEY-----</pre>
+        </div>
+        <div class="putty">
+        <b>$privatekey</b>:
+        <pre class="pre">PuTTY-User-Key-File-2: ssh-rsa
+Encryption: none
+Comment: phpseclib-generated-key
+Public-Lines: 3
+AAAAB3NzaC1yc2EAAAADAQABAAAAgQCqGKukO1De7zhZj6+H0qtjTkVxwTCpvKe4
+eCZ0FPqri0cb2JZfXJ/DgYSF6vUpwmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RK
+NUSesmQRMSGkVb1/3j+skZ6UtW+5u09lHNsj6tQ51s1SPrCBkedbNf0Tp0GbMJDy
+R4e9T04ZZw==
+Private-Lines: 7
+AAAAgBYo5KOevqhsjfDNEVcmkQF8/vsU6hwS4d7ceFYDLa0PlhIAo4aE8KNtyjAQ
+LiRkmJ0ZqAWTN5TH0ynryJAInTxMb2AnZuXWKt106C5JC7+S9qSCFThTAxvihEpw
+BVe5dnPnJ80TFtPm+n/JkdQic2bsVSy+kNNn7y4uef5m0mMRAAAAQQDeAw6fiIQX
+GukBI4eMZZt4nscy2o12KyYner3VpoeE+Np2q+Z3pvAMd/aNzQ/W9WaI+NRfcxUJ
+rmfPwIGm63ilAAAAQQDEIvkdBvZtCvgHKitwxab+EQ/YxnNE5XvfIXjWE+xEL2br
+oquF470c9Mm6jf/2zmn6yobE6UUvQ0O3hKSiyOAbAAAAQBGoiuSoSjafUhV7i1cE
+Gpb88h5NBYZzWXGZ37sJ5QsW+sJyoNde3xH8vdXhzU7eT82D6X/scw9RZz+/6rCJ
+4p0=
+Private-MAC: 03e2cb74e1d67652fbad063d2ed0478f31bdf256</pre>
+        </div>
+        <div class="encputty">
+        <b>$privatekey</b>:
+        <pre class="pre">PuTTY-User-Key-File-2: ssh-rsa
+Encryption: aes256-cbc
+Comment: phpseclib-generated-key
+Public-Lines: 3
+AAAAB3NzaC1yc2EAAAADAQABAAAAgQCqGKukO1De7zhZj6+H0qtjTkVxwTCpvKe4
+eCZ0FPqri0cb2JZfXJ/DgYSF6vUpwmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RK
+NUSesmQRMSGkVb1/3j+skZ6UtW+5u09lHNsj6tQ51s1SPrCBkedbNf0Tp0GbMJDy
+R4e9T04ZZw==
+Private-Lines: 7
+llx04QMegql0/nE5RvcJSrGrodxt6ytuv/JX2caeZBUyQwQc2WBNYagLHyHPM9jI
+9OUWz59FLhjFXZMDNMoUXxVmjwQpOAaVPYNxxFM9AF6/NXFji64K7huD9n4A+kLn
+sHwMLWPR5a/tZA0r05DZNz9ULA3mQu7Hz4EQ8ifu3uTPJuTmL51x6RmudYKysb20
+fM8VzC3ukvzzRh0pujUVTr/yQdmciASVFnZlt4xQy+ZEOVUAOfwjd//AFfXTvk6x
+7A45rNlU/uicHwLgoY1APvRHCFxw7F+uVW5L4mSX7NNzqBKkZ+1qpQTAfQvIfEIb
+444+CXsgIyOpqt6VxJH2u6elAtE1wau3YaFR8Alm8m97rFYzRi3oDP5NZYkTCWSV
+EOpSeghXSs7IilJu8I6/sB1w5dakdeBSFkIynrlFXkO0uUw+QJJWjxY8SypzgIuP
+DzduF6XsQrCyo6dnIpGQCQ==
+Private-MAC: 35134b7434bf828b21404099861d455e660e8740</pre>
+        </div>
+        <div class="xml">
+        <b>$privatekey</b>:
+        <pre class="pre">&lt;RSAKeyValue>
+  &lt;Modulus>AKoYq6Q7UN7vOFmPr4fSq2NORXHBMKm8p7h4JnQU+quLRxvYll9cn8OBhIXq9SnCYkbzBVBkqN4ZyMM4vlSWy66wWdwLNYFDtEo1RJ6yZBExIaRVvX/eP6yRnpS1b7m7T2Uc2yPq1DnWzVI+sIGR51s1/ROnQZswkPJHh71PThln&lt;/Modulus>
+  &lt;Exponent>AQAB&lt;/Exponent>
+  &lt;P>AN4DDp+IhBca6QEjh4xlm3iexzLajXYrJid6vdWmh4T42nar5nem8Ax39o3ND9b1Zoj41F9zFQmuZ8/AgabreKU=&lt;/P>
+  &lt;Q>AMQi+R0G9m0K+AcqK3DFpv4RD9jGc0Tle98heNYT7EQvZuuiq4XjvRz0ybqN//bOafrKhsTpRS9DQ7eEpKLI4Bs=&lt;/Q>
+  &lt;DP>FklyR1uZ/wPJjj611cdBcztlPdqoxssQGnh85BzCj/u3WqBpE2vjvyyvyI5kX6zk7S0ljKtt2jny2+00VsBerQ==&lt;/DP>
+  &lt;DQ>AJGC1Mg5Oydo5NwD6BiROrPxGo2bpTbu/fhrT8ebHkTz2eplU9VQQSQzY1oZMVX8i1m5WUTLPz2yLJIBQVdXqhM=&lt;/DQ>
+  &lt;InverseQ>EaiK5KhKNp9SFXuLVwQalvzyHk0FhnNZcZnfuwnlCxb6wnKg117fEfy91eHNTt5PzYPpf+xzD1FnP7/qsIninQ==&lt;/InverseQ>
+  &lt;D>Fijko56+qGyN8M0RVyaRAXz++xTqHBLh3tx4VgMtrQ+WEgCjhoTwo23KMBAuJGSYnRmoBZM3lMfTKevIkAidPExvYCdm5dYq3XToLkkLv5L2pIIVOFMDG+KESnAFV7l2c+cnzRMW0+b6f8mR1CJzZuxVLL6Q02fvLi55/mbSYxE=&lt;/D>
+&lt;/RSAKeyValue></pre>
+        </div>
+        <div class="pkcs1pub">
+        <b>$publickey</b>:
+        <pre class="pre">-----BEGIN PUBLIC KEY-----
+MIGJAoGBAKoYq6Q7UN7vOFmPr4fSq2NORXHBMKm8p7h4JnQU+quLRxvYll9cn8OBhIXq9SnCYkbz
+BVBkqN4ZyMM4vlSWy66wWdwLNYFDtEo1RJ6yZBExIaRVvX/eP6yRnpS1b7m7T2Uc2yPq1DnWzVI+
+sIGR51s1/ROnQZswkPJHh71PThlnAgMBAAE=
+-----END PUBLIC KEY-----</pre>
+        </div>
+        <div class="openssh">
+        <b>$publickey</b>:
+        <pre class="pre">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCqGKukO1De7zhZj6+H0qtjTkVxwTCpvKe4eCZ0FPqri0cb2JZfXJ/DgYSF6vUpwmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/3j+skZ6UtW+5u09lHNsj6tQ51s1SPrCBkedbNf0Tp0GbMJDyR4e9T04ZZw== phpseclib-generated-key</pre>
+        </div>
+        <div class="xmlpub">
+        <b>$publickey</b>:
+        <pre class="pre">&lt;RSAKeyValue>
+  &lt;Modulus>AKoYq6Q7UN7vOFmPr4fSq2NORXHBMKm8p7h4JnQU+quLRxvYll9cn8OBhIXq9SnCYkbzBVBkqN4ZyMM4vlSWy66wWdwLNYFDtEo1RJ6yZBExIaRVvX/eP6yRnpS1b7m7T2Uc2yPq1DnWzVI+sIGR51s1/ROnQZswkPJHh71PThln&lt;/Modulus>
+  &lt;Exponent>AQAB&lt;/Exponent>
+&lt;/RSAKeyValue></pre>
+        </div>
+      </div>
+      <div class="public">
+        <h2>Values of $publickey:</h2>
+        <div class="pkcs1pub">
+        <pre class="pre">-----BEGIN PUBLIC KEY-----
+MIGJAoGBAKoYq6Q7UN7vOFmPr4fSq2NORXHBMKm8p7h4JnQU+quLRxvYll9cn8OBhIXq9SnCYkbz
+BVBkqN4ZyMM4vlSWy66wWdwLNYFDtEo1RJ6yZBExIaRVvX/eP6yRnpS1b7m7T2Uc2yPq1DnWzVI+
+sIGR51s1/ROnQZswkPJHh71PThlnAgMBAAE=
+-----END PUBLIC KEY-----</pre>
+        </div>
+        <div class="openssh">
+        <pre class="pre">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAAAgQCqGKukO1De7zhZj6+H0qtjTkVxwTCpvKe4eCZ0FPqri0cb2JZfXJ/DgYSF6vUpwmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/3j+skZ6UtW+5u09lHNsj6tQ51s1SPrCBkedbNf0Tp0GbMJDyR4e9T04ZZw== phpseclib-generated-key</pre>
+        </div>
+        <div class="xmlpub">
+        <pre class="pre">&lt;RSAKeyValue>
+  &lt;Modulus>AKoYq6Q7UN7vOFmPr4fSq2NORXHBMKm8p7h4JnQU+quLRxvYll9cn8OBhIXq9SnCYkbzBVBkqN4ZyMM4vlSWy66wWdwLNYFDtEo1RJ6yZBExIaRVvX/eP6yRnpS1b7m7T2Uc2yPq1DnWzVI+sIGR51s1/ROnQZswkPJHh71PThln&lt;/Modulus>
+  &lt;Exponent>AQAB&lt;/Exponent>
+&lt;/RSAKeyValue></pre>
+        </div>
+      </div>
+      <div class="sign">
+        <h2>Options</h2>
+        <p><code>$rsa->setHash()</code> tells Crypt_RSA which hash algorithm to use. The default hash algorithm is sha1.</p>
+        <p class="sign1"><code>$rsa->setMGFHash()</code> tells Crypt_RSA which hash to use as the mask generation function. The default hash algorithm is sha1.</p>
+        <p class="sign1"><code>$rsa->setSaltLength()</code> sets the salt length. The PKCS#1 standard PKCS#1 recommends this value either be 0 (which is what it is by default) or the length of the output of the hash function as set via setHash().</p>
+      </div>
+      <div class="encrypt">
+        <h2 class="enc1">Options</h2>
+        <p class="enc1"><code>$rsa->setHash()</code> tells Crypt_RSA which hash algorithm to use. The default hash algorithm is sha1.</p>
+        <p class="enc1"><code>$rsa->setMGFHash()</code> tells Crypt_RSA which hash to use as the mask generation function. The default hash algorithm is sha1.</p>
+      </div>
+      <div class="timeout">
+        <h2>Partial Keys</h2>
+        <p>Creating an RSA key can be a computationally expensive process. The fastest way to do it is to have the gmp extension installed and, failing that, the slower bcmath extension. If neither of those are available RSA keys can still be generated but it'll be slower still.</p>
+        <p>In the event that a webserver has a timeout limit in place for scripts it may help to perform multiple successive calls to <code>$rsa->createKey()</code>, via AJAX, or something. <code>$partialkey</code> is returned to the clients browser and the clients browser resends an HTTP request via AJAX with <code>$partialkey</code> for example.</p>
+      </div>
+    </div>
+  </div>
+  <!-- end .grid_9 -->
+</div>
+<!-- end .container_16 -->
+</body>
+</html>
