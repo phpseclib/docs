@@ -71,10 +71,13 @@ $(document).ready(function(){
     unique: true
   });
   $('.name,.hitarea').click(showPath);
-  $('.certopen,.cert').accordion({
+  $('.certopen').accordion({
     collapsible: true
   });
-  $('.cert').accordion('activate', 0);
+  $('.cert').accordion({
+    collapsible: true,
+     active: false
+  });
 });
 </script>
 

@@ -7,8 +7,18 @@
 <link rel="stylesheet" href="css/text.css" />
 <link rel="stylesheet" href="css/960.css" />
 <link rel="stylesheet" href="css/prettify.css"/>
+<link rel="stylesheet" href="css/jquery-ui-1.8.21.button.css" />
 
+<script src="js/jquery-1.7.2.min.js"></script>
+<script src="js/jquery-ui-1.8.21.button.min.js"></script>
 <script src="js/prettify.js"></script>
+
+<script>
+$(document).ready(function() {
+  $('#download').button();
+});
+</script>
+
 
 <style media="screen">
 h1 { text-align: left; margin-bottom: 0 }
@@ -20,7 +30,7 @@ code { background: #ffa }
 #permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
 .buttonOff { display: none }
 ul { margin-bottom: 0 }
-#pgup { font-size: 10px; margin-bottom: 2em }
+#pgup { font-size: 10px; margin-bottom: 2em }
 </style>
 </head>
 <body onload="prettyPrint()">
@@ -30,13 +40,14 @@ ul { margin-bottom: 0 }
   </div>
   <div class="grid_4">
     <h2>Pure-PHP implementations of:</h2>
+    <p>
     <ul>
       <li><a href="rsa/intro.html">RSA</a></li>
       <li><a href="ssh/intro.html">SSH2</a></li>
       <li><a href="sftp/intro.html">SFTP</a></li>
       <li><a href="x509/tutorial.html">X.509</a></li>
       <li>
-        Symmetric key encryption
+        <a href="crypt/examples.html">Symmetric key encryption</a>
         <ul>
           <li>AES</li>
           <li>Rijndael</li>
@@ -46,10 +57,16 @@ ul { margin-bottom: 0 }
         </ul>
       </li>
     </ul>
+    </p>
+    <p>
+      <a href="#" id="download">Download phpseclib 0.3.0</a>
+    </p>
   </div>
   <div class="grid_8">
     <h2>Compatibility</h2>
     <p>php<span class="red">sec</span>lib is designed to be ultra-compatible.  It works on PHP4+ (PHP4, assuming the use of <a href="http://pear.php.net/package/PHP_Compat">PHP_Compat</a>) and doesn't require any extensions.  For purposes of speed, mcrypt is used if it's available as is gmp or bcmath (in that order), but they are not required.</p>
+    <h2>Interoperability</h2>
+    <p>php<span class="red">sec</span>lib is designed to be fully interoperable with OpenSSL and other standardized cryptography programs and protocols.</p>
     <h2>MIT-Licensed</h2>
     <p>php<span class="red">sec</span>lib is licensed with the <a href="http://en.wikipedia.org/wiki/MIT_License">MIT-license</a>. By virtue of not being <a href="http://en.wikipedia.org/wiki/Copyleft">copyleft</a> it's less restrictive than the GPL, which in turn, means that it's fully <a href="http://www.gnu.org/licenses/license-list.html#X11License">GPL compatible</a>.</p>
     <h2>Usage</h2>
@@ -60,6 +77,17 @@ set_include_path(get_include_path() . PATH_SEPARATOR . 'phpseclib');
 
 include('Net/SSH2.php');
 ?></pre>
+  </div>
+  <div class="grid_24">
+    <p style="float: left; width: 33%">
+      <img src="images/pear-icon.png" alt="PEAR Icon" width="16" height="16" /> PEAR Channel:<br /><a href="pear.htm">phpseclib.sourceforge.net</a>
+    </p>
+    <p style="float: left; width: 33%; text-align: center">
+      <img src="images/github.png" alt="GitHub Icon" width="88" height="39" />
+    </p>
+    <p style="float: left; width: 33%; text-align: right">
+      <a href="http://sourceforge.net/donate/index.php?group_id=198487"><img src="http://images.sourceforge.net/images/project-support.jpg" width="88" height="32" border="0" alt="Support This Project" /></a>
+    </p>
   </div>
 </body>
 </html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>phpseclib: RSA Examples and Notes</title>
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+<link rel="stylesheet" href="../css/prettify.css"/>
+
+<script src="../js/prettify.js"></script>
+<script src="../js/jquery-1.7.2.min.js"></script>
+
+<script>
+var manageSelects = function() {
+  options = $('select option');
+  for (var i = 0; i < options.length; i++) {
+   $('.' + options[i].value).hide();
+  }
+
+  options = $('select option:selected');
+  for (var i = 0; i < options.length; i++) {
+   $('.' + options[i].value).show();
+  }
+};
+
+var highlight = function() {
+  if ($('.' + this.value).closest('#notes').length == 0) {
+    $('.' + this.value).css('background-color', '#ffa');
+  }
+};
+
+var unhighlight = function() {
+  if ($('.' + this.value).closest('#notes').length == 0) {
+    $('.' + this.value).css('background-color', '#f5f4ee');
+  }
+};
+
+var toggleButton = function() {
+  buttons = $('button[value="' + this.value + '"]');
+  buttons.eq(0).toggle();
+  buttons.eq(1).toggle();
+  $('.' + this.value).toggle();
+};
+
+var permLink = function() {
+  attrs = '';
+  selected = $('select option:selected,.disableCode:visible');
+  for (i = 0; i < selected.length; i++) {
+    attrs+= selected[i].value + ',';
+  }
+  hashPos = window.location.href.indexOf('#');
+  newURL = hashPos == -1 ? window.location.href : window.location.href.substring(0, hashPos);
+  window.location.href = newURL + '#' + attrs;
+};
+
+$(document).ready(function() {
+  //$('pre span[id]').hide();
+  //$('#notes div[id]').hide();
+
+  buttons = $('button:visible');
+  for (var i = 0; i < buttons.length; i++) {
+   $('.' + buttons[i].value).hide();
+  }
+
+  options = window.location.href.split('#');
+  options = options.length > 1 ? options[1].split(',') : new Array();
+  for (var i = 0; i < options.length; i++) {
+    options[i] = options[i].replace(/%20/g, ' ');
+    $('select option[value="' + options[i] +'"]').prop('selected', true);
+    button = $('button[value="' + options[i] +'"]');
+    if (button.length) {
+      toggleButton.apply(button[0]);
+    }
+  }
+
+  manageSelects();
+
+  $('select').change(manageSelects);
+  //$('select').change(highlight);
+  $('select').keyup(manageSelects);
+  //$('select').focus(highlight);
+  //$('select').blur(unhighlight);
+  $('button').click(toggleButton);
+  $('#permlink span').click(permLink);
+});
+</script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }
+.red { color: #e11 }
+.prettyprint, .pre { background: #f5f4ee }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+table { border: 1px outset; border-spacing: 2px; border-collapse: separate }
+td { border: 1px inset gray; padding: 1px }
+thead { background: gray }
+thead td { font-weight: bold }
+</style>
+</head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: Symmetric Key Encryption Examples and Notes</h1>
+    <div id="pgup">(return to <a href="intro.html">phpseclib: Symmetric Key Encryption Feature List</a>)</div>
+  </div>
+  <div class="clear"></div>
+  <div class="grid_3">
+    <p>
+      Cipher:<br />
+      <select>
+        <option value="des">DES</option>
+        <option value="3des">3DES</option>
+        <option value="rc4">RC4</option>
+        <option value="rijndael">Rijndael</option>
+        <option value="aes">AES</option>
+      </select>
+    </p>
+    <p class="des 3des rijndael aes">
+      Encryption Mode:<br />
+      <select>
+        <option value="ecb">ECB</option>
+        <option value="cbc">CBC</option>
+        <option value="ctr">CTR</option>
+        <option value="ofb">OFB</option>
+        <option value="cfb">CFB</option>
+      </select>
+    </p>
+    <p>
+      <div class="cbc">
+      <div class="3des">
+      Chaining:<br />
+      <select>
+        <option value="outer">Outer</option>
+        <option value="inner">Inner</option>
+      </select>
+      </div>
+      </div>
+    </p>
+    <p class="aes">
+      Key Length:<br />
+      <select>
+        <option value="k128">128-bit</option>
+        <option value="k192">192-bit</option>
+        <option value="k256">256-bit</option>
+      </select>
+    </p>
+    <p class="rijndael">
+      Key Length:<br />
+      <select>
+        <option value="kr128">128-bit</option>
+        <option value="kr160">160-bit</option>
+        <option value="kr192">192-bit</option>
+        <option value="kr224">224-bit</option>
+        <option value="kr256">256-bit</option>
+      </select>
+    </p>
+    <p class="rijndael">
+      Block Length:<br />
+      <select>
+        <option value="b128">128-bit</option>
+        <option value="b160">160-bit</option>
+        <option value="b192">192-bit</option>
+        <option value="b224">224-bit</option>
+        <option value="b256">256-bit</option>
+      </select>
+    </p>
+    <p>
+      Key Derivation:<br />
+      <select>
+        <option value="key">None</option>
+        <option value="pbkdf2">PBKDF2</option>
+      </select>
+    </p>
+    <p>
+      <div class="des 3des rijndael aes">
+      <div class="cbc ecb">
+      <button value="padding" class="buttonOff">Enable Padding</button>
+      <button value="padding" class="buttonOn disableCode">Disable Padding</button>
+      </div>
+      </div>
+    </p>
+    <p>
+      <button value="continuous" class="buttonOn">Enable Continuous Buffer</button>
+      <button value="continuous" class="buttonOff disableCode">Disable Continuous Buffer</button>
+    </p>
+  </div>
+  <!-- end .grid_3 -->
+  <div class="grid_9">
+    <div>
+<pre class="prettyprint" style="margin-bottom: 0">&lt;?php
+include('Crypt/<span class="aes">AES</span><span class="rijndael">Rijndael</span><span class="des">DES</span><span class="3des">TripleDES</span><span class="rc4">RC4</span>.php');
+
+$cipher = new Crypt_<span class="aes">AES</span><span class="rijndael">Rijndael</span><span class="des">DES</span><span class="3des">TripleDES</span><span class="rc4">RC4</span>(<span style="display: none">
+</span><span class="ecb ctr ofb cfb"><span class="aes rijndael des 3des">CRYPT_<span class="des 3des">DES</span><span class="aes">AES</span><span class="rijndael">RIJNDAEL</span>_MODE_<span style="display: none">
+</span><span class="ecb">ECB</span><span class="cfb">CFB</span><span class="ofb">OFB</span><span class="ctr">CTR</span></span></span><span class="cbc"><span class="3des"><span class="inner">CRYPT_DES_MODE_3CBC</span></span></span>);<span style="display: none">
+</span><span class="cbc"><span class="des"> // could use CRYPT_DES_MODE_CBC</span><span class="3des"><span class="outer"> // could use CRYPT_DES_MODE_CBC or CRYPT_DES_MODE_CBC3</span></span><span class="rijndael"> // could use CRYPT_RIJNDAEL_MODE_CBC</span><span class="aes"> // could use CRYPT_AES_MODE_CBC</span></span>
+<span class="rijndael"><span class="b160">$cipher->setBlockLength(160);
+</span><span class="b192">$cipher->setBlockLength(192);
+</span><span class="b224">$cipher->setBlockLength(224);
+</span><span class="b256">$cipher->setBlockLength(256);
+</span></span><span class="key"><span class="rijndael aes">// keys are null-padded to the closest valid size
+// longer than the longest key and it's truncated
+<span class="rijndael">//$cipher->setKeyLength(<span class="kr128">128</span><span class="kr160">160</span><span class="kr192">192</span><span class="kr224">224</span><span class="kr256">256</span>);
+</span><span class="aes">//$cipher->setKeyLength(<span class="k128">128</span><span class="k192">192</span><span class="k256">256</span>);
+</span></span>$cipher->setKey('abcdefgh<span class="3des rc4">ijklmnopqrstuvwx</span><span class="aes rijndael"><span class="k128 k192 k256">ijklmnop</span><span class="kr128 kr160 kr192 kr224 kr256">ijklmnop</span><span class="kr160 kr192 kr224 kr256">qrst</span><span class="kr192 kr224 kr256">uvwx</span><span class="k192 k256">qrstuvwx</span><span class="kr224 kr256">yz12</span><span class="kr256">3456</span><span class="k256">yz3456</span></span>');
+</span><span class="pbkdf2">$cipher->setPassword('whatever');
+// the following does the same thing:
+//$cipher->setPassword('whatever', 'pbkdf2', 'sha1', 'phpseclib/salt', 1000<span class="rc4">, 128 / 8</span><span class="aes">, <span class="k128">128</span><span class="k192">192</span><span class="k256">256</span> / 8</span><span class="rijndael">, <span class="kr128">128</span><span class="kr160">160</span><span class="kr192">192</span><span class="kr224">224</span><span class="kr256">256</span> / 8</span>);
+</span><span class="des 3des aes rijndael"><span class="cbc ctr ofb cfb">//$cipher->setIV('...'); // defaults to all-NULLs if not explicitely defined
+</span></span><span class="padding"><span class="aes rijndael des 3des"><span class="cbc ecb">$cipher->disablePadding();
+</span></span></span>
+$size = 10 * 1024;
+<span class="padding"><span class="ecb cbc"><span class="3des">$size-= 16; // make the plaintext length a multiple of the block length
+</span><span class="rijndael"><span class="b192">$size-= 16; // make the plaintext length a multiple of the block length
+</span></span><span class="rijndael"><span class="b224">$size-= 4; // make the plaintext length a multiple of the block length
+</span></span></span></span></span>$plaintext = str_repeat('a', $size);
+
+echo $cipher->decrypt($cipher->encrypt($plaintext));
+<span class="continuous">
+// without continuous mode the following would yield the same output as the above
+// with continuous mode it's treated the same way str_repeat('a', 2 * $size) would be
+$plaintext = str_repeat('a', $size);
+
+echo $cipher->decrypt($cipher->encrypt($plaintext));
+</span>?&gt;</pre>
+    </div>
+    <div id="permlink"><span>permanent link</span></div>
+    <div id="notes">
+      <div class="cfb">
+        <div class="continuous">
+          <h2>A departure from mcrypt</h2>
+          <p>In theory, encrypting a string using a stream cipher should yield the same results no matter how that string is partitioned out. At least when enableContinuousBuffer() has been called.  This is not the case with mcrypt.  The following link demonstrates how phpseclib's rewritten CFB implementation (CFB mode is one of several modes that turn block ciphers into stream ciphers) guarantees this behavior:</p>
+          <p><a href="cfb-demo.phps">http://phpseclib.sourceforge.net/crypt/cfb-demo.phps</a></p>
+        </div>
+      </div>
+      <div class="rc4 ctr cfb ofb">
+        <h2>Word of caution about stream ciphers</h2>
+        <p>Most stream ciphers (and block ciphers operating in a mode - like CTR, CFB and OFB - that turns them into stream ciphers) work by generating a stream of pseudorandom characters called a <a href="http://en.wikipedia.org/wiki/Keystream">keystream</a> and then XOR'ing that with the plaintext. This *effectively* makes them <a href="http://en.wikipedia.org/wiki/One-time_pad">one-time pads</a> which, in theory, can provide perfect secrecy. The problem with one-time pads is that they're not as versatile as one might desire. Among other things, a keystream must never be reset, lest it be possible for an attacker to recover the keystream via a <a href="http://en.wikipedia.org/wiki/Known-plaintext_attack">known-plaintext attack</a>. ie. <code>$ciphertext ^ $plaintext = $key</code>. If <code>$key</code> is constant (because the keystream's being reset or something) than an attacker can recover any <code>$plaintext</code>, but if not - if it's dynamic - then the only key that an attacker could recover is their own.</p>
+      </div>
+      <div class="3des">
+        <div class="cbc">
+        <h2>Inner Chaining vs. Outer Chaining</h2>
+        <p>Inner chaining, as used by SSH1, does DES three times on the whole string.  Outer chaining, as used by SSH2 and most other 3DES implementations, does DES three times on each block.  Outer chaining is generally considered more secure.</p>
+        </div>
+      </div>
+      <div id="speed" class="aes rijndael">
+        <div class="cbc ecb">
+        <h2>Speed Comparisons</h2>
+        <p>The following table compares the speed of five different pure-PHP implementations of AES (one of which is Crypt_Rijndael and one of which is Crypt_AES) when ran on 150KB of text on a 1.8GHz Pentium 4-M. The numbers listed are averaged from five different trials and are measured in seconds. phpseclib's two implementations are highlighted. All implementations can be viewed by clicking on their names.</p>
+        <table>
+          <thead>
+            <tr>
+              <td>Implementation</td>
+              <td>Speed</td>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="movable-type.phps">movable-type.phps</a></td>
+              <td>15.6844158172</td>
+            </tr>
+            <tr>
+              <td><a href="phpaes.phps">phpaes.phps</a></td>
+              <td>39.9537248135</td>
+            </tr>
+            <tr>
+              <td><a href="phpclasses1.phps">phpclasses1.phps</a></td>
+              <td>15.0100150108</td>
+            </tr>
+            <tr>
+              <td><a href="phpclasses2.phps">phpclasses2.phps</a></td>
+              <td>62.591713190079</td>
+            </tr>
+            <tr style="background: yellow">
+              <td><a href="phpseclib-aes.phps">phpseclib-aes.phps</a></td>
+              <td>2.03581542968752</td>
+            </tr>
+            <tr style="background: yellow">
+              <td><a href="phpseclib-rijndael.phps">phpseclib-rijndael.phps</a></td>
+              <td>2.62501101493836</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>As can be seen, phpseclib's implementations are the fastest. phpseclib-aes.phps is faster than phpseclib-rijndael.phps because phpseclib-rijndael.phps has to contend with multiple block sizes whereas phpseclib-aes.phps does not. Note that if mcrypt weren't explicitily disabled phpseclib would have been even faster.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- end .grid_9 -->
+</div>
+<!-- end .container_16 -->
+</body>
+</html>
