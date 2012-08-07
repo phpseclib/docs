@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>phpseclib: X.509 Introduction</title>
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }
+.red { color: #e11 }
+.prettyprint { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+</style>
+</head>
+<body>
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: X.509 Feature List</h1>
+    <div id="pgup">(return to <a href="../index.html">phpseclib Feature List</a>)</div>
+    <p>Click on any of the following for examples.</p>
+  </div>
+  <div class="grid_4">
+    <h2>Supported Public Key Algorithms</h2>
+    <ul>
+      <li>rsaEncryption</li>
+    </ul>
+    <p>
+    <h2>Supported Signature Algorithms</h2>
+    <ul>
+      <li>md2WithRSAEncryption</li>
+      <li>md5WithRSAEncryption</li>
+      <li>sha1WithRSAEncryption</li>
+      <li>sha224WithRSAEncryption</li>
+      <li>sha256WithRSAEncryption</li>
+      <li>sha384WithRSAEncryption</li>
+      <li>sha512WithRSAEncryption</li>
+    </ul>
+    </p>
+  </div>
+  <div class="grid_8">
+    <h2>Features</h2>
+    <ul>
+      <li>Decode X.509 certificates (<a href="decoder.php">try it online</a>)
+        <ul>
+          <li><a href="examples.html">loadX509()</a></li>
+          <li><a href="examples.html#getdnprop">getDNProp()</a></li>
+          <li><a href="examples.html#getdnstr">getDN() as string</a></li>
+          <li><a href="examples.html#getissuerdnprop">getIssuerDNProp()</a></li>
+          <li><a href="examples.html#getissuerdn">getIssuerDN()</a></li>
+          <li><a href="examples.html#getissuerdnstr">getIssuerDN() as string</a></li>
+          <li><a href="examples.html#getpublickey">getPublicKey()</a></li>
+        </ul>
+      </li>
+      <li>
+        Validate X.509 certificates
+        <ul>
+          <li><a href="examples.html#validate">validateSignature()</a></li>
+          <li><a href="examples.html#validate,signoself">validateSignature() (no self signed)</a></li>
+          <li><a href="examples.html#validate,url">validateURL()</a></li>
+          <li><a href="examples.html#validate,date">validateDate() (current date)</a></li>
+          <li><a href="examples.html#validate,customdate">validateDate() (custom date)</a></li>
+        </ul>
+      </li>
+      <li><a href="examples.html#selfsigned">Create self-signed certs</a></li>
+      <li><a href="examples.html#casigned">Create CA signed certs</a></li>
+      <li><a href="examples.html#csr">Create CSR</a></li>
+    </ul>
+  </div>
+</body>
+</html>
