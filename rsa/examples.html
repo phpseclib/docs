@@ -210,7 +210,7 @@ $rsa->setPublicKey();
 <span class="pkcs1pub">
 $publickey = $rsa->getPublicKey(); // could do CRYPT_RSA_PUBLIC_FORMAT_PKCS1 too</span><span class="openssh">
 $publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_OPENSSH);</span><span class="xmlpub">
-$publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_XML);</span></span><span class="sign encrypt">//$rsa->setPassword('password');
+$publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_XML);</span></span><span class="sign">//$rsa->setPassword('password');
 $rsa->loadKey('...'); // private key
 
 $plaintext = '...';
@@ -219,8 +219,7 @@ $plaintext = '...';
 $signature = $rsa->sign($plaintext);
 
 $rsa->loadKey('...'); // public key
-echo $rsa->verify($plaintext, $signature) ? 'verified' : 'unverified';</span></span><span class="encrypt">
-$rsa->loadKey('...'); // public key
+echo $rsa->verify($plaintext, $signature) ? 'verified' : 'unverified';</span></span><span class="encrypt">$rsa->loadKey('...'); // public key
 
 <span class="enc2">$rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);</span><span class="enc1">//$rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_OAEP);</span>
 $ciphertext = $rsa->encrypt($plaintext);
