@@ -322,7 +322,7 @@ $pubKey->setPublicKey();
 
 $subject = new File_X509();
 <span class="selfloadx509">// omit the setPublicKey() call and the cert will be re-signed with most extensions preserved
-$subject->loadX509('...') // see <a href="phpseclib.txt">phpseclib.crt</a>
+$subject->loadX509('...'); // see <a href="phpseclib.txt">phpseclib.crt</a>
 </span><span class="selfsetdnprop">$subject->setDNProp('id-at-organizationName', 'phpseclib demo cert');
 //$subject->removeDNProp('id-at-organizationName');
 </span><span class="selfsetdn1">$subject->setDN(
@@ -406,7 +406,7 @@ echo "\r\n\r\n";
 // create a self-signed cert that'll serve as the CA
 $subject = new File_X509();
 <span class="issuerloadx509">// omit the setPublicKey() call and the cert will be resigned with most extensions preserved
-$subject->loadX509('...') // see <a href="phpseclib.txt">phpseclib.crt</a>
+$subject->loadX509('...'); // see <a href="phpseclib.txt">phpseclib.crt</a>
 </span><span class="issuersetdnprop">$subject->setDNProp('id-at-organizationName', 'phpseclib demo CA');
 //$subject->removeDNProp('id-at-organizationName');
 </span><span class="issuersetdn1">$subject->setDN(
@@ -464,7 +464,7 @@ $pubKey->setPublicKey();
 
 $subject = new File_X509();
 <span class="subjloadx509">// omit the setPublicKey() call and the cert will be re-signed with most extensions preserved
-$subject->loadX509('...') // see <a href="phpseclib.txt">phpseclib.crt</a>
+$subject->loadX509('...'); // see <a href="phpseclib.txt">phpseclib.crt</a>
 </span><span class="subjsetdnprop">$subject->setDNProp('id-at-organizationName', 'phpseclib demo cert');
 //$subject->removeDNProp('id-at-organizationName');
 </span><span class="subjsetdn1">$subject->setDN(
