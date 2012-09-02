@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="google-site-verification" content="DHz4kg_uhBzFTmMZSrMTtF9lqPofgrUucAmZrsakViI" />
+<meta name="keywords" content="SSH,SFTP,RSA,PHP,AES,Rijndael,3DES,RC4,SSH2,SSH1,X.509,X509" />
+<meta name="description" content="phpseclib's BigInteger implementation works on any host using every trick under the book for maximum speed" />
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-19770173-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<title>phpseclib: BigInteger Introduction</title>
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }.red { color: #e11 }
+.prettyprint { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+table { border: 1px outset; border-spacing: 2px; border-collapse: separate }
+td { border: 1px inset gray; padding: 3px }
+thead { background: yellow }
+thead td { font-weight: bold }
+tbody td {text-align: right }
+</style>
+</head>
+<body>
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: BigInteger Introduction</h1>
+    <div id="pgup">(return to <a href="../index.html">phpseclib Feature List</a>)</div>
+  </div>
+  <div class="grid_4">
+    <h2>Operations</h2>
+    <ul>
+      <li><a href="examples.html">add()</a></li>
+      <li><a href="examples.html#subtract">subtract()</a></li>
+      <li><a href="examples.html#multiply">multiply()</a></li>
+      <li><a href="examples.html#divide">divide()</a></li>
+      <li><a href="examples.html#powmod">powMod()</a></li>
+      <li><a href="examples.html#modinverse">modInverse()</a></li>
+      <li><a href="examples.html#gcd">gcd()</a></li>
+      <li><a href="examples.html#extendedgcd">extendedGCD()</a></li>
+      <li><a href="examples.html#abs">abs()</a></li>
+      <li><a href="examples.html#compare">compare()</a></li>
+      <li><a href="examples.html#equals">equals()</a></li>
+      <li><a href="examples.html#random">random()</a></li>
+      <li><a href="examples.html#randomprime">randomPrime()</a></li>
+      <li><a href="examples.html#isprime">isPrime()</a></li>
+    </ul>
+    <p>
+    <h2>Bitwise Operations</h2>
+    <ul>
+      <li><a href="examples.html#setprecision">setPrecision()</a></li>
+      <li><a href="examples.html#bitwiseand">bitwise_and()</a></li>
+      <li><a href="examples.html#bitwiseor">bitwise_or()</a></li>
+      <li><a href="examples.html#bitwisexor">bitwise_xor()</a></li>
+      <li><a href="examples.html#bitwisenot">bitwise_not()</a></li>
+      <li><a href="examples.html#bitwiseleftshift">bitwise_leftShift()</a></li>
+      <li><a href="examples.html#bitwiseleftrotate">bitwise_leftRotate()</a></li>
+      <li><a href="examples.html#bitwiserightshift">bitwise_rightShift()</a></li>
+      <li><a href="examples.html#bitwiserightrotate">bitwise_rightRotate()</a></li>
+    </ul>
+    </p>
+    <p>
+    <h2>Formating</h2>
+    <ul>
+      <li><a href="examples.html#constructor">Constructor</a></li>
+      <li><a href="examples.html#tostring">toString()</a></li>
+      <li><a href="examples.html#tohex">toHex()</a></li>
+      <li><a href="examples.html#tobytes">toBytes()</a></li>
+      <li><a href="examples.html#tobits">toBits()</a></li>
+    </ul>
+    </p>
+    <p>
+    <h2>Misc</h2>
+    <ul>
+      <li><a href="examples.html#setrandomgenerator">setRandomGenerator()</a></li>
+    </ul>
+    </p>
+  </div>
+  <div class="grid_8">
+    <h2>Speed Analysis</h2>
+    <p>The following <a href="http://en.wikipedia.org/wiki/Heat_map">heat map</a> shows how many <b>seconds</b> Math_BigInteger takes to perform encryption / decryption with a 2048-bit RSA key on a 1.73GHz Intel Core i7-820QM under various environments. See <a href="speed.phps">speed.phps</a> for the source code.</p>
+    <p>Math_BigInteger automatically picks the fastest settings to use depending on what extensions it has available at its disposal.</p>
+    <table border="1">
+      <thead>
+        <tr><td style="border: 0; background: white"></td><td>Internal</td><td>BCMath</td><td>Internal</td><td>BCMath</td><td>GMP</td></tr>
+        <tr><td style="border: 0; background: white"></td><td colspan="2" style="background: wheat; font-weight: normal; text-align: center">w/o OpenSSL</td><td colspan="2" style="background: wheat; font-weight: normal; text-align: center">w/ OpenSSL</td><td style="border: 0; background: white"></td></tr>
+      </thead>
+      <tbody>
+<!--
+$cur = 0.087;
+$max = 26.448;
+$r = intval(($cur / $max) * 255);
+$gb = 255 - $r;
+$r = str_pad(dechex($r), 2, '0', STR_PAD_RIGHT);
+$gb = str_pad(dechex($gb), 2, '0', STR_PAD_RIGHT);
+echo 'ff' . $gb . $gb;
+-->
+        <tr><td style="background: yellow"><b>PHP 4.4</b></td><td style="background: #ff0000">26.448</td><td style="background: #ffcfcf">5.003</td><td style="background: #ffe1e1">3.205</td><td style="background: #fffbfb">0.454</td><td style="border: 0; background: white"></td></tr>
+        <tr><td style="background: yellow"><b>PHP 5.0</b></td><td style="background: #ff0202">25.802</td><td style="background: #ffd1d1">4.873</td><td style="background: #ffe0e0">3.279</td><td style="background: #fffbfb">0.455</td><td style="border: 0; background: white"></td></tr>
+        <tr><td style="background: yellow"><b>PHP 5.1</b></td><td style="background: #ffaaaa">8.907</td><td style="background: #ffd0d0">4.962</td><td style="background: #ffeeee">1.778</td><td style="background: #fffbfb">0.434</td><td>0.021</td></tr>
+        <tr><td style="background: yellow"><b>PHP 5.2</b></td><td style="background: #ffafaf">8.363</td><td style="background: #ffd2d2">4.672</td><td style="background: #fff0f0">1.595</td><td style="background: #fffcfc">0.391</td><td>0.018</td></tr>
+        <tr><td style="background: yellow"><b>PHP 5.3</b></td><td style="background: #ffc1c1">6.477</td><td style="background: #ffd5d5">4.454</td><td style="background: #fff5f5">1.124</td><td style="background: #fffafa">0.570</td><td>0.087</td></tr>
+        <tr><td style="background: yellow"><b>PHP 5.4</b></td><td style="background: #ffd0d0">4.970</td><td style="background: #ffa7a7">9.146</td><td style="background: #fff9f9">0.702</td><td style="background: #fffcfc">0.403</td><td>0.013</td></tr>
+      </tbody>
+    </table>
+    <h2>Internal Engine</h2>
+    <p>The major limiting factor for the internal implementation is the PHP engine itself.  Each successive major version brings with it speed improvements but there's only so much it can do.</p>
+    <h2>GMP Engine</h2>
+    <p><a href="http://en.wikipedia.org/wiki/GNU_Multiple_Precision_Arithmetic_Library">GMP</a>, to quote wikipedia, "<i>aims to be faster than any other bignum library</i>", using "<i>highly optimized assembly language code</i>".</p>
+    <h2>OpenSSL Enhancements</h2>
+    <p>Only used for powMod(). Converts the exponent and the modulo to an appropriately formatted RSA public key and performs non-padded RSA encryption with that.</p>
+  </div>
+</body>
+</html>

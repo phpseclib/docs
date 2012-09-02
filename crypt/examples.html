@@ -265,7 +265,7 @@ echo $cipher->decrypt($cipher->encrypt($plaintext));
       <div id="speed" class="aes rijndael">
         <div class="cbc ecb">
         <h2>Speed Comparisons</h2>
-        <p>The following table compares the speed of five different pure-PHP implementations of AES (one of which is Crypt_Rijndael and one of which is Crypt_AES) when ran on 150KB of text on a 1.8GHz Pentium 4-M. The numbers listed are averaged from five different trials and are measured in seconds. phpseclib's two implementations are highlighted. All implementations can be viewed by clicking on their names.</p>
+        <p>The following table compares the speed of five different pure-PHP implementations of AES (one of which is Crypt_Rijndael and one of which is Crypt_AES) when ran on 1MB of text on a 1.73GHz Intel Core i7-820QM with PHP 5.4.3. The numbers listed are averaged from five different trials and are measured in seconds. phpseclib's two implementations are highlighted. All implementations can be viewed by clicking on their names.</p>
         <table>
           <thead>
             <tr>
@@ -276,27 +276,27 @@ echo $cipher->decrypt($cipher->encrypt($plaintext));
           <tbody>
             <tr>
               <td><a href="movable-type.phps">movable-type.phps</a></td>
-              <td>15.6844158172</td>
+              <td>31.1147150993345</td>
             </tr>
             <tr>
               <td><a href="phpaes.phps">phpaes.phps</a></td>
-              <td>39.9537248135</td>
+              <td>56.4934304952625</td>
             </tr>
             <tr>
               <td><a href="phpclasses1.phps">phpclasses1.phps</a></td>
-              <td>15.0100150108</td>
+              <td>25.3963540792465</td>
             </tr>
             <tr>
               <td><a href="phpclasses2.phps">phpclasses2.phps</a></td>
-              <td>62.591713190079</td>
+              <td>58.8358825445175</td>
             </tr>
             <tr style="background: yellow">
               <td><a href="phpseclib-aes.phps">phpseclib-aes.phps</a></td>
-              <td>2.03581542968752</td>
+              <td>8.3935635089874</td>
             </tr>
             <tr style="background: yellow">
               <td><a href="phpseclib-rijndael.phps">phpseclib-rijndael.phps</a></td>
-              <td>2.62501101493836</td>
+              <td>10.436311006546</td>
             </tr>
           </tbody>
         </table>

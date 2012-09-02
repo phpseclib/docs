@@ -1,10 +1,10 @@
 <?php
-// 55.535305976868
-// 57.451555013657
+// 30.751706123352
+// 31.477724075317
 
-// http://www.phpaes.com/
+// http://www.movable-type.co.uk/scripts/aes-php.html
 
-include('AES.class.php');
+include('aes.php');
 
 $plaintext = '';
 for ($i = 0; $i < 1024*1024; $i++) {
@@ -13,8 +13,8 @@ for ($i = 0; $i < 1024*1024; $i++) {
 
 $start = microtime(true);
 
-$aes = new AES('abcdefghijklmnop');
-$aes->encrypt($plaintext);
+AESEncryptCtr($plaintext, 'abcdefghijklmnop', 128);
 
 $elapsed = microtime(true) - $start;
+
 echo "Elapsed time: $elapsed";

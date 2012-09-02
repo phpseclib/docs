@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="google-site-verification" content="DHz4kg_uhBzFTmMZSrMTtF9lqPofgrUucAmZrsakViI" />
+<meta name="keywords" content="SSH,SFTP,RSA,PHP,AES,Rijndael,3DES,RC4,SSH2,SSH1,X.509,X509" />
+<meta name="description" content="phpseclib's SFTP implementation is feature rich and has pretty much zero server requirements above and beyond PHP" />
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-19770173-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<title>phpseclib: BigInteger Examples and Notes</title>
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+<link rel="stylesheet" href="../css/prettify.css"/>
+
+<script src="../js/prettify.js"></script>
+<script src="../js/jquery-1.7.2.min.js"></script>
+
+<script>
+var manageSelects = function() {
+  options = $('select option');
+  for (var i = 0; i < options.length; i++) {
+   $('.' + options[i].value).hide();
+  }
+
+  options = $('select option:selected');
+  for (var i = 0; i < options.length; i++) {
+   $('.' + options[i].value).show();
+  }
+};
+
+var highlight = function() {
+  if ($('.' + this.value).closest('#notes').length == 0) {
+    $('.' + this.value).css('background-color', '#ffa');
+  }
+};
+
+var unhighlight = function() {
+  if ($('.' + this.value).closest('#notes').length == 0) {
+    $('.' + this.value).css('background-color', '#f5f4ee');
+  }
+};
+
+var toggleButton = function() {
+  buttons = $('button[value="' + this.value + '"]');
+  buttons.eq(0).toggle();
+  buttons.eq(1).toggle();
+  $('.' + this.value).toggle();
+};
+
+var permLink = function() {
+  attrs = '';
+  selected = $('select option:selected,.disableCode:visible');
+  for (i = 0; i < selected.length; i++) {
+    attrs+= selected[i].value + ',';
+  }
+  hashPos = window.location.href.indexOf('#');
+  newURL = hashPos == -1 ? window.location.href : window.location.href.substring(0, hashPos);
+  window.location.href = newURL + '#' + attrs;
+};
+
+$(document).ready(function() {
+  //$('pre span[id]').hide();
+  //$('#notes div[id]').hide();
+
+  buttons = $('button:visible');
+  for (var i = 0; i < buttons.length; i++) {
+   $('.' + buttons[i].value).hide();
+  }
+
+  options = window.location.href.split('#');
+  options = options.length > 1 ? options[1].split(',') : new Array();
+  for (var i = 0; i < options.length; i++) {
+    options[i] = options[i].replace(/%20/g, ' ');
+    $('select option[value="' + options[i] +'"]').prop('selected', true);
+    button = $('button[value="' + options[i] +'"]');
+    if (button.length) {
+      toggleButton.apply(button[0]);
+    }
+  }
+
+  manageSelects();
+
+  $('select').change(manageSelects);
+  //$('select').change(highlight);
+  $('select').keyup(manageSelects);
+  //$('select').focus(highlight);
+  //$('select').blur(unhighlight);
+  $('button').click(toggleButton);
+  $('#permlink span').click(permLink);
+});
+</script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }.red { color: #e11 }
+.prettyprint, .pre { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }</style></head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: BigInteger Examples and Notes</h1>
+    <div id="pgup">(return to <a href="intro.html">phpseclib: BigInteger Feature List</a>)</div>
+  </div>
+  <div class="clear"></div>
+  <div class="grid_3">
+    <p>
+      Action:<br />
+      <select>
+        <option value="add">add()</option>
+        <option value="subtract">subtract()</option>
+        <option value="multiply">multiply()</option>
+        <option value="divide">divide()</option>
+        <option value="powmod">powMod()</option>
+        <option value="modinverse">modInverse()</option>
+        <option value="gcd">gcd()</option>
+        <option value="extendedgcd">extendedGCD()</option>
+        <option value="abs">abs()</option>
+        <option value="compare">compare()</option>
+        <option value="equals">equals()</option>
+        <option value="random">random()</option>
+        <option value="randomprime">randomPrime()</option>
+        <option value="isprime">isPrime()</option>
+
+        <option value="setprecision">setPrecision()</option>
+        <option value="bitwiseand">bitwise_and()</option>
+        <option value="bitwiseor">bitwise_or()</option>
+        <option value="bitwisexor">bitwise_xor()</option>
+        <option value="bitwisenot">bitwise_not()</option>
+        <option value="bitwiseleftshift">bitwise_leftShift()</option>
+        <option value="bitwiseleftrotate">bitwise_leftRotate()</option>
+        <option value="bitwiserightshift">bitwise_rightShift()</option>
+        <option value="bitwiserightrotate">bitwise_rightRotate()</option>
+
+        <option value="constructor">Constructor</option>
+        <option value="tostring">toString()</option>
+        <option value="tohex">toHex()</option>
+        <option value="tobytes">toBytes()</option>
+        <option value="tobits">toBits()</option>
+
+        <option value="setrandomgenerator">setRandomGenerator()</option>
+      </select>
+    </p>
+  </div>
+  <!-- end .grid_3 -->
+  <div class="grid_9">
+    <div>
+<pre class="prettyprint" style="margin-bottom: 0">&lt;?php
+include('Math/BigInteger.php');
+<span class="add subtract multiply divide powmod modinverse compare equals">
+$a = new Math_BigInteger(5);
+$b = new Math_BigInteger(3);
+<span class="powmod">$c = new Math_BigInteger(4);
+</span></span><span class="gcd extendedgcd">
+$a = new Math_BigInteger(50);
+$b = new Math_BigInteger(30);
+</span><span class="random randomprime setrandomgenerator">
+$a = new Math_BigInteger(30);
+$b = new Math_BigInteger(50);
+</span><span class="bitwiseand bitwiseor bitwisexor">
+$a = new Math_BigInteger('1100', 2);
+$b = new Math_BigInteger('1010', 2);
+</span><span class="tostring tobytes tobits tohex">
+$a = new Math_BigInteger(pack('H*', 'FA'), 256);
+</span><span class="add">
+echo $a->add($b); // outputs 5</span><span class="subtract">
+echo $a->subtract($b); // outputs 2</span><span class="multiply">
+echo $a->multiply($b); // outputs 15</span><span class="divide">
+list($quotient, $residue) = $a->divide($b);
+echo $quotient . "\r\n&lt;br /&gt;\r\n"; // outputs 1
+echo $residue;                     // outputs 2</span><span class="powmod">
+echo $a->powMod($b, $c); // outputs 1 (eg. 125 % (4 * 31))</span><span class="modinverse">
+echo $a->modInverse($b); // outputs 2</span><span class="gcd">
+echo $a->gcd($b); // outputs 10</span><span class="extendedgcd">
+extract($a->extendedGCD($b));
+
+echo $gcd. "\r\n&lt;br />\r\n"; // outputs  10
+echo $x  . "\r\n&lt;br />\r\n"; // outputs  29
+echo $y;                     // outputs -48</span><span class="abs">
+$a = new Math_BigInteger(-5);
+
+echo $a->abs(); // outputs 5</span><span class="compare">
+echo $a->compare($b) . "\r\n&lt;br />\r\n"; // outputs  1
+echo $b->compare($a) . "\r\n&lt;br />\r\n"; // outputs -1
+echo $a->compare($a);                    // outputs  0</span><span class="equals">
+var_dump($a->equals($b)); // outputs bool(false)</span><span class="random setrandomgenerator">
+$rand = new Math_BigInteger();
+//$rand->setRandomGenerator('mt_rand');
+echo $rand->random($a, $b); // outputs random number between 30 and 50, inclusive</span><span class="randomprime">
+$rand = new Math_BigInteger();
+//$rand->setRandomGenerator('mt_rand');
+echo $rand->randomPrime($a, $b); // outputs random prime between 30 and 50, inclusive</span><span class="isprime">
+$a = new Math_BigInteger(47);
+var_dump($a->isPrime()); // outputs bool(true)</span><span class="setprecision">
+$a = new Math_BigInteger(347);
+$a->setPrecision(8);
+
+echo $a->toBits() . "\r\n&lt;br />\r\n"; // outputs 01011011
+$a = $a->bitwise_leftRotate(2);
+echo $a->toBits();                    // outputs 01101101</span><span class="bitwiseand">
+echo $a->bitwise_and($b)->toBits(); // outputs 1000</span><span class="bitwiseor">
+echo $a->bitwise_or($b)->toBits(); // outputs 1110</span><span class="bitwisexor">
+echo $a->bitwise_xor($b)->toBits(); // outputs 110</span><span class="bitwisenot">
+$a = new Math_BigInteger('010', 2);
+$a->setPrecision(3);
+
+echo $a->bitwise_not()->toBits(); // outputs 101</span><span class="bitwiseleftshift">
+$a = new Math_BigInteger('11', 2);
+
+echo $a->bitwise_leftShift(2)->toBits(); // outputs 1100</span><span class="bitwiseleftrotate">
+$a = new Math_BigInteger('1001', 2);
+$a->setPrecision(4);
+
+echo $a->bitwise_leftRotate(2)->toBits(); // outputs 0110</span><span class="bitwiserightshift">
+$a = new Math_BigInteger('11', 2);
+
+echo $a->bitwise_leftShift(1)->toBits(); // outputs 1</span><span class="bitwiserightrotate">
+$a = new Math_BigInteger('1001', 2);
+$a->setPrecision(4);
+
+echo $a->bitwise_leftRotate(2)->toBits(); // outputs 0110</span><span class="constructor">
+// all of these are equal to 250
+new Math_BigInteger(pack('H*', 'FA'),   256);
+new Math_BigInteger(pack('H*', '00FA'),-256);
+new Math_BigInteger('FA',   16);
+new Math_BigInteger('00FA',-16);
+new Math_BigInteger('250',  10);
+new Math_BigInteger('250',-10);
+new Math_BigInteger('11111010',  2);
+new Math_BigInteger('011111010',-2);
+
+// all of these are equal to -6
+new Math_BigInteger(pack('H*', 'FA'), -256);
+new Math_BigInteger('FA', -16);
+new Math_BigInteger('-6', -10);
+new Math_BigInteger('11111010', -2);</span><span class="tostring">
+echo $a->toString(); // outputs 250</span><span class="tobytes">
+echo bin2hex($a->toBytes()) . "\r\n&lt;br />\r\n"; // outputs fa
+echo bin2hex($a->toBytes(true));                // outputs 00fa</span><span class="tohex">
+echo $a->toHex() . "\r\n&lt;br />\r\n"; // outputs fa
+echo $a->toHex(true);                // outputs 00fa</span><span class="tobits">
+echo $a->toBits() . "\r\n&lt;br />\r\n"; // outputs  11111010
+echo $a->toBits(true);                // outputs 011111010</span>
+?&gt;</pre>
+    </div>
+    <div id="permlink"><span>permanent link</span></div>
+    <div id="notes">
+      <h2>Notes</h2>
+      <div class="divide">
+        Returns an array whose first element contains the quotient and whose second element contains the"common residue".
+        If the remainder would be positive, the "common residue" and the remainder are the same.  If the remainder would be negative, the "common residue"
+        is equal to the sum of the remainder and the divisor (basically, the "common residue" is the first positive modulo).
+      </div>
+      <div class="modinverse">
+        Say you have (30 mod 17 * x mod 17) mod 17 == 1.  x can be found using modular inverses.
+      </div>
+      <div class="gcd">
+        Calculates the greatest common divisor
+      </div>
+      <div class="extendedgcd">
+        Say you have 50 and 30.  The GCD is 10.  B&#233;zout's identity states that there exist integers x and y such that 50*x + 30*y == 10.
+        In point of fact, there are actually an infinite number of x and y combinations and which combination is returned is dependant upon which mode is in use.
+        See <a href="http://en.wikipedia.org/wiki/B%C3%A9zout%27s_identity">B&#233;zout's identity - Wikipedia</a> for more information.
+      </div>
+      <div class="abs">
+        Absolute Value
+      </div>
+      <div class="compare">
+        <p><code>$a->compare($b)</code> returns 1 if <code>$a > $b</code>, 0 if <code>$a == $b</code>, and -1 if <code>$a < $b</code>. The reason for this is demonstrated thusly:</p>
+<pre style="background: #ffa">$x  > $y: $x->compare($y)  > 0
+$x  < $y: $x->compare($y)  < 0
+$x == $y: $x->compare($y) == 0
+$x >= $y: $x->compare($y) >= 0
+$x <= $y: $x->compare($y) <= 0</pre>
+        <p>As a consequence of this, <code>!$x->compare($y)</code> does not mean <code>$x != $y</code> but rather <code>$x == $y</code>.  If you want to test for equality, use <code>$x->equals($y)</code>.</p>
+    </div>
+    <div class="equals">
+      If you need to see if one number is greater than or less than another number, use Math_BigInteger::compare()
+    </div>
+    <div class="randomprime">
+      <p>Function definition:</p>
+      <pre style="background: #ffa">Math_BigInteger randomPrime(Math_BigInteger $min, Math_BigInteger $max, int $timeout = false)</pre>
+      <p>If there's not a prime within the given range, false will be returned.  If more than $timeout seconds have elapsed, function gives up and return false.</p>
+    </div>
+    <div class="setprecision">
+      <p>Some bitwise operations give different results depending on the precision being used.  Examples include bitwise_leftShift, bitwise_not, bitwise_rightRotate and bitwise_leftRotate.</p>
+      <p>Whenever a new Math_BigInteger object is created it's precision is set to the same precision as the calling object. In other words, if you do <code>$b = $a->bitwise_not()</code> then $b will have the same precision as $a.</p>
+    </div>
+    <div class="bitwisenot">
+      <p>If the precision (see setPrecision) is not explicitely defined, <code>$a->bitwise_not()</code> will always yield a smaller value since the most significant bit is assumed to have a value of one. With fixed precision, however, the leading bit can be anything.</p>
+      <p>So without <code>$a->setPrecision(3)</code>, bitwise_not() in the above example will return a bit value of 1 (with the two leading zero's dropped) whereas with it it returns 101.</p>
+    </div>
+    <div class="constructor">
+      <p>The constructor takes two parameters. The first is the number and the second represents the base. Both are optional (if they're not provided, the Math_BigInteger object will assume a value of 0).</p>
+      <p>If the base is negative (-2, -16, -256) the number will be assumed to be encoded in <a href="http://en.wikipedia.org/wiki/Two%27s_complement">two's complement</a>.</p>
+    </div>
+    <div class="tostring">
+      Called automatically via the <a href="http://php.net/manual/en/language.oop5.magic.php">__toString magic method</a> on PHP 5+.
+    </div>
+    <div class="tobits tobytes tohex">
+      If the optional parameter is set to bool(true) the number will be encoded in <a href="http://en.wikipedia.org/wiki/Two%27s_complement">two's complement</a>.
+    </div>
+  <!-- end .grid_9 -->
+</div>
+<!-- end .container_16 -->
+</body>
+</html>
