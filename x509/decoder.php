@@ -140,9 +140,10 @@ table,td { border: 1px solid black; padding: 4px }
   </div>
   <div class="clear"></div>
   <div class="grid_3">
-    <p style="color: gray">
-      The associative array returned by this page corresponds to the ASN.1 description of X.509 certificates.
-    </p>
+    <div style="color: gray">
+      <p>The associative array returned by this page corresponds to the ASN.1 description of X.509 certificates.</p>
+      <p>Also, note that <code>subjectPublicKey</code> will not be decodable by OpenSSL as OpenSSL's rsautl function expects the public key to not only contain <code>subjectPublicKey</code> but also everything else in <code>subjectPublicKeyInfo</code>. ie. OpenSSL requires the public key explicitly identify it's using.  Crypt_RSA can handle this format though and convert it if that's needed.</p>
+    </div>
   </div>
   <!-- end .grid_3 -->
   <div class="grid_9">
