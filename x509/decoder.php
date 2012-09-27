@@ -186,6 +186,7 @@ else:
     {
         $result = '';
         foreach ($array as $key => $value) {
+            $key = (string) $key;
             switch ($key) {
                 case 'subjectPublicKey':
                     $open = '<pre>';
