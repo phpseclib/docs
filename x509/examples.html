@@ -346,14 +346,14 @@ $subject->loadCSR('...'); // see <a href="csr.txt">csr.pem</a>
 // calling setPublicKey() is unnecessary when loadCSR() is called
 </span>
 $subject->setPublicKey($pubKey);<span class="selfkeyid">
-$subject->setKeyIdentifier('...');
-$issuer->setKeyIdentifier('...');</span><span class="selfdomain">
+$subject->setKeyIdentifier('...');</span><span class="selfdomain">
 $subject->setDomain('www.whatever.com');
 // multiple domain names: $subject->setDomain('www.google.com', 'www.yahoo.com');</span>
 
 $issuer = new File_X509();
 $issuer->setPrivateKey($privKey);
-$issuer->setDN($subject->getDN());
+$issuer->setDN($subject->getDN());<span class="selfkeyid">
+$issuer->setKeyIdentifier('...');</span>
 
 $x509 = new File_X509();
 //$x509->setStartDate('-1 month'); // default: now
@@ -509,7 +509,8 @@ echo "the stunnel.pem contents are as follows:\r\n\r\n";
 echo $privKey->getPrivateKey();
 echo "\r\n";
 echo $x509->saveX509($result);
-echo "\r\n";</span>?&gt;</pre>
+echo "\r\n";
+</span>?&gt;</pre>
     </div>
     <div id="permlink"><span>permanent link</span></div>
     <div id="notes">
