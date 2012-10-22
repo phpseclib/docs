@@ -93,6 +93,17 @@ var showPath = function() {
     path+= '[' + delimiter + name + delimiter + ']';
   }
   $('#path').html('<code id="path">$cert' + path + '</code>:');
+};
+
+var showPathCSR = function() {
+  path = '';
+  parents = $(this).parents('li:visible');
+  for (var i = parents.length - 1; i >= 0; i--) {
+    name = $('.name', parents[i])[0].textContent;
+    delimiter = isNaN(name) ? '\'' : '';
+    path+= '[' + delimiter + name + delimiter + ']';
+  }
+  $('#pathcsr').html('<code id="pathcsr">$csr' + path + '</code>:');
 };
 
 $(document).ready(function() {
@@ -123,7 +134,8 @@ $(document).ready(function() {
 
   manageSelects();
 
-  $('.name,.hitarea').click(showPath);
+  $('.loadx509 .name,.hitarea').click(showPath);
+  $('.csrload .name,.hitarea').click(showPathCSR);
 
   $('select').change(manageSelects);
   //$('select').change(highlight);
@@ -163,6 +175,7 @@ ul { margin-bottom: 0 }
         <option value="selfsigned">Create self signed cert</option>
         <option value="casigned">Create CA signed cert</option>
         <option value="csr">Create CSR</option>
+        <option value="readcsr">Read CSR</option>
       </select>
     </p>
     <p class="reading">
@@ -214,6 +227,16 @@ ul { margin-bottom: 0 }
     <p class="selfsigned">
       <button value="selfca" class="buttonOn">Make CA</button>
       <button value="selfca" class="buttonOff disableCode">Don't make CA</button>
+    </p>
+    <p class="readcsr">
+      Method:<br />
+      <select>
+        <option value="csrload">loadCSR()</option>
+        <option value="csrgetdnprop">getDNProp()</option>
+        <option value="csrgetdn">getDN()</option>
+        <option value="csrgetdnstr">getDN() as string</option>
+        <option value="csrgetpublickey">getPublicKey()</option>
+      </select>
     </p>
 
 
@@ -322,9 +345,9 @@ $pubKey->setPublicKey();
 
 $subject = new File_X509();
 <span class="selfloadx509">// omit the setPublicKey() call and the cert will be re-signed with most extensions preserved
-$subject->loadX509('...'); // see <a href="phpseclib.txt">phpseclib.crt</a>
+$subject->loadX509('...'); // see <a href="phpseclib.txt">phpseclib.crt</a></span><span style="display: none">
 </span><span class="selfsetdnprop">$subject->setDNProp('id-at-organizationName', 'phpseclib demo cert');
-//$subject->removeDNProp('id-at-organizationName');
+//$subject->removeDNProp('id-at-organizationName');</span><span style="display: none">
 </span><span class="selfsetdn1">$subject->setDN(
     array(
         'rdnSequence' => array(
@@ -339,13 +362,9 @@ $subject->loadX509('...'); // see <a href="phpseclib.txt">phpseclib.crt</a>
 );
 </span><span class="selfsetdn2">$subject->setDN(array(
     'O' => 'phpseclib demo cert'
-));</span><span class="selfsetdn3">
-$subject->setDN('/O=phpseclib demo cert');
-</span><span class="selfloadcsr">
-$subject->loadCSR('...'); // see <a href="csr.txt">csr.pem</a>
-// calling setPublicKey() is unnecessary when loadCSR() is called
-</span>
-$subject->setPublicKey($pubKey);<span class="selfkeyid">
+));</span><span class="selfsetdn3">$subject->setDN('/O=phpseclib demo cert');</span><span class="selfloadcsr">$subject->loadCSR('...'); // see <a href="csr.txt">csr.pem</a></span><span class="selfsetdnprop seltsetdn1 selfsetdn2 selfsetdn3 selfloadx509">
+$subject->setPublicKey($pubKey);</span><span class="selfloadcsr">
+// calling setPublicKey() is unnecessary when loadCSR() is called</span><span class="selfkeyid">
 $subject->setKeyIdentifier('...');</span><span class="selfdomain">
 $subject->setDomain('www.whatever.com');
 // multiple domain names: $subject->setDomain('www.google.com', 'www.yahoo.com');</span>
@@ -496,7 +515,7 @@ $issuer->setPrivateKey($CAPrivKey);
 $issuer->setDN($CASubject);
 
 <span class="issuerkeyid">$issuer->setKeyIdentifier('...');
-</span><span class="subjkeyid">$subject->setKeyIdentifier('---');
+</span><span class="subjkeyid">$subject->setKeyIdentifier('...');
 </span><span class="issuerkeyid">
 </span>$x509 = new File_X509();
 $x509->setStartDate('-1 month');
@@ -510,6 +529,17 @@ echo $privKey->getPrivateKey();
 echo "\r\n";
 echo $x509->saveX509($result);
 echo "\r\n";
+</span><span class="readcsr">include('File/X509.php');
+
+$x509 = new File_X509();
+$csr = $x509->loadCSR('...'); // see <a href="csr.txt">csr.csr</a>
+<span class="csrload">
+print_r($csr);
+//echo $x509->validateSignature() ? 'valid' : 'invalid';</span><span class="csrgetdnprop">
+print_r($x509->getDNProp('O'));</span><span class="csrgetdn">
+print_r($x509->getDN());</span><span class="csrgetdnstr">
+echo $x509->getDN(true);</span><span class="csrgetpublickey">
+echo $x509->getPublicKey()->getPublicKey();</span>
 </span>?&gt;</pre>
     </div>
     <div id="permlink"><span>permanent link</span></div>
@@ -656,6 +686,34 @@ R+iTEBwr8kKJOop38otzxwGBvYk7YBHI2DZW0tivpceN7JjkhpkBUNd+vg/qQSp0UVp38MrVR0cw
 ZP0iAJmLHTq/Jpymrqpz3Cn0bvKFvmYvzHgy9bjS5dy8AuFZY16qieNJovrV2c4dnCh4xo2c+MbK
 Ig==
 -----END CERTIFICATE-----</pre>
+  </div>
+  <div class="readcsr">
+  <h2>Output:</h2>
+  <div class="csrload">
+  <code id="pathcsr">$csr:</code>
+<ul class="printr"><li><span class="name">certificationRequestInfo</span><ul><li><span class="name">version</span><ul><li>v1</li></ul></li><li><span class="name">subject</span><ul><li><span class="name">rdnSequence</span><ul><li><span class="name">0</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-organizationName</li></ul></li><li><span class="name">value</span><ul><li>phpseclib demo cert</li></ul></li></ul></li></ul></li></ul></li></ul></li><li><span class="name">subjectPKInfo</span><ul><li><span class="name">algorithm</span><ul><li><span class="name">algorithm</span><ul><li>rsaEncryption</li></ul></li></ul></li><li><span class="name">subjectPublicKey</span><ul><li><pre>-----BEGIN PUBLIC KEY-----
+MIGJAoGBAMX7X83YPC92SGgewurwucf30AQZU4amihKls8J7Bu5l6qv8ONv3JI9qvY8vJKhj6QHZ
+ABvFSCk7/nsilYhptD2MMUjOeosJwvNcqIo5acy/gox/nnInqnCWqhNtQ+DJDrsJEB+NxoNb1VD9
+PN0pqF3EsU8EAQgSkRfbdikuFMs1AgMBAAE=
+-----END PUBLIC KEY-----</pre></li></ul></li></ul></li></ul></li><li><span class="name">signatureAlgorithm</span><ul><li><span class="name">algorithm</span><ul><li>sha1WithRSAEncryption</li></ul></li></ul></li><li><span class="name">signature</span><ul><li><div style="overflow: auto; word-wrap: break-word">AAuMkTg7KCO8ubSvMXIw+8CjtTHrPmpM6L/8dDPOaM26fsxXT0ZN9mBxh5a+4uiwldyfsI8AsXkWodZ4+z3xaKhMDspay91nOb7InlRybN0n8mr1fyjUpOwwQs3RJDCI2TnTZrXBuJei0Xg6AKyNJ2ej3o8JX1VIXjDr0czV5d++</div></li></ul></li></ul>
+  </div>
+  <div class="csrgetdnprop">
+<code>$prop</code>:<ul class="printr"><li><span class="name">0</span><ul><li><pre>phpseclib demo cert</pre></li></ul></li></ul>
+  </div>
+  <div class="csrgetdn">
+  <code>$prop:</code>
+<ul class="printr"><ul><li><span class="name">rdnSequence</span><ul><li><span class="name">0</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-organizationName</li></ul></li><li><span class="name">value</span><ul><li>phpseclib demo cert</li></ul></li></ul></li></ul></li></ul></li></ul></li>
+  </div>
+  <div class="csrgetdnstr">
+  O=phpseclib demo cert
+  </div>
+  <div class="csrgetpublickey">
+<pre>-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQClAGXDCg5G9JmpSakvmmgAMtaxEHHnm0uzdirx
+l9uRKjycd61s+c66Qg/82XGfef8wY6+xdBr00uKwtDpSbIvIlddVbwWfqkJAimfKCM1uhyCzq6Pj
+tQRcPAzCV8so9nzQzuGYymFlnhRv8gF7RLko3vtjFi8UoYp8w1cplbHX/wIDAQAB
+-----END PUBLIC KEY-----</pre>
+  </div>
   </div>
   <!-- end .grid_9 -->
 </div>
