@@ -180,14 +180,14 @@ $ssh->exec('cd /');
 echo $ssh->exec('pwd'); // (despite the previous command) outputs /home/username</span><span style="display: none">
 </span><span class="interactive">echo $ssh->read('username@username:~$');
 $ssh->write("ls -la\n");
-echo $ssh->read('username@username:~$');</span><span class="sudo">echo $sftp->read('username@username:~$');
-$sftp->write("sudo ls -la\n");
-$output = $sftp->read('#Password:|username@username:~\$#', NET_SSH2_READ_REGEX);
+echo $ssh->read('username@username:~$');</span><span class="sudo">echo $ssh->read('username@username:~$');
+$ssh->write("sudo ls -la\n");
+$output = $ssh->read('#[pP]assword[^:]*:|username@username:~\$#', NET_SSH2_READ_REGEX);
 echo $output;
-if (preg_match('#Password:#', $output)) {
+if (preg_match('#[pP]assword[^:]*:#', $output)) {
     $ssh->write("password\n");
-    echo $sftp->read('username@username:~$');
-}</span><span class="timeout">$ssh->setTimeout(5);
+    echo $ssh->read('username@username:~$');
+}</span><span class="timeout">$ssh->setTimeout(1);
 echo $ssh->read();</span><span class="top">$ansi = new File_ANSI();
 
 $ansi->appendString($ssh->read('username@username:~$'));
