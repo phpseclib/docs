@@ -184,7 +184,7 @@ echo $ssh->read('username@username:~$');</span><span class="sudo">echo $sftp->re
 $sftp->write("sudo ls -la\n");
 $output = $sftp->read('#Password:|username@username:~\$#', NET_SSH2_READ_REGEX);
 echo $output;
-if (preg_match('#Password:#', $lines)) {
+if (preg_match('#Password:#', $output)) {
     $ssh->write("password\n");
     echo $sftp->read('username@username:~$');
 }</span><span class="timeout">$ssh->setTimeout(5);
