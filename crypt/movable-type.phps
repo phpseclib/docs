@@ -1,6 +1,6 @@
 <?php
-// 30.751706123352
-// 31.477724075317
+// 28.423454999924
+// 28.079409122467
 
 // http://www.movable-type.co.uk/scripts/aes-php.html
 
@@ -13,7 +13,7 @@ for ($i = 0; $i < 1024*1024; $i++) {
 
 $start = microtime(true);
 
-AESEncryptCtr($plaintext, 'abcdefghijklmnop', 128);
+AESCtr::encrypt($plaintext, 'abcdefghijklmnop', 128);
 
 $elapsed = microtime(true) - $start;
 

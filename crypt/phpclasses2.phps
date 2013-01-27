@@ -1,13 +1,13 @@
 <?php
-// 59.907835006714
-// 57.763930082321
+// 52.062352180481
+// 51.86350107193
 
 // http://www.phpclasses.org/browse/package/4238.html
 
 include('AESCipher.class.php');
 
 $plaintext = '';
-for ($i = 0; $i < 150000; $i++) {
+for ($i = 0; $i < 1024*1024; $i++) {
     $plaintext.= chr(mt_rand(0, 255));
 }
 
