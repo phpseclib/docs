@@ -47,11 +47,13 @@ table,td { border: 1px solid black; padding: 4px }
 <div class="container_12">
   <div class="grid_12">
     <h1>php<span class="red">sec</span>lib: ASN.1 Parser</h1>
-    <div id="pgup">(return to <a href="intro.html">phpseclib: X.509 Examples</a>)</div>
+    <div id="pgup">(return to <a href="decoder.php">phpseclib: X.509 Decoder</a>)</div>
   </div>
   <div class="clear"></div>
   <div class="grid_3">
-    The asn1parse command is a diagnostic utility that can parse ASN.1 structures. It can also be used to extract data from ASN.1 formatted data.
+    <div style="color: gray">
+      The asn1parse command is a diagnostic utility that can parse ASN.1 structures. It can also be used to extract data from ASN.1 formatted data.
+    </div>
   </div>
   <!-- end .grid_3 -->
   <div class="grid_9">
