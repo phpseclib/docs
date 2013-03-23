@@ -79,9 +79,10 @@ ul { margin-bottom: 0 }
         </ul></li>
       <li><a href="#" onclick="show('aes')">AES</a></li>
     </ul>
-    PHP Bindings:
+    PHP Bindings (openssl_*):
         <ul>
-          <li><a href="#" onclick="show('seal')">openssl_seal() / openssl_open()</a></li>
+          <li><a href="#" onclick="show('seal')">seal() / open()</a></li>
+          <li><a href="#" onclick="show('privateenc')">private_encrypt() / public_decrypt()</a></li>
         </ul>
   </div>
   <!-- end .grid_3 -->
@@ -405,6 +406,86 @@ echo $result;
 openssl_open($ciphertext, $result, $enckey, openssl_get_privatekey($privkey)); 
 
 echo $result;
+?></pre>
+	</div>
+       </div>
+       </p>
+     </div>
+
+
+
+
+
+      <div id="privateenc">
+       <p>
+       <h2>Encrypt with</h2>
+       <div class="accordion" style="margin: 0; padding: 0">
+	<h3><a href="#">OpenSSL</a></h3>
+	<div>
+<pre class="prettyprint" style="margin: 0; padding: 0">&lt;?php
+$privkey = file_get_contents('/path/to/private.key');
+
+openssl_private_encrypt('ddd', $ciphertext, $privkey);</pre>
+	</div>
+	<h3><a href="#">phpseclib</a></h3>
+	<div>
+<pre class="prettyprint" style="margin: 0; padding: 0">&lt;?php
+include_once('Crypt/RSA.php'); 
+
+// phpseclib implements PKCS#1 v2.1 which is largely compatible with
+// PKCS#1 v1.5 (which is what OpenSSL implements) save for instances
+// where the private key is being used to encrypt.
+define('CRYPT_RSA_PKCS15_COMPAT', true); 
+
+$privkey = file_get_contents('/path/to/private.key');
+
+$rsa = new Crypt_RSA(); 
+$rsa->loadKey($privkey); 
+$rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1); 
+$ciphertext = $rsa->encrypt('ddd'); </pre>
+	</div>
+
+
+
+
+
+
+
+
+
+
+       </div>
+      </p>
+      <p>
+        <h2>Decrypt with</h2>
+        <div class="accordion">
+	<h3><a href="#">phpseclib</a></h3>
+	<div>
+<pre class="prettyprint" style="margin: 0; padding: 0">// continuing from the above
+
+$rsa = new Crypt_RSA(); 
+$rsa->loadKey($privkey); 
+$rsa->loadKey($rsa->getPublicKey()); 
+$rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1); 
+echo $rsa->decrypt($ciphertext);
+?></pre>
+	</div>
+	<h3><a href="#">OpenSSL</a></h3>
+	<div>
+<pre class="prettyprint" style="margin: 0; padding: 0">// continuing from the above
+
+// openssl_get_publickey() only creates public key resources from X.509
+// certificates hence our creating one
+$dn = array();  // use defaults 
+$res_privkey = openssl_pkey_get_private($privkey); 
+$res_csr = openssl_csr_new($dn, $res_privkey); 
+$res_cert = openssl_csr_sign($res_csr, null, $res_privkey, 365); 
+openssl_x509_export($res_cert, $str_cert); 
+$res_pubkey = openssl_get_publickey($str_cert); 
+
+openssl_public_decrypt($ciphertext, $plaintext, $res_pubkey); 
+
+echo $plaintext;
 ?></pre>
 	</div>
        </div>
