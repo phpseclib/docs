@@ -94,7 +94,20 @@ include_once('File/ASN1.php');
 
 $asn1 = new File_ASN1();
 $str = !empty($_POST['cert']) ? $_POST['cert'] : file_get_contents($_FILES['pem']['tmp_name']);
-$temp = preg_replace('#^(?:[^-].+[\r\n]+)+|-.+-|[\r\n]| #', '', $str);
+/*
+    X.509 certs are assumed to be base64 encoded but sometimes they'll have additional things in them above and beyond the ceritificate. ie.
+    some may have the following preceeding the -----BEGIN CERTIFICATE----- line:
+
+    Bag Attributes 
+        localKeyID: 01 00 00 00
+    subject=/O=organization/OU=org unit/CN=common name
+    issuer=/O=organization/CN=common name
+*/
+$temp = preg_replace('#.*?^-+[^-]+-+#ms', '', $str, 1);
+// remove the -----BEGIN CERTIFICATE----- and -----END CERTIFICATE----- stuff
+$temp = preg_replace('#-+[^-]+-+#', '', $temp);
+// remove new lines
+$temp = str_replace(array("\r", "\n", ' '), '', $temp);
 $temp = preg_match('#^[a-zA-Z\d/+]*={0,2}$#', $temp) ? base64_decode($temp) : false;
 if ($temp != false) {
     $str = $temp;
