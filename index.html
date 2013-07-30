@@ -46,6 +46,9 @@ code { background: #ffa }
 .buttonOff { display: none }
 ul { margin-bottom: 0 }
 #pgup { font-size: 10px; margin-bottom: 2em }
+#ciphers li { line-height: 1.5em }
+.reset { margin-top: -6em } /* ie. #ciphers li line-height */
+.column2 { margin-left: 8.5em }
 </style></head>
 <body onload="prettyPrint()">
 <div class="container_12">
@@ -63,13 +66,16 @@ ul { margin-bottom: 0 }
       <li><a href="x509/intro.html">X.509</a></li>
       <li>
         <a href="crypt/examples.html">Symmetric key encryption</a>
-        <ul>
-          <li>AES</li>
-          <li>Rijndael</li>
-          <li>DES</li>
-          <li>3DES</li>
-          <li>RC4</li>
-        </ul>
+        <div id="ciphers"><ul>
+          <li class="column1">AES</li>
+          <li class="column1">Rijndael</li>
+          <li class="column1">Twofish</li>
+          <li class="column1">Blowfish</li>
+          <li class="column2 reset">DES</li>
+          <li class="column2">3DES</li>
+          <li class="column2">RC4</li>
+          <li class="column2">RC2</li>
+        </ul></div>
       </li>
     </ul>
     </p>
