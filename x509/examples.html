@@ -225,7 +225,7 @@ ul { margin-bottom: 0 }
       Method:<br />
       <select>
         <option value="sig">validateSignature()</option>
-        <option value="signoself">validateSignature() (no self signed)</option>
+        <option value="selfsign">validateSignature() (self signed)</option>
         <option value="url">validateURL()</option>
         <option value="date">validateDate() (current date)</option>
         <option value="customdate">validateDate() (arbitrary date)</option>
@@ -270,10 +270,10 @@ print_r($x509->getIssuerDN());</span>
 </span><span class="validate">include('File/X509.php');
 
 $x509 = new File_X509();
-<span class="signoself">$x509->loadCA('...'); // see <a href="signer.txt">signer.crt</a>
-</span>$cert = $x509->loadX509('...'); <span class="signoself url date customdate">// see <a href="google.txt">google.crt</a></span><span class="sig">// see <a href="selfsigned.txt">selfsigned.crt</a></span>
+<span class="sig">$x509->loadCA('...'); // see <a href="signer.txt">signer.crt</a>
+</span>$cert = $x509->loadX509('...'); <span class="sig url date customdate">// see <a href="google.txt">google.crt</a></span><span class="selfsign">// see <a href="selfsigned.txt">selfsigned.crt</a></span>
 <span class="sig">echo $x509->validateSignature() ? 'valid' : 'invalid';
-</span><span class="signoself">echo $x509->validateSignature(FILE_X509_VALIDATE_SIGNATURE_BY_CA) ?
+</span><span class="selfsign">echo $x509->validateSignature(true) ?
     'valid' :
     'invalid';
 </span><span class="url">// try it with "http://www.bing.com/search?q=phpseclib" too
