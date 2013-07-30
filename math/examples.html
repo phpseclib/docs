@@ -153,8 +153,6 @@ ul { margin-bottom: 0 }
         <option value="tohex">toHex()</option>
         <option value="tobytes">toBytes()</option>
         <option value="tobits">toBits()</option>
-
-        <option value="setrandomgenerator">setRandomGenerator()</option>
       </select>
     </p>
   </div>
@@ -170,7 +168,7 @@ $b = new Math_BigInteger(3);
 </span></span><span class="gcd extendedgcd">
 $a = new Math_BigInteger(50);
 $b = new Math_BigInteger(30);
-</span><span class="random randomprime setrandomgenerator">
+</span><span class="random randomprime">
 $a = new Math_BigInteger(30);
 $b = new Math_BigInteger(50);
 </span><span class="bitwiseand bitwiseor bitwisexor">
@@ -199,12 +197,10 @@ echo $a->abs(); // outputs 5</span><span class="compare">
 echo $a->compare($b) . "\r\n&lt;br />\r\n"; // outputs  1
 echo $b->compare($a) . "\r\n&lt;br />\r\n"; // outputs -1
 echo $a->compare($a);                    // outputs  0</span><span class="equals">
-var_dump($a->equals($b)); // outputs bool(false)</span><span class="random setrandomgenerator">
+var_dump($a->equals($b)); // outputs bool(false)</span><span class="random">
 $rand = new Math_BigInteger();
-//$rand->setRandomGenerator('mt_rand');
 echo $rand->random($a, $b); // outputs random number between 30 and 50, inclusive</span><span class="randomprime">
 $rand = new Math_BigInteger();
-//$rand->setRandomGenerator('mt_rand');
 echo $rand->randomPrime($a, $b); // outputs random prime between 30 and 50, inclusive</span><span class="isprime">
 $a = new Math_BigInteger(47);
 var_dump($a->isPrime()); // outputs bool(true)</span><span class="setprecision">
