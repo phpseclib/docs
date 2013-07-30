@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="google-site-verification" content="DHz4kg_uhBzFTmMZSrMTtF9lqPofgrUucAmZrsakViI" />
+<meta name="keywords" content="SSH,SFTP,RSA,PHP,AES,Rijndael,3DES,RC4,SSH2,SSH1,X.509,X509" />
+<meta name="description" content="phpseclib can encode, decode, sign and verify X.509 certificates." />
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-19770173-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<title>phpseclib: X.509 Creation Guide</title>
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+<link rel="stylesheet" href="../css/prettify.css"/>
+<link rel="stylesheet" href="../css/jquery.treeview.css" />
+<link rel="stylesheet" href="../css/jquery-ui-1.8.20.custom.css" />
+
+<script src="../js/prettify.js"></script>
+<script src="../js/jquery-1.7.2.min.js"></script>
+<script src="../js/jquery-ui-1.8.20.custom.min.js"></script>
+<script src="../js/jquery.cookie.js"></script>
+<script src="../js/jquery.treeview.js"></script>
+
+<script>
+function showSignature() {
+  if ($('#signature li').is(':hidden')) {
+    $('#signature span').trigger('click');
+  }
+}
+
+function showPublicKey() {
+  if ($('#tbsCertificate > ul > li').is(':hidden')) {
+    $('#tbsCertificate > span').trigger('click');
+  }
+  if ($('#subjectPublicKeyInfo > ul > li').is(':hidden')) {
+    $('#subjectPublicKeyInfo > span').trigger('click');
+  }
+  if ($('#subjectPublicKey > ul > li').is(':hidden')) {
+    $('#subjectPublicKey > span').trigger('click');
+  }
+}
+
+function showIssuer() {
+  if ($('#tbsCertificate > ul > li').is(':hidden')) {
+    $('#tbsCertificate > span').trigger('click');
+  }
+  if ($('#issuer > ul > li').is(':hidden')) {
+    $('#issuer > span').trigger('click');
+  }
+}
+
+function showSubject() {
+  if ($('#tbsCertificate > ul > li').is(':hidden')) {
+    $('#tbsCertificate > span').trigger('click');
+  }
+  if ($('#subject > ul > li').is(':hidden')) {
+    $('#subject > span').trigger('click');
+  }
+}
+
+var showPath = function() {
+  path = '';
+  parents = $(this).parents('li:visible');
+  for (var i = parents.length - 1; i >= 0; i--) {
+    name = $('.name', parents[i])[0].textContent;
+    delimiter = isNaN(name) ? '\'' : '';
+    path+= '[' + delimiter + name + delimiter + ']';
+  }
+  $('#path').html('<code id="path">$cert' + path + '</code>:');
+};
+
+$(document).ready(function(){
+  $('.printr').treeview({
+    persist: "location",
+    collapsed: true,
+    unique: true
+  });
+  $('.name,.hitarea').click(showPath);
+  $('.certopen').accordion({
+    collapsible: true
+  });
+  $('.cert').accordion({
+    collapsible: true,
+     active: false
+  });
+});
+</script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }.red { color: #e11 }
+.prettyprint, .pre { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }</style></head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: X.509 Creation Guide</h1>
+    <div id="pgup">(return to <a href="intro.html">phpseclib: X.509 Feature List</a>)</div>
+  </div>
+  <div class="grid_3">
+    <h2>Contents</h2>
+    <ul>
+      <li><a href="#generalidea">The General Idea</a></li>
+      <li><a href="#keys">Public / Private Keys</a></li>
+      <li><a href="#identifiers">Key Identifiers</a></li>
+      <li><a href="#dns">Distinguished Names</a></li>
+      <li><a href="#domains">Domain Names</a></li>
+      <li><a href="#transactional">Transactional Properties</a></li>
+      <li><a href="#funcs">Function List</a></li>
+      <li><a href="#minimalistic">Minimalistic Example</a></li>
+      <li><a href="#selfsigned">Example: Self-signed cert</a></li>
+      <li><a href="#casigned">Example: CA-signed cert</a></li>
+    </ul>
+  </div>
+  <div class="grid_9">
+    <h2 id="generalidea">The General Idea</h2>
+    <p>In a nutshell...</p>
+
+    <pre class="prettyprint">$result = $x509->sign($issuer, $subject); 
+$x509->saveX509($result);</pre>
+
+    <h2 id="keys">Public / Private Keys</h2>
+
+    <p><code>$issuer</code> and <code>$subject</code> are, themselves, File_X509 objects. They need private and public keys, respectively. Here's an example of how to create them from scratch for a brand new self-signed cert:</p>
+
+    <pre class="prettyprint">$privKey = new Crypt_RSA(); 
+extract($privKey->createKey()); 
+$privKey->loadKey($privatekey); 
+
+$pubKey = new Crypt_RSA(); 
+$pubKey->loadKey($publickey); 
+$pubKey->setPublicKey(); 
+
+$issuer->setPrivateKey($privKey); 
+$subject->setPublicKey($pubKey);</pre>
+
+    <p>The public key can also be set by <code>$subject->loadCSR('...')</code> or <code>$subject->loadX509('...')</code>. If you're using <code>$subject->loadX509()</code> you'll effectively be re-signing <code>$subject</code>. The issuer DN of $subject will be updated as will some of the other "transactional properties" (see below), if appropriate, but all (well, most) of the extensions will be preserved.</p>
+
+    <h2 id="identifiers">Key Identifiers</h2>
+
+    <p>Sometimes an <code>$issuer</code> or a <code>$subject</code> will have multiple private keys. To disambiguate between them key identifiers are used. An example follows:</p>
+
+    <pre class="prettyprint">setKeyIdentifier / computeKeyIdentifier</pre>
+
+    <h2 id="dns">Distinguished Names</h2>
+
+    <p><code>$issuer</code> and <code>$subject</code> also need to have their distinguished names set. That can be done in a number of ways. The following are all equivalent to one another:</p>
+
+    <pre class="prettyprint">$subject->setDNProp('id-at-organizationName', 'phpseclib demo cert'); 
+$subject->setDN( 
+    array( 
+        'rdnSequence' => array( 
+            array( 
+                array( 
+                    'type' => 'id-at-organizationName', 
+                    'value'=> 'phpseclib demo cert' 
+                ) 
+            ) 
+        ) 
+    ) 
+); 
+$subject->setDN(array( 
+    'O' => 'phpseclib demo cert' 
+)); 
+$subject->setDN('/O=phpseclib demo cert');</pre>
+
+    <p>DN properties can also be removed thusly:</p>
+
+    <pre class="prettyprint">$subject->removeDNProp('id-at-organizationName');</pre>
+
+    <p>DN properties can be set via <code>$x509->loadCSR('...')</code> and <code>$subject->loadX509('...')</code> as well. </p>
+
+    <p>See also: <a href="dnprops.html">List of DN property names</a></p>
+
+    <h2 id="domains">Domain Names</h2>
+
+    <p>If your X.509 certificate is supposed to be valid for a single domain name that domain name can be set by either setting the id-at-commonName or CN distinguished name property. If your X.509 certificate is supposed to be valid for multiple domain names an X.509 extension - id-ce-subjectAltName - is required. <code>setDomain()</code> takes care of all of this for you. Here's an example of how to make your certificate valid for two domains:</p>
+
+    <pre class="prettyprint">$subject->setDomain('www.google.com', 'www.yahoo.com');</pre>
+
+    <h2 id="transactional">Transactional Properties</h2>
+
+    <p>Some properties belong neither to $issuer or $subject. Rather they belong to "transaction". The functions to set those properties are as follows:</p>
+
+    <pre class="prettyprint">$x509->setSerialNumber(...);
+$x509->makeCA();
+$x509->setStartDate(...); 
+$x509->setEndDate(...);</pre>
+
+    <p><code>$subject->setDomain()</code> isn't considered a transactional property because, in theory, the issuing certificate could have at least one domain too since that's based on a particular distinguished name property. </p>
+
+    <p>The start time is, by default, when the cert is created. The current time is converted to UTC time and the fact that it's UTC time is denoted in the cert. Other X.509 decoders (eg. browsers or email clients or whatever) should decode this to their timezone so there's no need to set it to do <code>$x509->setStartDate('-1 day')</code> or anything like that.</p>
+
+    <p><code>setStartDate() / setEndDate()</code> are passed through <a href="http://php.net/strtotime">strtotime()</a> internally. If you want the cert to last forever pass <code>'lifetime'</code> to it.</p>
+
+    <h2 id="funcs">Function List</h2>
+
+    <p>Functions affecting properties common to both $issuer and $subject are as follows:</p>
+
+    <p><ul>
+      <li><code>setDNProp</code></li>
+      <li><code>removeDNProp</code></li>
+      <li><code>setDN</code></li>
+      <li><code>loadCSR</code></li>
+      <li><code>loadX509</code></li>
+      <li><code>setKeyIdentifier / computeKeyIdentifier</code></li>
+    </ul></p>
+
+    <p>Functions affecting $issuer only properties: </p>
+
+    <p><ul><li><code>setPrivateKey</code></li></ul></p>
+
+    <p>Functions affecting $subject only properties:</p>
+
+    <p><ul>
+      <li><code>setPublicKey</code></li>
+      <li><code>setDomain</code></li>
+    </ul></p>
+
+    <p>Functions affecting $x509 properties:</p>
+
+    <p><ul>
+      <li><code>setSerialNumber</code></li>
+      <li><code>makeCA</code></li>
+      <li><code>setStartDate</code></li>
+      <li><code>setEndDate</code></li>
+    </ul></p>
+
+    <h2 id="minimalistic">Minimalistic Example</h2>
+
+    <pre class="prettyprint">$subject = new File_X509(); 
+$subject->setPublicKey($pubKey); // $pubKey is Crypt_RSA object 
+$subject->setDN('/O=phpseclib demo cert'); 
+
+$issuer = new File_X509(); 
+$issuer->setPrivateKey($privKey); // $privKey is Crypt_RSA object 
+$issuer->setDN('/O=phpseclib demo cert'); 
+
+$x509 = new File_X509(); 
+$result = $x509->sign($issuer, $subject); 
+echo $x509->saveX509($result);</pre>
+
+    <p>For self-signed certs the DN of the subject and issuer will match and the issuer's private key will correspond to the subject's public key.</p>
+
+    <h2 id="selfsigned">Example: Self-signed cert</h2>
+
+    <p>This example creates the key pair from scratch.</p>
+
+<pre class="prettyprint">&lt;?php
+include('File/X509.php');
+include('Crypt/RSA.php');
+
+// create private key / x.509 cert for stunnel / website
+$privKey = new Crypt_RSA();
+extract($privKey->createKey());
+$privKey->loadKey($privatekey);
+
+$pubKey = new Crypt_RSA();
+$pubKey->loadKey($publickey);
+$pubKey->setPublicKey();
+
+$subject = new File_X509();
+$subject->setDNProp('id-at-organizationName', 'phpseclib demo cert');
+$subject->setPublicKey($pubKey);
+
+$issuer = new File_X509();
+$issuer->setPrivateKey($privKey);
+$issuer->setDN($subject->getDN());
+
+$x509 = new File_X509();
+
+$result = $x509->sign($issuer, $subject);
+echo "the stunnel.pem contents are as follows:\r\n\r\n";
+echo $privKey->getPrivateKey();
+echo "\r\n";
+echo $x509->saveX509($result);
+echo "\r\n";
+?></pre>
+
+    <p>Click below to view the output</p>
+
+    <p>
+    <div class="cert" style="font-size: 12px">
+      <h3><a href="#">Output</a></h3>
+      <div>
+        <pre>the stunnel.pem contents are as follows:
+
+-----BEGIN RSA PRIVATE KEY-----
+MIICXQIBAAKBgQCtYr+TcpSQ043ZZi+akC1LR5Q6MJPJ6/0MQ7IFPt/SCywaxsdFsNQ40+TOSFNk
+G68nscyB5nEPDkNzLJ7AklNSRHItqxTwohuW4a+fBfzAi0vXS9IrM2iep13cHE9r5QW9pouRQiYf
+bi5FegEWbtIc5SrmAxHAH9K3KGRaXEeufwIDAQABAoGAFijgwz+JrVjccESXIPH8V/q1/xnmSZBX
+rxGX1wPKJ1Y2NNXi8g0/kmPCgnrL7ad8I16d/JwvJvVzuWyifYo2C7++wHjPKvqTXgg7OiCai3KV
+O0y3r3xhVdvKOOmD42zPuPkHXSORrWP0wgH07pPThKRLmc2I1EuRtXzLvGrCOMECQQDbD7YRotnC
+biL7OzoFuzUKEpSN464LhdkTcDWeRUEvQQa/hTiKIeJ5aTdvyEOKBpuYzPTh6/79nBkgS7Lg5KtV
+AkEAyp9X06ZMXiOIFZszARddoALM1FXJkAVsa5T+pUJAscKU5JHFrgckk+D9snnYvR7eN5OMHOkP
+fH9yzKS4Zif6gwJABojicoY8HruwWXQ7193syB8jxVPMZlWY0yaewtjoB+PVsrLjq+M04VBNMg10
+TlLCI33BtFeY5LHaYgdAD8tifQJBAKnBGZmuR2jPJ+HCJtcRNlUqQ2TZgobwpEb1iun1ObIzrP5Z
+yl3kihaCdsmiH51CUTYKnWZTM7BALnOYxQyBDfUCQQCI1JOGXOveAxsr4sP6vornAU/G7ekX2n9x
+LAjktKBd0pX25L9fdqrZPH61bOvF9S3VjuiX5vSp8OyUxoWMPbPn
+-----END RSA PRIVATE KEY-----
+-----BEGIN CERTIFICATE-----
+MIIB4zCCAU6gAwIBAgIAMAsGCSqGSIb3DQEBBTA5MRwwGgYDVQQKDBNwaHBzZWNsaWIgZGVtbyBj
+ZXJ0MRkwFwYDVQQDDBB3d3cud2hhdGV2ZXIuY29tMCIYDzIwMTIwNjA0MDMxMDMxWhgPMjAxMzA2
+MDQwMzEwMzFaMDkxHDAaBgNVBAoME3BocHNlY2xpYiBkZW1vIGNlcnQxGTAXBgNVBAMMEHd3dy53
+aGF0ZXZlci5jb20wgZ0wCwYJKoZIhvcNAQEBA4GNADCBiQKBgQCtYr+TcpSQ043ZZi+akC1LR5Q6
+MJPJ6/0MQ7IFPt/SCywaxsdFsNQ40+TOSFNkG68nscyB5nEPDkNzLJ7AklNSRHItqxTwohuW4a+f
+BfzAi0vXS9IrM2iep13cHE9r5QW9pouRQiYfbi5FegEWbtIc5SrmAxHAH9K3KGRaXEeufwIDAQAB
+MAsGCSqGSIb3DQEBBQOBgQBYEsMuWBA9ie4ulXxeLhLoQvEo6vgl5LDRFMuP+AhkKzfXUo2yEMWP
+/QxbSglcPT/ycb+5+FhYGWxGatM5V+sB43ZBHZD14ZWPN35ePmDIfqXdRmphhXuhdNU7DWwp97ZR
+c26CQXzHurRf29VloV8k5JKwsfnLRPVCrbJySMB6dg==
+-----END CERTIFICATE-----</pre>
+      </div>
+    </div></p>
+
+    <h2 id="casigned">Example: CA-signed cert</h2>
+
+    <p>Creates both the issuer and subject certs and the keypairs for both. We could just mark the cert generated above as a certificate authority via <code>$x509->makeCA()</code> and copy / paste the private key / cert that the last script generated into this script but I figure a self-contained example that doesn't require any copy / pasting might be better.</p>
+
+    <pre class="prettyprint">&lt;?php
+include('File/X509.php');
+include('Crypt/RSA.php');
+
+// create private key for CA cert
+$CAPrivKey = new Crypt_RSA();
+extract($CAPrivKey->createKey());
+$CAPrivKey->loadKey($privatekey);
+
+$pubKey = new Crypt_RSA();
+$pubKey->loadKey($publickey);
+$pubKey->setPublicKey();
+
+echo "the private key for the CA cert (can be discarded):\r\n\r\n";
+echo $privatekey;
+echo "\r\n\r\n";
+
+
+
+
+
+
+
+// create a self-signed cert that'll serve as the CA
+$subject = new File_X509();
+$subject->setDNProp('id-at-organizationName', 'phpseclib demo CA');
+$subject->setPublicKey($pubKey);
+
+$issuer = new File_X509();
+$issuer->setPrivateKey($CAPrivKey);
+$issuer->setDN($CASubject = $subject->getDN());
+
+$x509 = new File_X509();
+$x509->makeCA();
+
+$result = $x509->sign($issuer, $subject);
+echo "the CA cert to be imported into the browser is as follows:\r\n\r\n";
+echo $x509->saveX509($result);
+echo "\r\n\r\n";
+
+
+
+
+
+
+
+
+// create private key / x.509 cert for stunnel / website
+$privKey = new Crypt_RSA();
+extract($privKey->createKey());
+$privKey->loadKey($privatekey);
+
+$pubKey = new Crypt_RSA();
+$pubKey->loadKey($publickey);
+$pubKey->setPublicKey();
+
+$subject = new File_X509();
+$subject->setDNProp('id-at-organizationName', 'phpseclib demo cert');
+
+$subject->setPublicKey($pubKey);
+
+$issuer = new File_X509();
+$issuer->setPrivateKey($CAPrivKey);
+$issuer->setDN($CASubject);
+
+$x509 = new File_X509();
+$result = $x509->sign($issuer, $subject);
+echo "the stunnel.pem contents are as follows:\r\n\r\n";
+echo $privKey->getPrivateKey();
+echo "\r\n";
+echo $x509->saveX509($result);
+echo "\r\n";
+?></pre>
+
+    <p>Click below to view the output</p>
+
+    <div class="cert" style="font-size: 12px">
+      <h3><a href="#">Output</a></h3>
+      <div>
+        <pre>the private key for the CA cert (can be discarded):
+
+-----BEGIN RSA PRIVATE KEY-----
+MIICXAIBAAKBgQCeSAGfM4nHdIaBwThHYGW3MABTvrSMrawnGN/Mx5ttyLQF4YcUJFSpGAJ8y2hV
+iak3irbLtc6nlpJFOHtMB4VsuG7S+MySYKBm5l7eApfWynHMLKVml3URXCMVMXju4SxiI+D10nNO
+aq+eSEIFlPOY+7LgSdIAka6/9+z2hgoITQIDAQABAoGADS1RdT+FKOW6jPLZDJgp36ZPYKlvvoZ2
+3opjl1jGx8z9r7+mzzZ3Fdy52EnW1cgwHj+eGDd6jNksNDcPjLTTlqfwoKMZhf1gpYBKA5PtnqFU
+rxM5eW3SzLWkPOZoS/i8fxze0uvoh0zcm6u1nictcjkj0Hqql4hbTrDRENxTfgECQQC9qYFWsH8q
+r/ztbl6WBxW1NT9JgthvteiINpAjeN9tmuP9BgTGPk4j3MhTVsPp5ogzdn3MLch2YJ9cJuEeHon1
+AkEA1aSiiZwGH9tCI8EFJrDqbCqDgeOmlkgMp5YQ8TqBg6/nkM4wWz9cXSmFPO3L9BQhvXE8RlGJ
+DChCksbBcjnV+QJBALXZ7w+lz2iosYUejEahqGjFE1dyw//olXr1hiLc5K39E5kpyi4i012Ddfii
+etqsle9yL5A0Xb9TSblb9gGhGnkCQDyj8Gay3KIqMAnJ/dZPnRp6rr0titlZNg5TcBeojZ59TXMy
+s1MTFvpykJkMvjlXhYQqIfurpQTIYK0csUfk1rECQBPVqVAG45VBn6yV1cDaqvg/0aQ6yZc7nQTr
+7aLuUCTaf/xP4wSWiQpGiRFdTLt3pkkI3XdngV6j8RCcpgED6qU=
+-----END RSA PRIVATE KEY-----
+
+the CA cert to be imported into the browser is as follows:
+
+-----BEGIN CERTIFICATE-----
+MIIBzzCCATqgAwIBAgIBATALBgkqhkiG9w0BAQUwHDEaMBgGA1UECgwRcGhwc2VjbGliIGRlbW8g
+Q0EwIhgPMjAxMjA1MDQwMzQxNDhaGA8yMDEzMDYwNDAzNDE0OFowHDEaMBgGA1UECgwRcGhwc2Vj
+bGliIGRlbW8gQ0EwgZ0wCwYJKoZIhvcNAQEBA4GNADCBiQKBgQCeSAGfM4nHdIaBwThHYGW3MABT
+vrSMrawnGN/Mx5ttyLQF4YcUJFSpGAJ8y2hViak3irbLtc6nlpJFOHtMB4VsuG7S+MySYKBm5l7e
+ApfWynHMLKVml3URXCMVMXju4SxiI+D10nNOaq+eSEIFlPOY+7LgSdIAka6/9+z2hgoITQIDAQAB
+oyMwITAOBgNVHQ8BAQAEBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zALBgkqhkiG9w0BAQUDgYEAc31s
+EL3tWfwFIHYK+96wzvAS7F/4FCMcZOdrW9LZ1IniXUSf601MIOVy0pAc17Xf6QjlVOhziA3cLMi3
+3CWwEDgnhXU8s6YRAa6WD8eeHwmJKE3vIU0+klscIdOO+14BrC+mRUoPaZ1hmixMvrK/pVhXAkef
+XTSk5kq9f2Bfm+M=
+-----END CERTIFICATE-----
+
+the stunnel.pem contents are as follows:
+
+-----BEGIN RSA PRIVATE KEY-----
+MIICWwIBAAKBgQCBsisUty8OFR2gz3sweCoIfyzFWcvaTA55noaI6LXZMebI3iB7u5dJjsbI2yRh
+IgDaHBDVyu6R9W/NA9QFkKGoHmnnvHsEo8Jc9Ca3nVIfjVBUj+kGMnadUtHoxZaRXLdwV9nX+LCa
+rfEz9VDS21BOJJ6OzUmvvkM0AUkGQlmcnwIDAQABAoGAN2+c63dbNRVAe0aEHNUX/lbBn79Am5fL
+zh882RNC+0nRoAUV9F1cDpRpElxdAemjXJcHeSKK87dpaMOcoh5Ogi2rXXgB++igxNdx19+z4Ku1
+A1JG0O08Z/n7DQQb5g+V4Z9oIorpfufh7lIj4HgDLoznCj2lWq6SpzWobmtYnC0CQQDJDjYDRJRR
+ujepI6yz+9ckD6Jr2AwjSrdQKUPMzeexlTQgDqW/Jec5k3dS1zcvM+FctzNfnp9LyK/CABFYLb6r
+AkEApSOpwpzAsL1rDUqdV3iBEPPBmLLeTef4+pyggGGYFeu+TR3hNrHZPphXi6F/c+kmt7kDWgq1
+K3QZPQkadXgJ3QJAF5Bb0jw6ae26Uk+FET8l8usGLT+QBJ7gJzv+30UOr6h+CHfPAz0tAXmAFax1
+okmhUx2BnuZXYyltN/6MCdqqqwJAVqU5owTADXu1OYoWuBhgD9b1kvr2rQWzmzqm8/VA6O+CL9An
+pJz4EWG5PWgFCXoheHA4k/veRuhpfZ7TJSNQeQJAFVH1RQYAYOTVyyXYbUJnXEbVnEYeTVUKLJmx
+VSmAwFxx6s/EHVmiDH/WPgV4NkZt7gW7epkqoz3gfTDWYfx8Qg==
+-----END RSA PRIVATE KEY-----
+-----BEGIN CERTIFICATE-----
+MIIBxTCCATCgAwIBAgIBATALBgkqhkiG9w0BAQUwHDEaMBgGA1UECgwRcGhwc2VjbGliIGRlbW8g
+Q0EwIhgPMjAxMjA1MDQwMzQxNDhaGA8yMDEzMDYwNDAzNDE0OFowNzEcMBoGA1UECgwTcGhwc2Vj
+bGliIGRlbW8gY2VydDEXMBUGA1UEAwwOd3d3Lmdvb2dsZS5jb20wgZ0wCwYJKoZIhvcNAQEBA4GN
+ADCBiQKBgQCBsisUty8OFR2gz3sweCoIfyzFWcvaTA55noaI6LXZMebI3iB7u5dJjsbI2yRhIgDa
+HBDVyu6R9W/NA9QFkKGoHmnnvHsEo8Jc9Ca3nVIfjVBUj+kGMnadUtHoxZaRXLdwV9nX+LCarfEz
+9VDS21BOJJ6OzUmvvkM0AUkGQlmcnwIDAQABMAsGCSqGSIb3DQEBBQOBgQBzWpz47IfG6vWf5WlN
+R+iTEBwr8kKJOop38otzxwGBvYk7YBHI2DZW0tivpceN7JjkhpkBUNd+vg/qQSp0UVp38MrVR0cw
+ZP0iAJmLHTq/Jpymrqpz3Cn0bvKFvmYvzHgy9bjS5dy8AuFZY16qieNJovrV2c4dnCh4xo2c+MbK
+Ig==
+-----END CERTIFICATE-----</pre>
+      </div>
+    </div>
+
+  </div>
+</div>
+<!-- end .container_16 -->
+</body>
+</html>

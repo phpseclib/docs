@@ -24,13 +24,16 @@
 <link rel="stylesheet" href="../css/960.css" />
 <link rel="stylesheet" href="../css/prettify.css"/>
 <link rel="stylesheet" href="../css/jquery.qtip.min.css"/>
-<link rel="stylesheet" href="../css/jquery.treeview.css" />
+<link rel="stylesheet" href="../css/jquery.treeview.css" />
+
 
 <script src="../js/prettify.js"></script>
 <script src="../js/jquery-1.7.2.min.js"></script>
 <script src="../js/jquery.qtip.min.js"></script>
-<script src="../js/jquery.cookie.js"></script>
-<script src="../js/jquery.treeview.js"></script>
+<script src="../js/jquery.cookie.js"></script>
+
+<script src="../js/jquery.treeview.js"></script>
+
 
 <script>
 var certFlag = false;
@@ -84,36 +87,59 @@ var handleCert = function(event) {
   }
 }
 
-var showPath = function() {
-  path = '';
-  parents = $(this).parents('li:visible');
-  for (var i = parents.length - 1; i >= 0; i--) {
-    name = $('.name', parents[i])[0].textContent;
-    delimiter = isNaN(name) ? '\'' : '';
-    path+= '[' + delimiter + name + delimiter + ']';
-  }
-  $('#path').html('<code id="path">$cert' + path + '</code>:');
+var showPath = function() {
+
+  path = '';
+
+  parents = $(this).parents('li:visible');
+
+  for (var i = parents.length - 1; i >= 0; i--) {
+
+    name = $('.name', parents[i])[0].textContent;
+
+    delimiter = isNaN(name) ? '\'' : '';
+
+    path+= '[' + delimiter + name + delimiter + ']';
+
+  }
+
+  $('#path').html('<code id="path">$cert' + path + '</code>:');
+
 };
 
-var showPathCSR = function() {
-  path = '';
-  parents = $(this).parents('li:visible');
-  for (var i = parents.length - 1; i >= 0; i--) {
-    name = $('.name', parents[i])[0].textContent;
-    delimiter = isNaN(name) ? '\'' : '';
-    path+= '[' + delimiter + name + delimiter + ']';
-  }
-  $('#pathcsr').html('<code id="pathcsr">$csr' + path + '</code>:');
-};
+var showPathCSR = function() {
+
+  path = '';
+
+  parents = $(this).parents('li:visible');
+
+  for (var i = parents.length - 1; i >= 0; i--) {
+
+    name = $('.name', parents[i])[0].textContent;
+
+    delimiter = isNaN(name) ? '\'' : '';
+
+    path+= '[' + delimiter + name + delimiter + ']';
+
+  }
+
+  $('#pathcsr').html('<code id="pathcsr">$csr' + path + '</code>:');
+
+};
+
 
 $(document).ready(function() {
   //$('pre span[id]').hide();
   //$('#notes div[id]').hide();
 
-  $('.printr').treeview({
-    persist: "location",
-    collapsed: true,
-    unique: true
+  $('.printr').treeview({
+
+    persist: "location",
+
+    collapsed: true,
+
+    unique: true
+
   });
 
   buttons = $('button:visible');
@@ -135,7 +161,8 @@ $(document).ready(function() {
   manageSelects();
 
   $('.loadx509 .name,.hitarea').click(showPath);
-  $('.csrload .name,.hitarea').click(showPathCSR);
+  $('.csrload .name,.hitarea').click(showPathCSR);
+
 
   $('select').change(manageSelects);
   //$('select').change(highlight);
@@ -172,8 +199,10 @@ ul { margin-bottom: 0 }
       <select>
         <option value="reading">Read certificate</option>
         <option value="validate">Validate certificate</option>
+<!--
         <option value="selfsigned">Create self signed cert</option>
         <option value="casigned">Create CA signed cert</option>
+-->
         <option value="csr">Create CSR</option>
         <option value="readcsr">Read CSR</option>
         <option value="readcrl">Read CRL</option>
@@ -202,33 +231,6 @@ ul { margin-bottom: 0 }
         <option value="customdate">validateDate() (arbitrary date)</option>
       </select>
     </p>
-    <p class="selfsigned">
-      Create Distinguished Name from:<br />
-      <select>
-        <option value="selfsetdnprop">setDNProp() / removeDNProp()</option>
-        <option value="selfsetdn1">setDN (rdnSequence array)</option>
-        <option value="selfsetdn2">setDN (array)</option>
-        <option value="selfsetdn3">setDN() (string)</option>
-        <option value="selfloadcsr">loadCSR()</option>
-        <option value="selfloadx509">loadX509()</option>
-      </select>
-    </p>
-    <p class="selfsigned">
-      <button value="selfkeyid" class="buttonOn">Set Key Identifier</button>
-      <button value="selfkeyid" class="buttonOff disableCode">Disable Key Identifier</button>
-    </p>
-    <p class="selfsigned">
-      <button value="selfdomain" class="buttonOn">Set Domain Name</button>
-      <button value="selfdomain" class="buttonOff disableCode">Disable Domain Name</button>
-    </p>
-    <p class="selfsigned">
-      <button value="selfserial" class="buttonOn">Set Serial Number</button>
-      <button value="selfserial" class="buttonOff disableCode">Disable Serial Number</button>
-    </p>
-    <p class="selfsigned">
-      <button value="selfca" class="buttonOn">Make CA</button>
-      <button value="selfca" class="buttonOff disableCode">Don't make CA</button>
-    </p>
     <p class="readcsr">
       Method:<br />
       <select>
@@ -247,62 +249,6 @@ ul { margin-bottom: 0 }
     </p>
 
 
-    <div class="casigned">
-
-      <div style="border: 1px solid" class="casigned">
-      <p style="background: #ffa; border-bottom: 1px solid; padding: 2px; margin-bottom: 0" class="casigned"><b>Issuer</b></p>
-      <p>
-      Create Distinguished Name from:<br />
-      <select>
-        <option value="issuersetdnprop">setDNProp() / removeDNProp()</option>
-        <option value="issuersetdn1">setDN (rdnSequence array)</option>
-        <option value="issuersetdn2">setDN (array)</option>
-        <option value="issuersetdn3">setDN() (string)</option>
-        <option value="issuerloadcsr">loadCSR()</option>
-        <option value="issuerloadx509">loadX509()</option>
-      </select>
-      </p>
-      <p>
-        <button value="issuerserial" class="buttonOn">Set Serial Number</button>
-        <button value="issuerserial" class="buttonOff disableCode">Disable Serial Number</button>
-      </p>
-      <p style="margin-bottom: 0">
-        <button value="issuerkeyid" class="buttonOn">Set Key Identifier</button>
-        <button value="issuerkeyid" class="buttonOff disableCode">Disable Key Identifier</button>
-      </p>
-      </div>
-
-      <div style="border: 1px solid; margin: 20px 0 20px 0" class="casigned">
-      <p style="background: #ffa; border-bottom: 1px solid; padding: 2px; margin-bottom: 0" class="casigned"><b>Subject</b></p>
-      <p>
-      Create Distinguished Name from:<br />
-      <select>
-        <option value="subjsetdnprop">setDNProp() / removeDNProp()</option>
-        <option value="subjsetdn1">setDN (rdnSequence array)</option>
-        <option value="subjsetdn2">setDN (array)</option>
-        <option value="subjsetdn3">setDN() (string)</option>
-        <option value="subjloadcsr">loadCSR()</option>
-        <option value="subjloadx509">loadX509()</option>
-      </select>
-      </p>
-      <p>
-        <button value="subjca" class="buttonOn">Make CA</button>
-        <button value="subjca" class="buttonOff disableCode">Don't make CA</button>
-      </p>
-      <p>
-        <button value="subjserial" class="buttonOn">Set Serial Number</button>
-        <button value="subjserial" class="buttonOff disableCode">Disable Serial Number</button>
-      </p>
-      <p>
-        <button value="subjkeyid" class="buttonOn">Set Key Identifier</button>
-        <button value="subjkeyid" class="buttonOff disableCode">Disable Key Identifier</button>
-      </p>
-      <p style="margin-bottom: 0">
-        <button value="subjdomain" class="buttonOn">Set Domain Name</button>
-        <button value="subjdomain" class="buttonOff disableCode">Disable Domain Name</button>
-      </p>
-      </div>
-    </div>
   </div>
   <!-- end .grid_3 -->
   <div class="grid_9">
@@ -338,62 +284,7 @@ echo $x509->validateURL('https://www.google.com/#q=phpseclib') ?
 </span><span class="customdate">echo $x509->validateDate(strtotime('January 1, 2001')) ?
     'valid' :
     'invalid';
-</span></span><span class="selfsigned">include('File/X509.php');
-include('Crypt/RSA.php');
-
-// create private key / x.509 cert for stunnel / website
-$privKey = new Crypt_RSA();
-extract($privKey->createKey());
-$privKey->loadKey($privatekey);
-
-$pubKey = new Crypt_RSA();
-$pubKey->loadKey($publickey);
-$pubKey->setPublicKey();
-
-$subject = new File_X509();
-<span class="selfloadx509">// omit the setPublicKey() call and the cert will be re-signed with most extensions preserved
-$subject->loadX509('...'); // see <a href="phpseclib.txt">phpseclib.crt</a></span><span style="display: none">
-</span><span class="selfsetdnprop">$subject->setDNProp('id-at-organizationName', 'phpseclib demo cert');
-//$subject->removeDNProp('id-at-organizationName');</span><span style="display: none">
-</span><span class="selfsetdn1">$subject->setDN(
-    array(
-        'rdnSequence' => array(
-            array(
-                array(
-                    'type' => 'id-at-organizationName',
-                    'value'=> 'phpseclib demo cert'
-                )
-            )
-        )
-    )
-);
-</span><span class="selfsetdn2">$subject->setDN(array(
-    'O' => 'phpseclib demo cert'
-));</span><span class="selfsetdn3">$subject->setDN('/O=phpseclib demo cert');</span><span class="selfloadcsr">$subject->loadCSR('...'); // see <a href="csr.txt">csr.pem</a></span><span class="selfsetdnprop seltsetdn1 selfsetdn2 selfsetdn3 selfloadx509">
-$subject->setPublicKey($pubKey);</span><span class="selfloadcsr">
-// calling setPublicKey() is unnecessary when loadCSR() is called</span><span class="selfkeyid">
-$subject->setKeyIdentifier('...');</span><span class="selfdomain">
-$subject->setDomain('www.whatever.com');
-// multiple domain names: $subject->setDomain('www.google.com', 'www.yahoo.com');</span>
-
-$issuer = new File_X509();
-$issuer->setPrivateKey($privKey);
-$issuer->setDN($subject->getDN());<span class="selfkeyid">
-$issuer->setKeyIdentifier('...');</span>
-
-$x509 = new File_X509();
-//$x509->setStartDate('-1 month'); // default: now
-//$x509->setEndDate('+1 year'); // default: +1 year<span class="selfserial">
-$x509->setSerialNumber("\0");</span><span class="selfca">
-$x509->makeCA();</span>
-
-$result = $x509->sign($issuer, $subject);
-echo "the stunnel.pem contents are as follows:\r\n\r\n";
-echo $privKey->getPrivateKey();
-echo "\r\n";
-echo $x509->saveX509($result);
-echo "\r\n";
-</span><span class="csr">include('File/X509.php');
+</span></span><span class="csr">include('File/X509.php');
 include('Crypt/RSA.php');
 
 $privKey = new Crypt_RSA();
@@ -407,135 +298,6 @@ $x509->setDNProp('id-at-organizationName', 'phpseclib demo cert');
 $csr = $x509->signCSR();
 
 echo $x509->saveCSR($csr);
-</span><span class="casigned">include('File/X509.php');
-include('Crypt/RSA.php');
-
-// create private key for CA cert
-$CAPrivKey = new Crypt_RSA();
-extract($CAPrivKey->createKey());
-$CAPrivKey->loadKey($privatekey);
-
-$pubKey = new Crypt_RSA();
-$pubKey->loadKey($publickey);
-$pubKey->setPublicKey();
-
-echo "the private key for the CA cert (can be discarded):\r\n\r\n";
-echo $privatekey;
-echo "\r\n\r\n";
-
-
-
-
-
-
-
-// create a self-signed cert that'll serve as the CA
-$subject = new File_X509();
-<span class="issuerloadx509">// omit the setPublicKey() call and the cert will be resigned with most extensions preserved
-$subject->loadX509('...'); // see <a href="phpseclib.txt">phpseclib.crt</a>
-</span><span class="issuersetdnprop">$subject->setDNProp('id-at-organizationName', 'phpseclib demo CA');
-//$subject->removeDNProp('id-at-organizationName');
-</span><span class="issuersetdn1">$subject->setDN(
-    array(
-        'rdnSequence' => array(
-            array(
-                array(
-                    'type' => 'id-at-organizationName',
-                    'value'=> 'phpseclib demo CA'
-                )
-            )
-        )
-    )
-);
-</span><span class="issuersetdn2">$subject->setDN(array(
-    'O' => 'phpseclib demo CA'
-));</span><span class="issuersetdn3">
-$subject->setDN('/O=phpseclib demo CA');
-</span><span class="issuerloadcsr">
-$subject->loadCSR('...'); // see <a href="csr.txt">csr.pem</a>
-</span>$subject->setPublicKey($pubKey);
-
-$issuer = new File_X509();
-$issuer->setPrivateKey($CAPrivKey);
-$issuer->setDN($CASubject = $subject->getDN());<span class="issuerkeyid">
-$subject->setKeyIdentifier('...');
-$issuer->setKeyIdentifier('...');</span>
-
-$x509 = new File_X509();
-$x509->setStartDate('-1 month');
-$x509->setEndDate('+1 year');<span class="issuerserial">
-$x509->setSerialNumber("\0");</span>
-$x509->makeCA();
-
-$result = $x509->sign($issuer, $subject);
-echo "the CA cert to be imported into the browser is as follows:\r\n\r\n";
-echo $x509->saveX509($result);
-echo "\r\n\r\n";
-
-
-
-
-
-
-
-
-// create private key / x.509 cert for stunnel / website
-$privKey = new Crypt_RSA();
-extract($privKey->createKey());
-$privKey->loadKey($privatekey);
-
-$pubKey = new Crypt_RSA();
-$pubKey->loadKey($publickey);
-$pubKey->setPublicKey();
-
-$subject = new File_X509();
-<span class="subjloadx509">// omit the setPublicKey() call and the cert will be re-signed with most extensions preserved
-$subject->loadX509('...'); // see <a href="phpseclib.txt">phpseclib.crt</a>
-</span><span class="subjsetdnprop">$subject->setDNProp('id-at-organizationName', 'phpseclib demo cert');
-//$subject->removeDNProp('id-at-organizationName');
-</span><span class="subjsetdn1">$subject->setDN(
-    array(
-        'rdnSequence' => array(
-            array(
-                array(
-                    'type' => 'id-at-organizationName',
-                    'value'=> 'phpseclib demo cert'
-                )
-            )
-        )
-    )
-);
-</span><span class="subjsetdn2">$subject->setDN(array(
-    'O' => 'phpseclib demo cert'
-));</span><span class="subjsetdn3">
-$subject->setDN('/O=phpseclib demo cert');
-</span><span class="subjloadcsr">
-$subject->loadCSR('...'); // see <a href="csr.txt">csr.pem</a>
-// calling setPublicKey() is unnecessary when loadCSR() is called
-</span>
-$subject->setPublicKey($pubKey);<span class="subjdomain">
-$subject->setDomain('www.whatever.com');
-// multiple domain names: $subject->setDomain('www.google.com', 'www.yahoo.com');</span>
-
-$issuer = new File_X509();
-$issuer->setPrivateKey($CAPrivKey);
-$issuer->setDN($CASubject);
-
-<span class="issuerkeyid">$issuer->setKeyIdentifier('...');
-</span><span class="subjkeyid">$subject->setKeyIdentifier('...');
-</span><span class="issuerkeyid">
-</span>$x509 = new File_X509();
-$x509->setStartDate('-1 month');
-$x509->setEndDate('+1 year');<span class="subjserial">
-$x509->setSerialNumber(chr(1));</span><span class="subjca">
-$x509->makeCA();</span>
-
-$result = $x509->sign($issuer, $subject);
-echo "the stunnel.pem contents are as follows:\r\n\r\n";
-echo $privKey->getPrivateKey();
-echo "\r\n";
-echo $x509->saveX509($result);
-echo "\r\n";
 </span><span class="readcsr">include('File/X509.php');
 
 $x509 = new File_X509();
@@ -562,7 +324,8 @@ print_r($crl);
     <h2>Output:</h2>
       <div class="loadx509">
         <p style="font-size: 10px; color: gray">(see <a href="decoder.php" style="color: lightblue">phpseclib: X.509: Decoder</a> to try phpseclib's X.509 decoder with your own certificates)</p>
-<code id="path">$cert</code>:
+<code id="path">$cert</code>:
+
 <ul class="printr"><li><span class="name">tbsCertificate</span><ul><li><span class="name">version</span><ul><li>v3</li></ul></li><li><span class="name">serialNumber</span><ul><li>105827261859531100510423749949966875981</li></ul></li><li><span class="name">signature</span><ul><li><span class="name">algorithm</span><ul><li>sha1WithRSAEncryption</li></ul></li><li><span class="name">parameters</span><ul><li><span class="name">null</span><ul><li></li></ul></li></ul></li></ul></li><li><span class="name">issuer</span><ul><li><span class="name">rdnSequence</span><ul><li><span class="name">0</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-countryName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">printableString</span><ul><li>ZA</li></ul></li></ul></li></ul></li></ul></li><li><span class="name">1</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-organizationName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">printableString</span><ul><li>Thawte Consulting (Pty) Ltd.</li></ul></li></ul></li></ul></li></ul></li><li><span class="name">2</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-commonName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">printableString</span><ul><li>Thawte SGC CA</li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li><span class="name">validity</span><ul><li><span class="name">notBefore</span><ul><li><span class="name">utcTime</span><ul><li>Wed, 26 Oct 11 00:00:00 +0000</li></ul></li></ul></li><li><span class="name">notAfter</span><ul><li><span class="name">utcTime</span><ul><li>Mon, 30 Sep 13 23:59:59 +0000</li></ul></li></ul></li></ul></li><li><span class="name">subject</span><ul><li><span class="name">rdnSequence</span><ul><li><span class="name">0</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-countryName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">printableString</span><ul><li>US</li></ul></li></ul></li></ul></li></ul></li><li><span class="name">1</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-stateOrProvinceName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">printableString</span><ul><li>California</li></ul></li></ul></li></ul></li></ul></li><li><span class="name">2</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-localityName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">teletexString</span><ul><li>Mountain View</li></ul></li></ul></li></ul></li></ul></li><li><span class="name">3</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-organizationName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">teletexString</span><ul><li>Google Inc</li></ul></li></ul></li></ul></li></ul></li><li><span class="name">4</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-commonName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">teletexString</span><ul><li>www.google.com</li></ul></li></ul></li></ul></li></ul></li></ul></li></ul></li><li><span class="name">subjectPublicKeyInfo</span><ul><li><span class="name">algorithm</span><ul><li><span class="name">algorithm</span><ul><li>rsaEncryption</li></ul></li><li><span class="name">parameters</span><ul><li><span class="name">null</span><ul><li></li></ul></li></ul></li></ul></li><li><span class="name">subjectPublicKey</span><ul><li><pre>-----BEGIN PUBLIC KEY-----
 MIGJAoGBAN63JkOmmYXNOKcVCbnPD8nDVYyI7oyNKCckSypeoNgW+mEYS89tYIDTNUAycsCPEtjl
 To+5svbZFV5ahjGjuoaqa8jZcYzMzScTHp1CXTj2p6zv+mLzGIHUJEZ/AXd8xiqJFJm7mDkdqBn7
@@ -573,7 +336,8 @@ OQBEfRuUangtaa3Aeiz60NogEpjTAgMBAAE=
 <code>$prop</code>:<ul class="printr"><li><span class="name">0</span><ul><li>www.google.com</li></ul></li></ul>
     </div>
     <div class="getdn">
-<code>$dn</code>:<ul class="printr"><li><span class="name">rdnSequence</span><ul><li><span class="name">0</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-countryName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">printableString</span><ul><li>US</li></ul></li></ul></li></ul></li></ul></li><li><span class="name">1</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-stateOrProvinceName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">printableString</span><ul><li>California</li></ul></li></ul></li></ul></li></ul></li><li><span class="name">2</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-localityName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">teletexString</span><ul><li>Mountain View</li></ul></li></ul></li></ul></li></ul></li><li><span class="name">3</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-organizationName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">teletexString</span><ul><li>Google Inc</li></ul></li></ul></li></ul></li></ul></li><li><span class="name">4</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-commonName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">teletexString</span><ul><li>www.google.com</li></ul></li></ul></li></ul></li></ul></li></ul></li></ul>
+<code>$dn</code>:
+<ul class="printr"><li><span class="name">rdnSequence</span><ul><li><span class="name">0</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-countryName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">printableString</span><ul><li>US</li></ul></li></ul></li></ul></li></ul></li><li><span class="name">1</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-stateOrProvinceName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">printableString</span><ul><li>California</li></ul></li></ul></li></ul></li></ul></li><li><span class="name">2</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-localityName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">teletexString</span><ul><li>Mountain View</li></ul></li></ul></li></ul></li></ul></li><li><span class="name">3</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-organizationName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">teletexString</span><ul><li>Google Inc</li></ul></li></ul></li></ul></li></ul></li><li><span class="name">4</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-commonName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">teletexString</span><ul><li>www.google.com</li></ul></li></ul></li></ul></li></ul></li></ul></li></ul>
     </div>
     <div class="getdnstr">
         C=US, ST=California, L=Mountain View, O=Google Inc, CN=www.google.com
@@ -589,10 +353,12 @@ OQBEfRuUangtaa3Aeiz60NogEpjTAgMBAAE=
 -----END PUBLIC KEY-----</pre>
     </div>
     <div class="getissuerdnprop">
-      <code>$prop</code>:<ul class="printr"><li><span class="name">0</span><ul><li><pre>Thawte SGC CA</pre></li></ul></li></ul>
+      <code>$prop</code>:
+<ul class="printr"><li><span class="name">0</span><ul><li><pre>Thawte SGC CA</pre></li></ul></li></ul>
     </div>
     <div class="getissuerdn">
-      <code>$dn</code>:<ul class="printr"><li><span class="name">rdnSequence</span><ul><li><span class="name">0</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-countryName</li></ul></li><li><span class="name">value</span><ul><li>ZA</li></ul></li></ul></li></ul></li><li><span class="name">1</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-organizationName</li></ul></li><li><span class="name">value</span><ul><li>Thawte Consulting (Pty) Ltd.</li></ul></li></ul></li></ul></li><li><span class="name">2</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-commonName</li></ul></li><li><span class="name">value</span><ul><li>Thawte SGC CA</li></ul></li></ul></li></ul></li></ul></li></ul>
+      <code>$dn</code>:
+<ul class="printr"><li><span class="name">rdnSequence</span><ul><li><span class="name">0</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-countryName</li></ul></li><li><span class="name">value</span><ul><li>ZA</li></ul></li></ul></li></ul></li><li><span class="name">1</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-organizationName</li></ul></li><li><span class="name">value</span><ul><li>Thawte Consulting (Pty) Ltd.</li></ul></li></ul></li></ul></li><li><span class="name">2</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-commonName</li></ul></li><li><span class="name">value</span><ul><li>Thawte SGC CA</li></ul></li></ul></li></ul></li></ul></li></ul>
     </div>
     <div class="getdnprop getissuerdnprop">
       <p><h2>Notes:</h2>
@@ -600,35 +366,6 @@ OQBEfRuUangtaa3Aeiz60NogEpjTAgMBAAE=
       <p>Valid property names are enumerated upon at <a href="dnprops.html">Distinguished Property Names</a></p>.
     </div>
   </div>
-  </div>
-  <div class="selfsigned">
-    <h2>Output:</h2>
-    <pre>the stunnel.pem contents are as follows:
-
------BEGIN RSA PRIVATE KEY-----
-MIICWwIBAAKBgQDR1VHopvujQwg7aZe6uvACg5ZLKYD1heP9hXlmJNGKkTvmV//uQ5PlWPTp99AW
-FgU9QRM5cKkxw/0hC8+JTyc1CoqtdVAI/8l826+muJfiUaUALkAHSrw8537Xj2agJQRmaVNhUztA
-G3y6yweav3dYLYJG3MDlcD4l2U9t6QDBGQIDAQABAoGAaMy+KBCeRaBJEENgwKZ1EQxfmBKWkgnZ
-INn1FAr3jNmUrSrubDXcPAP97o0SpLVC0KEb1Ohr2KsmVcbsVIvv7CoK5h+fNTOZpm51Wev5VlHA
-OO/FQtq4kTL9JpG/5vVbk5JFA1r7kC/W01Pwp8zpf8teM3NWKuciLUXy7RjCirECQQD0gmM8jWbS
-wUmSYLEUOaqZnpzpqm+dTLov8ubf0Dsla6OgnCg5N0noVMPm5oFSJBhQOjmQnrXmXLJu8Soo0VUv
-AkEA27HBjUe99ztdnP7uX6xhHX3XfUkk7TKZvulP1IvYnZggv3Nyyj+wqMsGavcOHwKfxoWo/Nim
-YLO1vMUKkLrMNwJARFSn/QUbRizELccd1aQj/Bhqi5aY6KHHqpy8TrH3xYZmTP029H5yBh6iPMYQ
-P+9caBdNfRANj5o6N2zoNk4B+wJAcnD/TTQw/ce79RtLWyU1laJHDWl7xd/U/QEWZ7bNiRKFBJYE
-Ftzkjpjr5+54OakpR8W6iLPmv3r90a6m2UulMwJAINcNFkJHojkf+Vc/e2U7ll19UIh+TDI0UrYT
-ZxJA2S/nhIz+A6cNTX+E+yHlTbJr5xu6jxexQ7HfU1hTWYNmUg==
------END RSA PRIVATE KEY-----
------BEGIN CERTIFICATE-----
-MIIB1TCCAUCgAwIBAgIAMAsGCSqGSIb3DQEBBTAeMRwwGgYDVQQKDBNwaHBzZWNsaWIgZGVtbyBj
-ZXJ0MCIYDzIwMTIwODA3MDUxNTU5WhgPMjAxMzA4MDcwNTE1NTlaMB4xHDAaBgNVBAoME3BocHNl
-Y2xpYiBkZW1vIGNlcnQwgZ0wCwYJKoZIhvcNAQEBA4GNADCBiQKBgQDR1VHopvujQwg7aZe6uvAC
-g5ZLKYD1heP9hXlmJNGKkTvmV//uQ5PlWPTp99AWFgU9QRM5cKkxw/0hC8+JTyc1CoqtdVAI/8l8
-26+muJfiUaUALkAHSrw8537Xj2agJQRmaVNhUztAG3y6yweav3dYLYJG3MDlcD4l2U9t6QDBGQID
-AQABoyYwJDARBgNVHSMBAQAEBzAFgAMuLi4wDwYDVR0OAQEABAUEAy4uLjALBgkqhkiG9w0BAQUD
-gYEAjj/JuN/zrogYs7n51/aILDNfSk9AZmwSgK3Q0oo1VmO2to+8/X7Zxul0Xaz9NtejdHuodKze
-wzh5GB5B7rAxwT2gEGrVys4vNBI+FcDKBWp8uGr3V94tkXlFFG6G5Ab2Q7TiRcv70b810+hbcMB8
-8KfbVnlPPbEa2o9lWyd6v9Q=
------END CERTIFICATE-----</pre>
   </div>
   <div class="csr">
     <h2>Output:</h2>
@@ -642,65 +379,6 @@ WsvdZzm+yJ5UcmzdJ/Jq9X8o1KTsMELN0SQwiNk502a1wbiXotF4OgCsjSdno96PCV9VSF4w69HM
 1eXfvg==
 -----END CERTIFICATE REQUEST-----</pre>
   </div>
-  <div class="casigned">
-    <h2>Output:</h2>
-    <pre>the private key for the CA cert (can be discarded):
-
------BEGIN RSA PRIVATE KEY-----
-MIICXAIBAAKBgQCeSAGfM4nHdIaBwThHYGW3MABTvrSMrawnGN/Mx5ttyLQF4YcUJFSpGAJ8y2hV
-iak3irbLtc6nlpJFOHtMB4VsuG7S+MySYKBm5l7eApfWynHMLKVml3URXCMVMXju4SxiI+D10nNO
-aq+eSEIFlPOY+7LgSdIAka6/9+z2hgoITQIDAQABAoGADS1RdT+FKOW6jPLZDJgp36ZPYKlvvoZ2
-3opjl1jGx8z9r7+mzzZ3Fdy52EnW1cgwHj+eGDd6jNksNDcPjLTTlqfwoKMZhf1gpYBKA5PtnqFU
-rxM5eW3SzLWkPOZoS/i8fxze0uvoh0zcm6u1nictcjkj0Hqql4hbTrDRENxTfgECQQC9qYFWsH8q
-r/ztbl6WBxW1NT9JgthvteiINpAjeN9tmuP9BgTGPk4j3MhTVsPp5ogzdn3MLch2YJ9cJuEeHon1
-AkEA1aSiiZwGH9tCI8EFJrDqbCqDgeOmlkgMp5YQ8TqBg6/nkM4wWz9cXSmFPO3L9BQhvXE8RlGJ
-DChCksbBcjnV+QJBALXZ7w+lz2iosYUejEahqGjFE1dyw//olXr1hiLc5K39E5kpyi4i012Ddfii
-etqsle9yL5A0Xb9TSblb9gGhGnkCQDyj8Gay3KIqMAnJ/dZPnRp6rr0titlZNg5TcBeojZ59TXMy
-s1MTFvpykJkMvjlXhYQqIfurpQTIYK0csUfk1rECQBPVqVAG45VBn6yV1cDaqvg/0aQ6yZc7nQTr
-7aLuUCTaf/xP4wSWiQpGiRFdTLt3pkkI3XdngV6j8RCcpgED6qU=
------END RSA PRIVATE KEY-----
-
-the CA cert to be imported into the browser is as follows:
-
------BEGIN CERTIFICATE-----
-MIIBzzCCATqgAwIBAgIBATALBgkqhkiG9w0BAQUwHDEaMBgGA1UECgwRcGhwc2VjbGliIGRlbW8g
-Q0EwIhgPMjAxMjA1MDQwMzQxNDhaGA8yMDEzMDYwNDAzNDE0OFowHDEaMBgGA1UECgwRcGhwc2Vj
-bGliIGRlbW8gQ0EwgZ0wCwYJKoZIhvcNAQEBA4GNADCBiQKBgQCeSAGfM4nHdIaBwThHYGW3MABT
-vrSMrawnGN/Mx5ttyLQF4YcUJFSpGAJ8y2hViak3irbLtc6nlpJFOHtMB4VsuG7S+MySYKBm5l7e
-ApfWynHMLKVml3URXCMVMXju4SxiI+D10nNOaq+eSEIFlPOY+7LgSdIAka6/9+z2hgoITQIDAQAB
-oyMwITAOBgNVHQ8BAQAEBAMCAQYwDwYDVR0TAQH/BAUwAwEB/zALBgkqhkiG9w0BAQUDgYEAc31s
-EL3tWfwFIHYK+96wzvAS7F/4FCMcZOdrW9LZ1IniXUSf601MIOVy0pAc17Xf6QjlVOhziA3cLMi3
-3CWwEDgnhXU8s6YRAa6WD8eeHwmJKE3vIU0+klscIdOO+14BrC+mRUoPaZ1hmixMvrK/pVhXAkef
-XTSk5kq9f2Bfm+M=
------END CERTIFICATE-----
-
-the stunnel.pem contents are as follows:
-
------BEGIN RSA PRIVATE KEY-----
-MIICWwIBAAKBgQCBsisUty8OFR2gz3sweCoIfyzFWcvaTA55noaI6LXZMebI3iB7u5dJjsbI2yRh
-IgDaHBDVyu6R9W/NA9QFkKGoHmnnvHsEo8Jc9Ca3nVIfjVBUj+kGMnadUtHoxZaRXLdwV9nX+LCa
-rfEz9VDS21BOJJ6OzUmvvkM0AUkGQlmcnwIDAQABAoGAN2+c63dbNRVAe0aEHNUX/lbBn79Am5fL
-zh882RNC+0nRoAUV9F1cDpRpElxdAemjXJcHeSKK87dpaMOcoh5Ogi2rXXgB++igxNdx19+z4Ku1
-A1JG0O08Z/n7DQQb5g+V4Z9oIorpfufh7lIj4HgDLoznCj2lWq6SpzWobmtYnC0CQQDJDjYDRJRR
-ujepI6yz+9ckD6Jr2AwjSrdQKUPMzeexlTQgDqW/Jec5k3dS1zcvM+FctzNfnp9LyK/CABFYLb6r
-AkEApSOpwpzAsL1rDUqdV3iBEPPBmLLeTef4+pyggGGYFeu+TR3hNrHZPphXi6F/c+kmt7kDWgq1
-K3QZPQkadXgJ3QJAF5Bb0jw6ae26Uk+FET8l8usGLT+QBJ7gJzv+30UOr6h+CHfPAz0tAXmAFax1
-okmhUx2BnuZXYyltN/6MCdqqqwJAVqU5owTADXu1OYoWuBhgD9b1kvr2rQWzmzqm8/VA6O+CL9An
-pJz4EWG5PWgFCXoheHA4k/veRuhpfZ7TJSNQeQJAFVH1RQYAYOTVyyXYbUJnXEbVnEYeTVUKLJmx
-VSmAwFxx6s/EHVmiDH/WPgV4NkZt7gW7epkqoz3gfTDWYfx8Qg==
------END RSA PRIVATE KEY-----
------BEGIN CERTIFICATE-----
-MIIBxTCCATCgAwIBAgIBATALBgkqhkiG9w0BAQUwHDEaMBgGA1UECgwRcGhwc2VjbGliIGRlbW8g
-Q0EwIhgPMjAxMjA1MDQwMzQxNDhaGA8yMDEzMDYwNDAzNDE0OFowNzEcMBoGA1UECgwTcGhwc2Vj
-bGliIGRlbW8gY2VydDEXMBUGA1UEAwwOd3d3Lmdvb2dsZS5jb20wgZ0wCwYJKoZIhvcNAQEBA4GN
-ADCBiQKBgQCBsisUty8OFR2gz3sweCoIfyzFWcvaTA55noaI6LXZMebI3iB7u5dJjsbI2yRhIgDa
-HBDVyu6R9W/NA9QFkKGoHmnnvHsEo8Jc9Ca3nVIfjVBUj+kGMnadUtHoxZaRXLdwV9nX+LCarfEz
-9VDS21BOJJ6OzUmvvkM0AUkGQlmcnwIDAQABMAsGCSqGSIb3DQEBBQOBgQBzWpz47IfG6vWf5WlN
-R+iTEBwr8kKJOop38otzxwGBvYk7YBHI2DZW0tivpceN7JjkhpkBUNd+vg/qQSp0UVp38MrVR0cw
-ZP0iAJmLHTq/Jpymrqpz3Cn0bvKFvmYvzHgy9bjS5dy8AuFZY16qieNJovrV2c4dnCh4xo2c+MbK
-Ig==
------END CERTIFICATE-----</pre>
-  </div>
   <div class="readcsr">
   <h2>Output:</h2>
   <div class="csrload">
@@ -712,7 +390,9 @@ AXtEuSje+2MWLxShinzDVymVsdf/AgMBAAE=
 -----END PUBLIC KEY-----</pre></li></ul></li></ul></li></ul></li><li><span class="name">signatureAlgorithm</span><ul><li><span class="name">algorithm</span><ul><li>sha1WithRSAEncryption</li></ul></li></ul></li><li><span class="name">signature</span><ul><li><div style="overflow: auto; word-wrap: break-word">ACEVzXM3m2ub2cu+AHQ2yJqs73xsH/BPxW+S2YXpvzTODypG5pO8haK5wR8nNmWs2puiDrz0zcbrRrJ4ZiwbFMpRr7E9AaiSMTd291qjOpABqxLonJ6p0q2j1y633XlavuTAi63UmsFszc27BFhaX04XgYST/2+DDyK816fNBcio</div></li></ul></li></ul>
   </div>
   <div class="csrgetdnprop">
-<code>$prop</code>:<ul class="printr"><li><span class="name">0</span><ul><li><pre>phpseclib demo cert</pre></li></ul></li></ul>
+<code>$prop</code>:
+<ul class="printr"><li><span class="name">0</span><ul><li><pre>phpseclib demo cert</pre></li></ul></li></ul>
+
   </div>
   <div class="csrgetdn">
   <code>$prop:</code>
