@@ -263,7 +263,7 @@ print_r($cert);</span><span class="getdnprop">
 print_r($x509->getDNProp('CN'));</span><span class="getdn">
 print_r($x509->getDN());</span><span class="getissuerdnprop">
 print_r($x509->getIssuerDNProp('CN'));</span><span class="getpublickey">
-echo $x509->getPublicKey()->getPublicKey();</span><span class="getdnstr">
+echo $x509->getPublicKey();</span><span class="getdnstr">
 echo $x509->getDN(true);</span><span class="getissuerdnstr">
 echo $x509->getIssuerDN(true);</span><span class="getissuerdn">
 print_r($x509->getIssuerDN());</span>
@@ -347,9 +347,10 @@ OQBEfRuUangtaa3Aeiz60NogEpjTAgMBAAE=
     </div>
     <div class="getpublickey">
         <pre>-----BEGIN PUBLIC KEY-----
-MIGJAoGBAN63JkOmmYXNOKcVCbnPD8nDVYyI7oyNKCckSypeoNgW+mEYS89tYIDTNUAycsCPEtjl
-To+5svbZFV5ahjGjuoaqa8jZcYzMzScTHp1CXTj2p6zv+mLzGIHUJEZ/AXd8xiqJFJm7mDkdqBn7
-OQBEfRuUangtaa3Aeiz60NogEpjTAgMBAAE=
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDetyZDppmFzTinFQm5zw/Jw1WM
+iO6MjSgnJEsqXqDYFvphGEvPbWCA0zVAMnLAjxLY5U6PubL22RVeWoYxo7qGqmvI
+2XGMzM0nEx6dQl049qes7/pi8xiB1CRGfwF3fMYqiRSZu5g5HagZ+zkARH0blGp4
+LWmtwHos+tDaIBKY0wIDAQAB
 -----END PUBLIC KEY-----</pre>
     </div>
     <div class="getissuerdnprop">
