@@ -308,7 +308,7 @@ print_r($csr);
 print_r($x509->getDNProp('O'));</span><span class="csrgetdn">
 print_r($x509->getDN());</span><span class="csrgetdnstr">
 echo $x509->getDN(true);</span><span class="csrgetpublickey">
-echo $x509->getPublicKey()->getPublicKey();</span>
+echo $x509->getPublicKey();</span>
 </span><span class="readcrl">include('File/X509.php');
 
 $x509 = new File_X509();
@@ -393,20 +393,20 @@ AXtEuSje+2MWLxShinzDVymVsdf/AgMBAAE=
   <div class="csrgetdnprop">
 <code>$prop</code>:
 <ul class="printr"><li><span class="name">0</span><ul><li><pre>phpseclib demo cert</pre></li></ul></li></ul>
-
   </div>
   <div class="csrgetdn">
   <code>$prop:</code>
-<ul class="printr"><ul><li><span class="name">rdnSequence</span><ul><li><span class="name">0</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-organizationName</li></ul></li><li><span class="name">value</span><ul><li>phpseclib demo cert</li></ul></li></ul></li></ul></li></ul></li></ul></li>
+<ul class="printr"><li><span class="name">rdnSequence</span><ul><li><span class="name">0</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-organizationName</li></ul></li><li><span class="name">value</span><ul><li><span class="name">utf8String</span><ul><li>phpseclib demo cert</li></ul></li></ul></li></ul></li></ul></li></ul></li></ul>
   </div>
   <div class="csrgetdnstr">
   O=phpseclib demo cert
   </div>
   <div class="csrgetpublickey">
 <pre>-----BEGIN PUBLIC KEY-----
-MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQClAGXDCg5G9JmpSakvmmgAMtaxEHHnm0uzdirx
-l9uRKjycd61s+c66Qg/82XGfef8wY6+xdBr00uKwtDpSbIvIlddVbwWfqkJAimfKCM1uhyCzq6Pj
-tQRcPAzCV8so9nzQzuGYymFlnhRv8gF7RLko3vtjFi8UoYp8w1cplbHX/wIDAQAB
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQClAGXDCg5G9JmpSakvmmgAMtax
+EHHnm0uzdirxl9uRKjycd61s+c66Qg/82XGfef8wY6+xdBr00uKwtDpSbIvIlddV
+bwWfqkJAimfKCM1uhyCzq6PjtQRcPAzCV8so9nzQzuGYymFlnhRv8gF7RLko3vtj
+Fi8UoYp8w1cplbHX/wIDAQAB
 -----END PUBLIC KEY-----</pre>
   </div>
   </div>
