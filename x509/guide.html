@@ -154,9 +154,11 @@ $subject->setPublicKey($pubKey);</pre>
 
     <h2 id="identifiers">Key Identifiers</h2>
 
-    <p>Sometimes an <code>$issuer</code> or a <code>$subject</code> will have multiple private keys. To disambiguate between them key identifiers are used. An example follows:</p>
+    <p>Sometimes an <code>$issuer</code> or a <code>$subject</code> will have multiple private keys. To disambiguate between them key identifiers are used. Quoting <a href="http://tools.ietf.org/html/rfc5280#section-4.2.1.1">RFC5280 &sect; 4.2.1.1</a>, "the value of the keyIdentifier field SHOULD be derived from the public key used to verify the certificate's signature or a method that generates unique values". An example follows:</p>
 
-    <pre class="prettyprint">setKeyIdentifier / computeKeyIdentifier</pre>
+    <pre class="prettyprint">$issuer->setKeyIdentifier($issuer->computeKeyIdentifier($pubKey));</pre>
+
+    <p>Note that computeKeyIdentifier is already called by <code>saveX509()</code> unless you've specifically over-written the key identifier.</p>
 
     <h2 id="dns">Distinguished Names</h2>
 
@@ -184,7 +186,9 @@ $subject->setDN('/O=phpseclib demo cert');</pre>
 
     <pre class="prettyprint">$subject->removeDNProp('id-at-organizationName');</pre>
 
-    <p>DN properties can be set via <code>$x509->loadCSR('...')</code> and <code>$subject->loadX509('...')</code> as well. </p>
+    <p>DN properties can be set via <code>$subject->loadCSR('...')</code> and <code>$subject->loadX509('...')</code> as well. </p>
+
+    <p>In the case of <code>$subject->setDN()</code>.. the value will be assumed to be utf8String unless you explicitely tell phpseclib to set it to another type by doing something like <code>'value'=> array('ia5String' => 'phpseclib demo cert')</code>.
 
     <p>See also: <a href="dnprops.html">List of DN property names</a></p>
 
@@ -206,6 +210,8 @@ $x509->setEndDate(...);</pre>
     <p><code>$subject->setDomain()</code> isn't considered a transactional property because, in theory, the issuing certificate could have at least one domain too since that's based on a particular distinguished name property. </p>
 
     <p>The start time is, by default, when the cert is created. The current time is converted to UTC time and the fact that it's UTC time is denoted in the cert. Other X.509 decoders (eg. browsers or email clients or whatever) should decode this to their timezone so there's no need to set it to do <code>$x509->setStartDate('-1 day')</code> or anything like that.</p>
+
+    <p>The end date, by default, is one year from the current time.</p>
 
     <p><code>setStartDate() / setEndDate()</code> are passed through <a href="http://php.net/strtotime">strtotime()</a> internally. If you want the cert to last forever pass <code>'lifetime'</code> to it.</p>
 
