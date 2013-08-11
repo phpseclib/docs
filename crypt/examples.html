@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8" />
 <meta name="google-site-verification" content="DHz4kg_uhBzFTmMZSrMTtF9lqPofgrUucAmZrsakViI" />
-<meta name="keywords" content="SSH,SFTP,RSA,PHP,AES,Rijndael,3DES,RC4,SSH2,SSH1,X.509,X509" />
-<meta name="description" content="phpseclib contains pure-PHP implementations of AES, Rijndael, DES, 3DES and RC4, supporting ECB, CBC, OFB, CFB and CTR modes of operation" />
+<meta name="keywords" content="SSH,SFTP,RSA,PHP,AES,Rijndael,3DES,RC4,Blowfish,Twofish,RC2,SSH2,SSH1,X.509,X509" />
+<meta name="description" content="phpseclib contains pure-PHP implementations of AES, Rijndael, Twofish, Blowfish, DES, 3DES, RC4 and RC2, supporting ECB, CBC, OFB, CFB and CTR modes of operation." />
 <script type="text/javascript">
 
   var _gaq = _gaq || [];
@@ -18,7 +18,7 @@
   })();
 
 </script>
-<title>phpseclib: RSA Examples and Notes</title>
+<title>phpseclib: Symmetric Key Encryption Examples and Notes</title>
 <link rel="stylesheet" href="../css/reset.css" />
 <link rel="stylesheet" href="../css/text.css" />
 <link rel="stylesheet" href="../css/960.css" />
@@ -124,17 +124,33 @@ thead td { font-weight: bold }</style></head>
   </div>
   <div class="clear"></div>
   <div class="grid_3">
-    <p>
-      Cipher:<br />
-      <select>
-        <option value="aes">AES</option>
-        <option value="rijndael">Rijndael</option>
-        <option value="rc4">RC4</option>
-        <option value="3des">3DES</option>
-        <option value="des">DES</option>
-      </select>
-    </p>
-    <p class="des 3des rijndael aes">
+    <p>
+
+      Cipher:<br />
+
+      <select>
+
+        <option value="aes">AES</option>
+
+        <option value="rijndael">Rijndael</option>
+
+        <option value="twofish">Twofish</option>
+
+        <option value="blowfish">Blowfish</option>
+
+        <option value="rc4">RC4</option>
+
+        <option value="rc2">RC2</option>
+
+        <option value="3des">3DES</option>
+
+        <option value="des">DES</option>
+
+      </select>
+
+    </p>
+
+    <p class="des 3des rijndael aes twofish blowfish rc2">
       Encryption Mode:<br />
       <select>
         <option value="ecb">ECB</option>
@@ -155,7 +171,7 @@ thead td { font-weight: bold }</style></head>
       </div>
       </div>
     </p>
-    <p class="aes">
+    <p class="aes twofish">
       Key Length:<br />
       <select>
         <option value="k128">128-bit</option>
@@ -207,9 +223,9 @@ thead td { font-weight: bold }</style></head>
   <div class="grid_9">
     <div>
 <pre class="prettyprint" style="margin-bottom: 0">&lt;?php
-include('Crypt/<span class="aes">AES</span><span class="rijndael">Rijndael</span><span class="des">DES</span><span class="3des">TripleDES</span><span class="rc4">RC4</span>.php');
+include('Crypt/<span class="aes">AES</span><span class="rijndael">Rijndael</span><span class="des">DES</span><span class="3des">TripleDES</span><span class="rc4">RC4</span><span class="twofish">Twofish</span><span class="blowfish">Blowfish</span><span class="rc2">RC2</span>.php');
 
-$cipher = new Crypt_<span class="aes">AES</span><span class="rijndael">Rijndael</span><span class="des">DES</span><span class="3des">TripleDES</span><span class="rc4">RC4</span>(<span style="display: none">
+$cipher = new Crypt_<span class="aes">AES</span><span class="rijndael">Rijndael</span><span class="des">DES</span><span class="3des">TripleDES</span><span class="rc4">RC4</span><span class="twofish">Twofish</span><span class="blowfish">Blowfish</span><span class="rc2">RC2</span>(<span style="display: none">
 </span><span class="ecb ctr ofb cfb"><span class="aes rijndael des 3des">CRYPT_<span class="des 3des">DES</span><span class="aes">AES</span><span class="rijndael">RIJNDAEL</span>_MODE_<span style="display: none">
 </span><span class="ecb">ECB</span><span class="cfb">CFB</span><span class="ofb">OFB</span><span class="ctr">CTR</span></span></span><span class="cbc"><span class="3des"><span class="inner">CRYPT_DES_MODE_3CBC</span></span></span>);<span style="display: none">
 </span><span class="cbc"><span class="des"> // could use CRYPT_DES_MODE_CBC</span><span class="3des"><span class="outer"> // could use CRYPT_DES_MODE_CBC or CRYPT_DES_MODE_CBC3</span></span><span class="rijndael"> // could use CRYPT_RIJNDAEL_MODE_CBC</span><span class="aes"> // could use CRYPT_AES_MODE_CBC</span></span>
@@ -221,7 +237,10 @@ $cipher = new Crypt_<span class="aes">AES</span><span class="rijndael">Rijndael<
 // longer than the longest key and it's truncated
 <span class="rijndael">//$cipher->setKeyLength(<span class="kr128">128</span><span class="kr160">160</span><span class="kr192">192</span><span class="kr224">224</span><span class="kr256">256</span>);
 </span><span class="aes">//$cipher->setKeyLength(<span class="k128">128</span><span class="k192">192</span><span class="k256">256</span>);
-</span></span>$cipher->setKey('abcdefgh<span class="3des rc4">ijklmnopqrstuvwx</span><span class="aes rijndael"><span class="k128 k192 k256">ijklmnop</span><span class="kr128 kr160 kr192 kr224 kr256">ijklmnop</span><span class="kr160 kr192 kr224 kr256">qrst</span><span class="kr192 kr224 kr256">uvwx</span><span class="k192 k256">qrstuvwx</span><span class="kr224 kr256">yz12</span><span class="kr256">3456</span><span class="k256">yz3456</span></span>');
+</span></span><span class="blowfish">// keys can range in length from 32 bits to 448 in steps of 8
+</span><span class="rc2">// keys can range in length from 8 bits to 1024 in steps of 8
+//$cipher->setKeyLength(...);
+</span>$cipher->setKey('abcdefgh<span class="3des rc4">ijklmnopqrstuvwx</span><span class="aes rijndael twofish"><span class="k128 k192 k256">ijklmnop</span><span class="kr128 kr160 kr192 kr224 kr256">ijklmnop</span><span class="kr160 kr192 kr224 kr256">qrst</span><span class="kr192 kr224 kr256">uvwx</span><span class="k192 k256">qrstuvwx</span><span class="kr224 kr256">yz12</span><span class="kr256">3456</span><span class="k256">yz3456</span></span>');
 </span><span class="pbkdf2">$cipher->setPassword('whatever');
 // the following does the same thing:
 //$cipher->setPassword('whatever', 'pbkdf2', 'sha1', 'phpseclib/salt', 1000<span class="rc4">, 128 / 8</span><span class="aes">, <span class="k128">128</span><span class="k192">192</span><span class="k256">256</span> / 8</span><span class="rijndael">, <span class="kr128">128</span><span class="kr160">160</span><span class="kr192">192</span><span class="kr224">224</span><span class="kr256">256</span> / 8</span>);
@@ -260,6 +279,12 @@ echo $cipher->decrypt($cipher->encrypt($plaintext));
         <div class="cbc">
         <h2>Inner Chaining vs. Outer Chaining</h2>
         <p>Inner chaining, as used by SSH1, does DES three times on the whole string.  Outer chaining, as used by SSH2 and most other 3DES implementations, does DES three times on each block.  Outer chaining is generally considered more secure.</p>
+        </div>
+      </div>
+      <div class="rc2">
+        <div class="cbc ecb">
+        <h2>RC2 is a Block Cipher</h2>
+        <p>Unlike RC4, RC2 is a block cipher.</p>
         </div>
       </div>
       <div id="speed" class="aes rijndael">
