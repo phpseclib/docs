@@ -206,6 +206,10 @@ echo $ssh->getLog();</span>
         <p>If done on an interactive shell, the output you'd receive for the first pwd would (depending on how your system is setup) be different than the output of the second pwd. The above code snippet, however, will yield two identical lines.</p>
         <p>The reason for this is that any "state changes" you make to the one-time shell are gone once the exec() has been ran and the channel has been deleted.</p>
       </div>
+      <div class="interactive">
+        <h2>New lines needed to send commands</h2>
+        <p>On a terminal you normally don't just type the command and expect to get the output. You type the command <i>and then</i> hit enter. To simulate that you'll need to add <code>"\n"</code> to the commands you send via <code>write()</code></p>
+      </div>
       <div class="sudo">
         <h2>sudo with read() / write()</h2>
         <p>By default, <a href="http://en.wikipedia.org/wiki/Sudo">sudo</a> caches passwords for 5 minutes after they've been entered. So while <code>$ssh->read('Password:')</code> will work the first time you try it, it won't work if you try it within a five minutes after having initially ran it.</p>
