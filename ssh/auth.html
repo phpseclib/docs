@@ -169,7 +169,8 @@ $ssh->read('User Name:');
 $ssh->write("username\n");
 $ssh->read('Password:');
 $ssh->write("password\n");</span>
-<span class="password rsakey encrsakey keyboard multifactor">echo $ssh->exec('pwd');
+<span class="password rsakey encrsakey keyboard multifactor">
+echo $ssh->exec('pwd');
 echo $ssh->exec('ls -la');</span><span class="noauth">
 $ssh->setTimeout(1);
 $ssh->read();
