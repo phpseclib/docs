@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="google-site-verification" content="DHz4kg_uhBzFTmMZSrMTtF9lqPofgrUucAmZrsakViI" />
+<meta name="keywords" content="SSH,SFTP,RSA,PHP,AES,Rijndael,3DES,RC4,SSH2,SSH1,X.509,X509" />
+<meta name="description" content="phpseclib's SSH2 implementation is feature rich and has pretty much zero server requirements above and beyond PHP" />
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-19770173-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<title>phpseclib: SSH2 Authentication Examples and Notes</title>
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+<link rel="stylesheet" href="../css/prettify.css"/>
+
+<script src="../js/prettify.js"></script>
+<script src="../js/jquery-1.7.2.min.js"></script>
+
+<script>
+var manageSelects = function() {
+  options = $('select option');
+  for (var i = 0; i < options.length; i++) {
+   $('.' + options[i].value).hide();
+  }
+
+  options = $('select option:selected');
+  for (var i = 0; i < options.length; i++) {
+   $('.' + options[i].value).show();
+  }
+};
+
+var highlight = function() {
+  if ($('.' + this.value).closest('#notes').length == 0) {
+    $('.' + this.value).css('background-color', '#ffa');
+  }
+};
+
+var unhighlight = function() {
+  if ($('.' + this.value).closest('#notes').length == 0) {
+    $('.' + this.value).css('background-color', '#f5f4ee');
+  }
+};
+
+var toggleButton = function() {
+  buttons = $('button[value="' + this.value + '"]');
+  buttons.eq(0).toggle();
+  buttons.eq(1).toggle();
+  $('.' + this.value).toggle();
+};
+
+var permLink = function() {
+  attrs = '';
+  selected = $('select option:selected,.disableCode:visible');
+  for (i = 0; i < selected.length; i++) {
+    attrs+= selected[i].value + ',';
+  }
+  hashPos = window.location.href.indexOf('#');
+  newURL = hashPos == -1 ? window.location.href : window.location.href.substring(0, hashPos);
+  window.location.href = newURL + '#' + attrs;
+};
+
+$(document).ready(function() {
+  //$('pre span[id]').hide();
+  //$('#notes div[id]').hide();
+
+  buttons = $('button:visible');
+  for (var i = 0; i < buttons.length; i++) {
+   $('.' + buttons[i].value).hide();
+  }
+
+  options = window.location.href.split('#');
+  options = options.length > 1 ? options[1].split(',') : new Array();
+  for (var i = 0; i < options.length; i++) {
+    options[i] = options[i].replace(/%20/g, ' ');
+    $('select option[value="' + options[i] +'"]').prop('selected', true);
+    button = $('button[value="' + options[i] +'"]');
+    if (button.length) {
+      toggleButton.apply(button[0]);
+    }
+  }
+
+  manageSelects();
+
+  $('select').change(manageSelects);
+  //$('select').change(highlight);
+  $('select').keyup(manageSelects);
+  //$('select').focus(highlight);
+  //$('select').blur(unhighlight);
+  $('button').click(toggleButton);
+  $('#permlink span').click(permLink);
+});
+</script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }.red { color: #e11 }
+.prettyprint { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }</style></head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: SSH2 Examples and Notes</h1>
+    <div id="pgup">(return to <a href="intro.html">phpseclib: SSH2 Feature List</a>)</div>
+  </div>
+  <div class="clear"></div>
+  <div class="grid_3">
+    <p>
+      Login:<br />
+      <select>
+        <option value="password">Password</option>
+        <option value="rsakey">RSA Key</option>
+        <option value="encrsakey">Password Protected RSA Key</option>
+        <option value="keyboard">Keyboard-Interactive</option>
+        <option value="multifactor">Multi-Factor</option>
+      </select>
+    </p>
+  </div>
+  <!-- end .grid_3 -->
+  <div class="grid_9">
+    <div>
+<pre class="prettyprint" style="margin-bottom: 0">&lt;?php
+include('Net/SSH2.php');<span class="rsakey encrsakey">
+include('Crypt/RSA.php');</span>
+
+$ssh = new Net_SSH2('www.domain.tld');
+<span class="password">if (!$ssh-&gt;login('username', 'password')) {
+    exit('Login Failed');
+}</span><span class="rsakey">$key = new Crypt_RSA();
+$key-&gt;loadKey(file_get_contents('privatekey'));
+if (!$ssh-&gt;login('username', $key)) {
+    exit('Login Failed');
+}</span><span class="encrsakey">$key = new Crypt_RSA();
+$key-&gt;setPassword('whatever');
+$key-&gt;loadKey(file_get_contents('privatekey'));
+if (!$ssh-&gt;login('username', $key)) {
+    exit('Login Failed');
+}</span><span class="keyboard">$result = $ssh-&gt;login($username,
+    array('Password' =&gt; 'pass1'),
+    array('Verification code' =&gt; 'code1')
+);
+if (!$result) {
+    exit('Login failed');
+}</span><span class="multifactor">if (!$ssh-&gt;login($username, 'pass1', 'code1')) {
+    exit('Login failed');
+}
+// this does the same thing as the above
+//if (!$ssh-&gt;login($username, 'pass1') && !$ssh-&gt;login($username, 'code1')) {
+//    exit('Login failed');
+//}</span>
+
+echo $ssh->exec('pwd');
+echo $ssh->exec('ls -la');
+?&gt;</pre>
+    </div>
+    <div id="permlink"><span>permanent link</span></div>
+    <div id="notes">
+      <div class="keyboard">
+        <h2>Keyboard-Interactive Authentication</h2>
+        <p>When doing password authentication phpseclib tries keyboard-interactive if password auth fails. Only after both fail does <code>->login()</code> return false. The reason for this is that a lot of systems just prompt for the password via keyboard-interactive. So if your server only has one keyboard-interactive prompt using the password authentication method would be sufficient.</p>
+        <p>The method utilized in this example is mainly useful when you have multiple keyboard-interactive prompts and need to disambiguate between them. This example utilizes prompt-based disambiguation. One can also distinguish between the various keyboard-interactive prompts via order-based disambiguation. This method is demonstrated in the multi-factor example. What'll happen in that example is that password auth will be tried, will presumably fail and then when keyboard-interactive succeeds all subsequent authentications will utilize keyboard-interactive (unless you're trying to auth with an RSA key).</p>
+      </div>
+  </div>
+  <!-- end .grid_9 -->
+</div>
+<!-- end .container_16 -->
+</body>
+</html>

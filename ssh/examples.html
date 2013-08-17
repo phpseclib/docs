@@ -121,14 +121,6 @@ ul { margin-bottom: 0 }
   <div class="clear"></div>
   <div class="grid_3">
     <p>
-      Login:<br />
-      <select>
-        <option value="password">Password</option>
-        <option value="rsakey">RSA Key</option>
-        <option value="encrsakey">Password Protected RSA Key</option>
-      </select>
-    </p>
-    <p>
       Action:<br />
       <select>
         <option value="oneoff">One-off commands</option>
@@ -160,18 +152,9 @@ include('File/ANSI.php');</span>
 define('NET_SSH2_LOGGING', NET_SSH2_LOG_COMPLEX);
 </span>
 $ssh = new Net_SSH2('www.domain.tld');
-<span class="password">if (!$ssh-&gt;login('username', 'password')) {
+if (!$ssh-&gt;login('username', 'password')) {
     exit('Login Failed');
-}</span><span class="rsakey">$key = new Crypt_RSA();
-$key-&gt;loadKey(file_get_contents('privatekey'));
-if (!$ssh-&gt;login('username', $key)) {
-    exit('Login Failed');
-}</span><span class="encrsakey">$key = new Crypt_RSA();
-$key-&gt;setPassword('whatever');
-$key-&gt;loadKey(file_get_contents('privatekey'));
-if (!$ssh-&gt;login('username', $key)) {
-    exit('Login Failed');
-}</span><span class="hostkey">
+}<span class="hostkey">
 // save $ssh->getServerPublicHostKey() if this is your first time connecting
 // check $ssh->getServerPublicHostKey() against previously saved value on subsequent connections</span>
 
