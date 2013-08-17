@@ -137,6 +137,7 @@ ul { margin-bottom: 0 }
         <option value="sudo">Advanced Interactive Shell: sudo</option>
         <option value="timeout">setTimeout: Identifying the prompt</option>
         <option value="top">Interactive Shell: ANSI Codes</option>
+        <option value="f1f2">Interactive Shell: F1, F2, etc</option>
       </select>
     </p>
     <p>
@@ -153,7 +154,7 @@ ul { margin-bottom: 0 }
     <div>
 <pre class="prettyprint" style="margin-bottom: 0">&lt;?php
 include('Net/SSH2.php');<span class="rsakey encrsakey">
-include('Crypt/RSA.php');</span><span class="top">
+include('Crypt/RSA.php');</span><span class="top f1f2">
 include('File/ANSI.php');</span>
 <span class="logging">
 define('NET_SSH2_LOGGING', NET_SSH2_LOG_COMPLEX);
@@ -194,7 +195,17 @@ $ansi->appendString($ssh->read('username@username:~$'));
 $ssh->write("top\n");
 $ssh->setTimeout(5);
 $ansi->appendString($ssh->read());
-echo $ansi->getScreen(); // or $ansi->getHistory()</span><span class="logging">
+echo $ansi->getScreen(); // or $ansi->getHistory()</span><span style="display: none">
+</span><span class="f1f2">$ssh->setTimeout(2);
+$ssh->read();
+$ssh->write("vim\n");
+$ssh->read();
+$ssh->write("\x1BOP"); // send F1
+
+$ansi = new File_ANSI();
+$ansi->appendString($ssh->read());
+
+echo $ansi->getScreen();</span><span class="logging">
 
 echo $ssh->getLog();</span>
 ?&gt;</pre>
@@ -283,6 +294,35 @@ Swap:        0k total,        0k used,        0k free,   399940k cached
  1647 root      15   0     0    0    0 S  0.0  0.0   0:00.16 kjournald</pre>
       <p>The history, by default, stores 200 lines (not including the current screen).  Both functions return HTML with the various formatting properties specified by HTML.  If you don't want HTML and want just the raw text of the terminal without any formatting do <code>htmlspecialchars_decode(strip_tags($ansi->getScreen()))</code>.
     </div>
+      <div class="f1f2">
+        <h2>Sending Special Characters</h2>
+        <p>A table of special characters and the keys they correspond to can be found at <a href="keys.html">SSH2 Special Characters</a>. The output of the above program is as follows:</p>
+        <pre style="color: white; background: black" width="80">*<u>help.txt</u>*      For <u>Vim version 7.3.</u>  Last change: 2010 Jul 20
+
+  VIM - main help file
+  k
+      Move around:  Use the cursor keys, or &quot;h&quot; to go left, h   l
+  &quot;j&quot; to go down, &quot;k&quot; to go up, &quot;l&quot; to go right.       j
+Close this window:  Use &quot;:q<b>&lt;Enter&gt;</b>&quot;.
+   Get out of Vim:  Use &quot;:qa!<b>&lt;Enter&gt;</b>&quot; (careful, all changes are lost!).
+
+Jump to a subject:  Position the cursor on a tag (e.g. |<u>bars</u>|) and hit <b>CTRL-]</b>.
+   With the mouse:  &quot;:set mouse=a&quot; to enable the mouse (in xterm or GUI).
+  Double-click the left mouse button on a tag, e.g. |<u>bars</u>|.
+        Jump back:  Type <b>CTRL-T</b> or <b>CTRL-O</b> (repeat to go further back).
+
+Get specific help:  It is possible to go directly to whatever you want help
+     on, by giving an argument to the |<u>:help</u>| command.
+     It is possible to further specify the context:
+                                         *<u>help-context</u>*
+  <u>WHAT                  PREPEND    EXAMPLE</u>      ~
+  Normal mode command      (nothing)   :help x
+<span style="color: black; background: white">help.txt [Help][RO]                                           1,1            Top</b></span>
+
+<span style="color: black; background: white">[No Name]                                                     0,0-1          All
+&quot;help.txt&quot; [readonly] 221L, 8239C</pre>
+        <p>The output may look different than vim when ran through, for example, PuTTY, because PuTTY uses <code>xterm</code> as it's shell whereas phpseclib uses <code>vt100</code>.</p>
+      </div>
   </div>
   <!-- end .grid_9 -->
 </div>

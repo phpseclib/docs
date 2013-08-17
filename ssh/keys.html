@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="google-site-verification" content="DHz4kg_uhBzFTmMZSrMTtF9lqPofgrUucAmZrsakViI" />
+<meta name="keywords" content="SSH,SFTP,RSA,PHP,AES,Rijndael,3DES,RC4,SSH2,SSH1,X.509,X509" />
+<meta name="description" content="phpseclib decodes X.509 certificates to an associative array or strings for select attributes" />
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-19770173-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<title>phpseclib: X.509: Distinguished Property Names</title>
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+<link rel="stylesheet" href="../css/prettify.css"/>
+<link rel="stylesheet" href="../css/jquery.qtip.min.css"/>
+<link rel="stylesheet" href="../css/jquery.treeview.css" /> 
+<script src="../js/prettify.js"></script>
+<script src="../js/jquery-1.7.2.min.js"></script>
+<script src="../js/jquery.qtip.min.js"></script>
+<script src="../js/jquery.cookie.js"></script> <script src="../js/jquery.treeview.js"></script> 
+<script>
+var certFlag = false;
+
+var manageSelects = function() {
+  options = $('select option');
+  for (var i = 0; i < options.length; i++) {
+   $('.' + options[i].value).hide();
+  }
+
+  options = $('select option:selected');
+  for (var i = 0; i < options.length; i++) {
+   $('.' + options[i].value).show();
+  }
+};
+
+var highlight = function() {
+  if ($('.' + this.value).closest('#notes').length == 0) {
+    $('.' + this.value).css('background-color', '#ffa');
+  }
+};
+
+var unhighlight = function() {
+  if ($('.' + this.value).closest('#notes').length == 0) {
+    $('.' + this.value).css('background-color', '#f5f4ee');
+  }
+};
+
+var toggleButton = function() {
+  buttons = $('button[value="' + this.value + '"]');
+  buttons.eq(0).toggle();
+  buttons.eq(1).toggle();
+  $('.' + this.value).toggle();
+};
+
+var permLink = function() {
+  attrs = '';
+  selected = $('select option:selected,.disableCode:visible');
+  for (i = 0; i < selected.length; i++) {
+    attrs+= selected[i].value + ',';
+  }
+  hashPos = window.location.href.indexOf('#');
+  newURL = hashPos == -1 ? window.location.href : window.location.href.substring(0, hashPos);
+  window.location.href = newURL + '#' + attrs;
+};
+
+var handleCert = function(event) {
+  e = event.relatedTarget || event.toElement;
+  if (e.id != 'cert2') {
+    $('#cert2').hide();
+  }
+}
+
+var showPath = function() {   path = '';   parents = $(this).parents('li:visible');   for (var i = parents.length - 1; i >= 0; i--) {     name = $('.name', parents[i])[0].textContent;     delimiter = isNaN(name) ? '\'' : '';     path+= '[' + delimiter + name + delimiter + ']';   }   $('#path').html('<code id="path">$cert' + path + '</code>:'); }; 
+$(document).ready(function() {
+  //$('pre span[id]').hide();
+  //$('#notes div[id]').hide();
+
+  $('.printr').treeview({     persist: "location",     collapsed: true,     unique: true   });
+
+  buttons = $('button:visible');
+  for (var i = 0; i < buttons.length; i++) {
+   $('.' + buttons[i].value).hide();
+  }
+
+  options = window.location.href.split('#');
+  options = options.length > 1 ? options[1].split(',') : new Array();
+  for (var i = 0; i < options.length; i++) {
+    options[i] = options[i].replace(/%20/g, ' ');
+    $('select option[value="' + options[i] +'"]').prop('selected', true);
+    button = $('button[value="' + options[i] +'"]');
+    if (button.length) {
+      toggleButton.apply(button[0]);
+    }
+  }
+
+  manageSelects();
+
+  $('#cert').qtip();
+
+  $('.name,.hitarea').click(showPath); 
+  $('select').change(manageSelects);
+  //$('select').change(highlight);
+  $('select').keyup(manageSelects);
+  //$('select').focus(highlight);
+  //$('select').blur(unhighlight);
+  $('button').click(toggleButton);
+  $('#permlink span').click(permLink);
+});
+</script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }.red { color: #e11 }
+.prettyprint, .pre { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+#cert:hover { cursor: hand }
+table { border: 1px outset; border-spacing: 2px; border-collapse: separate }
+td { border: 1px inset gray; padding: 3px }
+</style></head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: SSH2 Special Characters</h1>
+    <div id="pgup">(return to <a href="examples.html#f1f2">phpseclib: SSH2 Examples and Notes</a>)</div>
+  </div>
+  <div class="clear"></div>
+  <div class="grid_3">
+    &nbsp;
+  </div>
+  <!-- end .grid_3 -->
+  <div class="grid_9">
+    <h2>SSH2 Special Characters</h2>
+    <table border="1">
+      <thead>
+        <tr><td>Key</td><td>String</td></tr>
+      </thead>
+      <tr><td>F1</td><td><code>"\x1BOP"</code></td></tr>
+      <tr><td>F2</td><td><code>"\x1BOQ"</code></td></tr>
+      <tr><td>F3</td><td><code>"\x1BOR"</code></td></tr>
+      <tr><td>F4</td><td><code>"\x1BOS"</code></td></tr>
+    </table>
+  <!-- end .grid_9 -->
+</div>
+<!-- end .container_16 -->
+</body>
+</html>
