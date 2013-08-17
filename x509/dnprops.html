@@ -24,13 +24,16 @@
 <link rel="stylesheet" href="../css/960.css" />
 <link rel="stylesheet" href="../css/prettify.css"/>
 <link rel="stylesheet" href="../css/jquery.qtip.min.css"/>
-<link rel="stylesheet" href="../css/jquery.treeview.css" />
+<link rel="stylesheet" href="../css/jquery.treeview.css" />
+
 
 <script src="../js/prettify.js"></script>
 <script src="../js/jquery-1.7.2.min.js"></script>
 <script src="../js/jquery.qtip.min.js"></script>
-<script src="../js/jquery.cookie.js"></script>
-<script src="../js/jquery.treeview.js"></script>
+<script src="../js/jquery.cookie.js"></script>
+
+<script src="../js/jquery.treeview.js"></script>
+
 
 <script>
 var certFlag = false;
@@ -84,25 +87,39 @@ var handleCert = function(event) {
   }
 }
 
-var showPath = function() {
-  path = '';
-  parents = $(this).parents('li:visible');
-  for (var i = parents.length - 1; i >= 0; i--) {
-    name = $('.name', parents[i])[0].textContent;
-    delimiter = isNaN(name) ? '\'' : '';
-    path+= '[' + delimiter + name + delimiter + ']';
-  }
-  $('#path').html('<code id="path">$cert' + path + '</code>:');
-};
+var showPath = function() {
+
+  path = '';
+
+  parents = $(this).parents('li:visible');
+
+  for (var i = parents.length - 1; i >= 0; i--) {
+
+    name = $('.name', parents[i])[0].textContent;
+
+    delimiter = isNaN(name) ? '\'' : '';
+
+    path+= '[' + delimiter + name + delimiter + ']';
+
+  }
+
+  $('#path').html('<code id="path">$cert' + path + '</code>:');
+
+};
+
 
 $(document).ready(function() {
   //$('pre span[id]').hide();
   //$('#notes div[id]').hide();
 
-  $('.printr').treeview({
-    persist: "location",
-    collapsed: true,
-    unique: true
+  $('.printr').treeview({
+
+    persist: "location",
+
+    collapsed: true,
+
+    unique: true
+
   });
 
   buttons = $('button:visible');
@@ -125,7 +142,7 @@ $(document).ready(function() {
 
   $('#cert').qtip();
 
-  $('.name,.hitarea').click(showPath);
+  $('.name,.hitarea').click(showPath);
 
   $('select').change(manageSelects);
   //$('select').change(highlight);
@@ -215,6 +232,7 @@ ul { margin-bottom: 0 }
       <li>id-at-uniqueidentifier<br />
       uniqueidentifier<br />
       x500uniqueidentifier</li>
+    </ul>
   <!-- end .grid_9 -->
 </div>
 <!-- end .container_16 -->
