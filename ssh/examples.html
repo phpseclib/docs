@@ -195,6 +195,11 @@ echo $ssh->getLog();</span>
     </div>
     <div id="permlink"><span>permanent link</span></div>
     <div id="notes">
+      <div class="oneoff">
+        <h2>stderr and exit status</h2>
+        <p>By default <code>$ssh->exec()</code> returns both stdout and stderr. To suppress stderr you can call <code>$ssh->enableQuietMode()</code>. To get stderr separately from stdout you'll need to call <code>$ssh->enableQuietMode()</code> and then call <code>getStdError()</code>. These functions work with <code>$ssh->read()</code> as well.</p>
+        <p>To get the exit status you can call <code>$ssh->getExitStatus()</code></p>
+      </div>
       <div class="chdir">
         <h2>Successive calls to exec()</h2>
         <p>If done on an interactive shell, the output you'd receive for the first pwd would (depending on how your system is setup) be different than the output of the second pwd. The above code snippet, however, will yield two identical lines.</p>
