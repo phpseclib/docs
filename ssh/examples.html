@@ -197,7 +197,7 @@ echo $ssh->getLog();</span>
     <div id="notes">
       <div class="oneoff">
         <h2>stderr and exit status</h2>
-        <p>By default <code>$ssh->exec()</code> returns both stdout and stderr. To suppress stderr you can call <code>$ssh->enableQuietMode()</code>. To get stderr separately from stdout you'll need to call <code>$ssh->enableQuietMode()</code> and then call <code>getStdError()</code>. These functions work with <code>$ssh->read()</code> as well.</p>
+        <p>By default <code>$ssh->exec()</code> returns both stdout and stderr. To suppress stderr you can call <code>$ssh->enableQuietMode()</code>. To get stderr separately from stdout you'll need to call <code>$ssh->enableQuietMode()</code> and then call <code>$ssh->getStdError()</code>. These functions work with <code>$ssh->read()</code> as well.</p>
         <p>To get the exit status you can call <code>$ssh->getExitStatus()</code></p>
       </div>
       <div class="chdir">
