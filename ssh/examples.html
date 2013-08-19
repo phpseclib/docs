@@ -125,6 +125,7 @@ ul { margin-bottom: 0 }
       <select>
         <option value="oneoff">One-off commands</option>
         <option value="chdir">One-off commands: cd: a note</option>
+        <option value="callback">One-off commands: callbacks</option>
         <option value="interactive">Interactive Shell</option>
         <option value="sudo">Advanced Interactive Shell: sudo</option>
         <option value="timeout">setTimeout: Identifying the prompt</option>
@@ -145,8 +146,7 @@ ul { margin-bottom: 0 }
   <div class="grid_9">
     <div>
 <pre class="prettyprint" style="margin-bottom: 0">&lt;?php
-include('Net/SSH2.php');<span class="rsakey encrsakey">
-include('Crypt/RSA.php');</span><span class="top f1f2">
+include('Net/SSH2.php');<span class="top f1f2">
 include('File/ANSI.php');</span>
 <span class="logging">
 define('NET_SSH2_LOGGING', NET_SSH2_LOG_COMPLEX);
@@ -172,7 +172,12 @@ if (preg_match('#[pP]assword[^:]*:#', $output)) {
     $ssh->write("password\n");
     echo $ssh->read('username@username:~$');
 }</span><span class="timeout">$ssh->setTimeout(1);
-echo $ssh->read();</span><span class="top">$ansi = new File_ANSI();
+echo $ssh->read();</span><span class="callback">function packet_handler($str)
+{
+    echo $str;
+}
+
+$ssh->exec('ping 127.0.0.1', 'packet_handler');</span><span class="top">$ansi = new File_ANSI();
 
 $ansi->appendString($ssh->read('username@username:~$'));
 $ssh->write("top\n");
@@ -205,6 +210,10 @@ echo $ssh->getLog();</span>
         <p>If done on an interactive shell, the output you'd receive for the first pwd would (depending on how your system is setup) be different than the output of the second pwd. The above code snippet, however, will yield two identical lines.</p>
         <p>The reason for this is that any "state changes" you make to the one-time shell are gone once the exec() has been ran and the channel has been deleted.</p>
       </div>
+      <div class="timeout">
+        <h2>setTimeout</h2>
+        <p><code>$ssh->setTimeout()</code> works with <code>$ssh->read()</code> and <code>$ssh->exec()</code>.</p>
+      </div>
       <div class="interactive">
         <h2>New lines needed to send commands</h2>
         <p>On a terminal you normally don't just type the command and expect to get the output. You type the command <i>and then</i> hit enter. To simulate that you'll need to add <code>"\n"</code> to the commands you send via <code>write()</code></p>
@@ -212,6 +221,10 @@ echo $ssh->getLog();</span>
       <div class="sudo">
         <h2>sudo with read() / write()</h2>
         <p>By default, <a href="http://en.wikipedia.org/wiki/Sudo">sudo</a> caches passwords for 5 minutes after they've been entered. So while <code>$ssh->read('Password:')</code> will work the first time you try it, it won't work if you try it within a five minutes after having initially ran it.</p>
+      </div>
+      <div class="callback">
+        <h2>Callbacks</h2>
+        <p>This example is best run via the CLI. Run it via the webbrowser and you may need to <a href="http://php.net/flush">flush</a> the output buffer and even then YMMV.</p>
       </div>
       <div class="top">
         <h2>ANSI Escape Codes</h2>
