@@ -213,6 +213,8 @@ echo $ssh->getLog();</span>
       </div>
       <div class="timeout">
         <h2>setTimeout</h2>
+        <p>After each <code>$ssh->read()</code> the timeout resets to what you set it to last. By default the "channel" remains open so if you do <code>$ssh->write("ping 127.0.0.1\n")</code> and do two successive <code>$ssh->read()</code> you'll get ping output in both of those calls. If you don't want it to do that you can either send Ctrl + C via <code>$ssh->write("\x03")</code> or you can reset the whole channel by calling <code>$ssh->reset()</code>.</p>
+        <p><code>$ssh->isTimeout()</code> will return true if the result of the last <code>$ssh->read()</code> or <code>$ssh->exec()</code> was due to a timeout. Otherwise it will return false.</p>
         <p><code>$ssh->setTimeout()</code> works with <code>$ssh->read()</code> and <code>$ssh->exec()</code>.</p>
       </div>
       <div class="interactive">
