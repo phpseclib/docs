@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="google-site-verification" content="DHz4kg_uhBzFTmMZSrMTtF9lqPofgrUucAmZrsakViI" />
+<meta name="keywords" content="SSH,SFTP,RSA,PHP,AES,Rijndael,3DES,RC4,SSH2,SSH1,X.509,X509" />
+<meta name="description" content="Some commands require a PTY to work correctly with exec(). Examples inside." />
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-19770173-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<title>SSH2: PTY Comparisons</title>
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+<link rel="stylesheet" href="../css/prettify.css"/>
+<link rel="stylesheet" href="../css/jquery.treeview.css" />
+<link rel="stylesheet" href="../css/jquery-ui-1.8.20.custom.css" />
+
+<script src="../js/prettify.js"></script>
+<script src="../js/jquery-1.7.2.min.js"></script>
+<script src="../js/jquery-ui-1.8.20.custom.min.js"></script>
+<script src="../js/jquery.cookie.js"></script>
+<script src="../js/jquery.treeview.js"></script>
+
+<script>
+function showSignature() {
+  if ($('#signature li').is(':hidden')) {
+    $('#signature span').trigger('click');
+  }
+}
+
+function showPublicKey() {
+  if ($('#tbsCertificate > ul > li').is(':hidden')) {
+    $('#tbsCertificate > span').trigger('click');
+  }
+  if ($('#subjectPublicKeyInfo > ul > li').is(':hidden')) {
+    $('#subjectPublicKeyInfo > span').trigger('click');
+  }
+  if ($('#subjectPublicKey > ul > li').is(':hidden')) {
+    $('#subjectPublicKey > span').trigger('click');
+  }
+}
+
+function showIssuer() {
+  if ($('#tbsCertificate > ul > li').is(':hidden')) {
+    $('#tbsCertificate > span').trigger('click');
+  }
+  if ($('#issuer > ul > li').is(':hidden')) {
+    $('#issuer > span').trigger('click');
+  }
+}
+
+function showSubject() {
+  if ($('#tbsCertificate > ul > li').is(':hidden')) {
+    $('#tbsCertificate > span').trigger('click');
+  }
+  if ($('#subject > ul > li').is(':hidden')) {
+    $('#subject > span').trigger('click');
+  }
+}
+
+var showPath = function() {
+  path = '';
+  parents = $(this).parents('li:visible');
+  for (var i = parents.length - 1; i >= 0; i--) {
+    name = $('.name', parents[i])[0].textContent;
+    delimiter = isNaN(name) ? '\'' : '';
+    path+= '[' + delimiter + name + delimiter + ']';
+  }
+  $('#path').html('<code id="path">$cert' + path + '</code>:');
+};
+
+$(document).ready(function(){
+  $('.printr').treeview({
+    persist: "location",
+    collapsed: true,
+    unique: true
+  });
+  $('.name,.hitarea').click(showPath);
+  $('.certopen').accordion({
+    collapsible: true
+  });
+  $('.cert').accordion({
+    collapsible: true,
+     active: false
+  });
+});
+</script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }.red { color: #e11 }
+.prettyprint, .pre { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }</style></head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: SSH2: PTY Comparisons</h1>
+    <div id="pgup">(return to <a href="intro.html">phpseclib: SSH2 Feature List</a>)</div>
+  </div>
+  <div class="grid_3">
+    <h2>Examples</h2>
+    <ul>
+      <li><a href="#passwd">passwd</a></li>
+      <li><a href="#top">top</a></li>
+    </ul>
+  </div>
+  <div class="grid_9">
+    <p>Some commands require a PTY to work correctly with exec(). Examples follow:</p>
+    <h2 id="passwd">passwd</h2><hr />
+    <b>exec():</b>
+    <pre class="prettyprint">echo $ssh->exec('passwd');</pre>
+    <p>Stalls. If you use a <a href="examples.html#callback">callback function</a> or <a href="examples.html#timeout">setTimeout()</a> you'll see that it's outputting <code>(current) UNIX password:</code> and waiting for input that can't ever come.</p>
+    <b>exec() with PTY:</b>
+    <pre class="prettyprint">$ssh->enablePTY(); 
+$ssh->exec('passwd'); 
+echo $ssh->read('password:'); 
+$ssh->write("badpw\n"); 
+$ssh->setTimeout(3); 
+echo $ssh->read('password unchanged');</pre>
+    <p>Runs as one might expect. The three second delay is implemented by Linux to protect against brute force attacks (per "man pam_unix").</p>
+    <b>read() / write():</b>
+    <pre class="prettyprint">echo $ssh->read('username@username:~$');
+$ssh->write("passwd\n");
+echo $ssh->read('password:'); 
+$ssh->write("badpw\n"); 
+$ssh->setTimeout(3); 
+echo $ssh->read('password unchanged');</pre>
+    <p>Pretty much the same output as exec() with PTY.</p>
+    <hr /><h2 id="top">top</h2><hr />
+    <b>exec():</b>
+    <pre class="prettyprint">echo $ssh->exec('top');</pre>
+    <p>Outputs <code>TERM environment variable not set.</code></p>
+    <b>exec() with PTY:</b>
+    <pre class="prettyprint">$ssh->enablePTY();
+$ssh->exec('top');
+$ssh->setTimeout(5);
+$ansi->appendString($ssh->read());
+echo $ansi->getScreen();</pre>
+    <p>See <a href="examples.html#top">Interactive Shell: ANSI Codes</a> for the output.</p>
+    <b>read() / write():</b>
+    <pre class="prettyprint">$ansi->appendString($ssh->read('username@username:~$'));
+$ssh->write("top\n");
+$ssh->setTimeout(5);
+$ansi->appendString($ssh->read());
+echo $ansi->getScreen();</pre>
+    <p>Pretty much the same output as exec() with PTY.</p>
+  </div>
+</div>
+<!-- end .container_16 -->
+</body>
+</html>
