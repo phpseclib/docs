@@ -182,12 +182,12 @@ echo $ssh->read();</span>
     <div id="notes">
       <div class="password">
         <h2>On Failure</h2>
-        <p>If you're absolutely certain that the password / username you've entered are correct it's possible the server isn't using SSH authentication and that what's prompting you for your credentials is the terminal itself. In this scenario you would want to authenticate in the manner demonstrated in the no authentication example.</p>
+        <p>If you're absolutely certain that the password / username you've entered are correct it's possible the server isn't using SSH authentication and that what's prompting you for your credentials is the terminal itself. In this scenario you would want to authenticate in the manner demonstrated in the <a href="auth.html#noauth" onclick="$('select').val('noauth').change()">No Authentication</a> example.</p>
       </div>
       <div class="keyboard">
         <h2>Keyboard-Interactive Authentication</h2>
-        <p>When doing password authentication phpseclib tries keyboard-interactive if password auth fails. Only after both fail does <code>->login()</code> return false. The reason for this is that a lot of systems just prompt for the password via keyboard-interactive. So if your server only has one keyboard-interactive prompt using the password authentication method would be sufficient.</p>
-        <p>The method utilized in this example is mainly useful when you have multiple keyboard-interactive prompts and need to disambiguate between them. This example utilizes prompt-based disambiguation. One can also distinguish between the various keyboard-interactive prompts via order-based disambiguation. This method is demonstrated in the multi-factor example. What'll happen in that example is that password auth will be tried, will presumably fail and then when keyboard-interactive succeeds all subsequent authentications will utilize keyboard-interactive (unless you're trying to auth with an RSA key).</p>
+        <p>When doing password authentication phpseclib tries keyboard-interactive if password auth fails. Only after both fail does <code>$ssh->login()</code> return false. The reason for this is that a lot of systems just prompt for the password via keyboard-interactive. So if your server only has one keyboard-interactive prompt using the password authentication method would be sufficient.</p>
+        <p>The method utilized in this example is mainly useful when you have multiple keyboard-interactive prompts and need to disambiguate between them. This example utilizes prompt-based disambiguation. One can also distinguish between the various keyboard-interactive prompts via order-based disambiguation. This method is demonstrated in the <a href="auth.html#multifactor" onclick="$('select').val('multifactor').change()">Multi-Factor</a> example. What'll happen in that example is that password auth will be tried, will presumably fail and then when keyboard-interactive succeeds all subsequent authentications will utilize keyboard-interactive (unless you're trying to auth with an RSA key).</p>
       </div>
       <div class="noauth">
         <h2>Better Example Wanted</h2>
