@@ -23,9 +23,14 @@
 <link rel="stylesheet" href="../css/text.css" />
 <link rel="stylesheet" href="../css/960.css" />
 <link rel="stylesheet" href="../css/prettify.css"/>
+<link rel="stylesheet" href="../css/jquery.qtip.min.css"/>
+<link rel="stylesheet" href="../css/jquery.treeview.css" /> 
 
 <script src="../js/prettify.js"></script>
 <script src="../js/jquery-1.7.2.min.js"></script>
+<script src="../js/jquery.qtip.min.js"></script>
+<script src="../js/jquery.cookie.js"></script>
+<script src="../js/jquery.treeview.js"></script> 
 
 <script>
 var manageSelects = function() {
@@ -71,6 +76,8 @@ var permLink = function() {
 };
 
 $(document).ready(function() {
+  $('.printr').treeview({     persist: "location",     collapsed: true,     unique: true   });
+
   //$('pre span[id]').hide();
   //$('#notes div[id]').hide();
 
@@ -183,85 +190,9 @@ echo $sftp->getSFTPLog();</span>
       <div class="list">
         <h2>Output of nlist() and rawlist()</h2>
         <b>$sftp->nlist():</b>
-<pre class="pre">Array
-(
-    [0] => uploads
-    [1] => ..
-    [2] => .
-    [3] => .profile
-    [4] => .bashrc
-    [5] => .bash_logout
-)</pre>
+        <ul class="printr" style="margin-bottom: 15px"><li><span class="name">0</span><ul><li>uploads</li></ul></li><li><span class="name">1</span><ul><li>..</li></ul></li><li><span class="name">2</span><ul><li>.</li></ul></li><li><span class="name">3</span><ul><li>.profile</li></ul></li><li><span class="name">4</span><ul><li>.bashrc</li></ul></li><li><span class="name">5</span><ul><li>.bash_logout</li></ul></li></ul>
         <b>$sftp->rawlist():</b>
-<pre class="pre">Array
-(
-    [uploads] => Array
-        (
-            [size] => 4096
-            [uid] => 1001
-            [gid] => 1002
-            [permissions] => 16877
-            [atime] => 1338498490
-            [mtime] => 1338497853
-            [type] => 2
-        )
-
-    [..] => Array
-        (
-            [size] => 4096
-            [uid] => 0
-            [gid] => 0
-            [permissions] => 16877
-            [atime] => 1338499576
-            [mtime] => 1338497853
-            [type] => 2
-        )
-
-    [.] => Array
-        (
-            [size] => 4096
-            [uid] => 0
-            [gid] => 0
-            [permissions] => 16877
-            [atime] => 1338499576
-            [mtime] => 1338497853
-            [type] => 2
-        )
-
-    [.profile] => Array
-        (
-            [size] => 675
-            [uid] => 1012
-            [gid] => 1013
-            [permissions] => 33188
-            [atime] => 1338497357
-            [mtime] => 1338497357
-            [type] => 1
-        )
-
-    [.bashrc] => Array
-        (
-            [size] => 3353
-            [uid] => 1012
-            [gid] => 1013
-            [permissions] => 33188
-            [atime] => 1338497357
-            [mtime] => 1338497357
-            [type] => 1
-        )
-
-    [.bash_logout] => Array
-        (
-            [size] => 220
-            [uid] => 1012
-            [gid] => 1013
-            [permissions] => 33188
-            [atime] => 1338497357
-            [mtime] => 1338497357
-            [type] => 1
-        )
-
-)</pre>
+        <ul class="printr" style="margin-bottom: 15px"><li><span class="name">uploads</span><ul><li><span class="name">size</span><ul><li>4096</li></ul></li><li><span class="name">uid</span><ul><li>1001</li></ul></li><li><span class="name">gid</span><ul><li>1002</li></ul></li><li><span class="name">permissions</span><ul><li>16877</li></ul></li><li><span class="name">atime</span><ul><li>1338498490</li></ul></li><li><span class="name">mtime</span><ul><li>1338497853</li></ul></li><li><span class="name">type</span><ul><li>2</li></ul></li></ul></li><li><span class="name">..</span><ul><li><span class="name">size</span><ul><li>4096</li></ul></li><li><span class="name">uid</span><ul><li>0</li></ul></li><li><span class="name">gid</span><ul><li>0</li></ul></li><li><span class="name">permissions</span><ul><li>16877</li></ul></li><li><span class="name">atime</span><ul><li>1338499576</li></ul></li><li><span class="name">mtime</span><ul><li>1338497853</li></ul></li><li><span class="name">type</span><ul><li>2</li></ul></li></ul></li><li><span class="name">.</span><ul><li><span class="name">size</span><ul><li>4096</li></ul></li><li><span class="name">uid</span><ul><li>0</li></ul></li><li><span class="name">gid</span><ul><li>0</li></ul></li><li><span class="name">permissions</span><ul><li>16877</li></ul></li><li><span class="name">atime</span><ul><li>1338499576</li></ul></li><li><span class="name">mtime</span><ul><li>1338497853</li></ul></li><li><span class="name">type</span><ul><li>2</li></ul></li></ul></li><li><span class="name">.profile</span><ul><li><span class="name">size</span><ul><li>675</li></ul></li><li><span class="name">uid</span><ul><li>1012</li></ul></li><li><span class="name">gid</span><ul><li>1013</li></ul></li><li><span class="name">permissions</span><ul><li>33188</li></ul></li><li><span class="name">atime</span><ul><li>1338497357</li></ul></li><li><span class="name">mtime</span><ul><li>1338497357</li></ul></li><li><span class="name">type</span><ul><li>1</li></ul></li></ul></li><li><span class="name">bashrc</span><ul><li><span class="name">size</span><ul><li>3353</li></ul></li><li><span class="name">uid</span><ul><li>1012</li></ul></li><li><span class="name">gid</span><ul><li>1013</li></ul></li><li><span class="name">permissions</span><ul><li>33188</li></ul></li><li><span class="name">atime</span><ul><li>1338497357</li></ul></li><li><span class="name">mtime</span><ul><li>1338497357</li></ul></li><li><span class="name">type</span><ul><li>1</li></ul></li></ul></li><li><span class="name">.bash_lougout</span><ul><li><span class="name">size</span><ul><li>270</li></ul></li><li><span class="name">uid</span><ul><li>1012</li></ul></li><li><span class="name">gid</span><ul><li>1013</li></ul></li><li><span class="name">permissions</span><ul><li>33188</li></ul></li><li><span class="name">atime</span><ul><li>1338497357</li></ul></li><li><span class="name">mtime</span><ul><li>1338497357</li></ul></li><li><span class="name">type</span><ul><li>1</li></ul></li></ul></li></ul>
         The type index corresponds to one of the following named constants:
         <ul>
           <li>NET_SFTP_TYPE_REGULAR</li>
