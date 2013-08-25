@@ -121,14 +121,6 @@ ul { margin-bottom: 0 }
   <div class="clear"></div>
   <div class="grid_3">
     <p>
-      Login:<br />
-      <select>
-        <option value="password">Password</option>
-        <option value="rsakey">RSA Key</option>
-        <option value="encrsakey">Password Protected RSA Key</option>
-      </select>
-    </p>
-    <p>
       Action:<br />
       <select>
         <option value="put">Upload File (from string)</option>
@@ -157,18 +149,9 @@ include('Crypt/RSA.php');</span>
 define('NET_SFTP_LOGGING', NET_SFTP_LOG_COMPLEX);
 </span>
 $sftp = new Net_SFTP('www.domain.tld');
-<span class="password">if (!$sftp-&gt;login('username', 'password')) {
+if (!$sftp-&gt;login('username', 'password')) {
     exit('Login Failed');
-}</span><span class="rsakey">$key = new Crypt_RSA();
-$key-&gt;loadKey(file_get_contents('privatekey'));
-if (!$sftp-&gt;login('username', $key)) {
-    exit('Login Failed');
-}</span><span class="encrsakey">$key = new Crypt_RSA();
-$key-&gt;setPassword('whatever');
-$key-&gt;loadKey(file_get_contents('privatekey'));
-if (!$sftp-&gt;login('username', $key)) {
-    exit('Login Failed');
-}</span>
+}
 
 <span class="put">// puts a three-byte file named filename.remote on the SFTP server
 $sftp->put('filename.remote', 'xxx');</span><span class="putfile">// copies filename.local to filename.remote on the SFTP server
