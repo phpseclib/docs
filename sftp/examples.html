@@ -130,8 +130,7 @@ ul { margin-bottom: 0 }
     <p>
       Action:<br />
       <select>
-        <option value="put">Upload File (from string)</option>
-        <option value="putfile">Upload File (from filesystem)</option>
+        <option value="put">Upload File</option>
         <option value="get">Download File (to string)</option>
         <option value="getfile">Download File (to filesystem)</option>
         <option value="dir">Directory Management</option>
@@ -161,7 +160,9 @@ if (!$sftp-&gt;login('username', 'password')) {
 }
 
 <span class="put">// puts a three-byte file named filename.remote on the SFTP server
-$sftp->put('filename.remote', 'xxx');</span><span class="putfile">// copies filename.local to filename.remote on the SFTP server
+$sftp->put('filename.remote', 'xxx');
+// puts an x-byte file named filename.remote on the SFTP server,
+// where x is the size of filename.local
 $sftp->put('filename.remote', 'filename.local', NET_SFTP_LOCAL_FILE);</span><span class="get">// outputs the contents of filename.remote to the screen
 echo $sftp->get('filename.remote');</span><span class="getfile">// copies filename.remote to filename.local from the SFTP server
 $sftp->get('filename.remote', 'filename.local');</span><span class="dir">$sftp->mkdir('test'); // create directory 'test'
@@ -206,6 +207,19 @@ echo $sftp->getSFTPLog();</span>
         <p>stat() and lstat() return associative arrays with misc information about the files. lstat() and stat() are identical with the caveat that when the file in question is a <a href="http://en.wikipedia.org/wiki/Symbolic_link">symbolic link</a> the information returned refers to the link itself and not the file (or directory) being linked to.</p>
         <p>size() returns the 'size' index of the associative array returned by lstat()</p>
       </div>
+      <div class="put">
+        <h2>Uploading files</h2>
+        <p>The function definition for put() is as follows:</p>
+        <pre class="prettyprint">function put($remote_file, $data, $mode = NET_SFTP_STRING, $start = -1, $local_start = -1)</pre>
+        <p><b>Uploading strings vs. files</b></p>
+        <p><code>$sftp->put('filename.remote', 'filename.local')</code> creates filename.remote on the remote server with 'filename.local' as the contents.<p>
+        <p><code>$sftp->put('filename.remote', 'xxx', NET_SFTP_LOCAL_FILE)</code> creates filename.remote on the remote server such that the contents of it and filename.local match. ie. with NET_SFTP_LOCAL_FILE it uploads a file and without it it uploads a string.</p>
+        <p><b>Resuming transfers</b></p>
+        <p><code>$sftp->put('filename.remote', 'xxx', NET_SFTP_RESUME)</code> will append 'xxx' to filename.remote.</p>
+        <p><code>$sftp->put('filename.remote', 'filename.local', NET_SFTP_LOCAL_FILE | NET_SFTP_RESUME_START)</code> will append filename.remote to filename.local.</p>
+        <p><code>$sftp->put('filename.remote', 'filename.local', NET_SFTP_LOCAL_FILE | NET_SFTP_RESUME)</code> will append all but the first <code>$sftp->size('filename.remote')</code> bytes of filename.local to filename.remote. The idea being that if your transfer is interupted you can restart it.</p>
+        <p><b>Positional control</b></p>
+        <p>$start and $local_start give you more fine grained control over this process and take precident over NET_SFTP_RESUME when they're non-negative. ie. $start could let you write at the end of a file (like NET_SFTP_RESUME) or in the middle of one. $local_start could let you start your reading from the end of a file (like NET_SFTP_RESUME_START) or in the middle of one.</p>
     </div>
   </div>
   <!-- end .grid_9 -->
