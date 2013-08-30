@@ -131,8 +131,7 @@ ul { margin-bottom: 0 }
       Action:<br />
       <select>
         <option value="put">Upload File</option>
-        <option value="get">Download File (to string)</option>
-        <option value="getfile">Download File (to filesystem)</option>
+        <option value="get">Download File</option>
         <option value="dir">Directory Management</option>
         <option value="list">Directory Listing</option>
         <option value="chmod">Change Permissions</option>
@@ -164,7 +163,8 @@ $sftp->put('filename.remote', 'xxx');
 // puts an x-byte file named filename.remote on the SFTP server,
 // where x is the size of filename.local
 $sftp->put('filename.remote', 'filename.local', NET_SFTP_LOCAL_FILE);</span><span class="get">// outputs the contents of filename.remote to the screen
-echo $sftp->get('filename.remote');</span><span class="getfile">// copies filename.remote to filename.local from the SFTP server
+echo $sftp->get('filename.remote');
+// copies filename.remote to filename.local from the SFTP server
 $sftp->get('filename.remote', 'filename.local');</span><span class="dir">$sftp->mkdir('test'); // create directory 'test'
 $sftp->chdir('test'); // open directory 'test'
 echo $sftp->pwd(); // show that we're in the 'test' directory
@@ -220,6 +220,12 @@ echo $sftp->getSFTPLog();</span>
         <p><code>$sftp->put('filename.remote', 'filename.local', NET_SFTP_LOCAL_FILE | NET_SFTP_RESUME)</code> will append all but the first <code>$sftp->size('filename.remote')</code> bytes of filename.local to filename.remote. The idea being that if your transfer is interupted you can restart it.</p>
         <p><b>Positional control</b></p>
         <p>$start and $local_start give you more fine grained control over this process and take precident over NET_SFTP_RESUME when they're non-negative. ie. $start could let you write at the end of a file (like NET_SFTP_RESUME) or in the middle of one. $local_start could let you start your reading from the end of a file (like NET_SFTP_RESUME_START) or in the middle of one.</p>
+    </div>
+    <div class="get">
+      <h2>Downloading files</h2>
+      <p>The function definition for get() is as follows:</p>
+      <pre class="prettyprint">function get($remote_file, $local_file = false, $offset = 0, $length = -1)</pre>
+      <p>Returns a string containing the contents of $remote_file if $local_file is left undefined or a boolean false if the operation was unsuccessful.  If $local_file is defined, returns true or false depending on the success of the operation.</p>
     </div>
   </div>
   <!-- end .grid_9 -->
