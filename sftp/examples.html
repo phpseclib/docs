@@ -134,7 +134,7 @@ ul { margin-bottom: 0 }
         <option value="get">Download File</option>
         <option value="dir">Directory Management</option>
         <option value="list">Directory Listing</option>
-        <option value="chmod">Change Permissions</option>
+        <option value="attr">File Attributes</option>
         <option value="stat">File Information</option>
         <option value="delete">Delete and Rename</option>
       </select>
@@ -174,8 +174,15 @@ $sftp->rmdir('test'); // delete the directory
 //$sftp->delete('test', true);</span><span style="display: none">
 </span><span class="list">print_r($sftp->nlist()); // == $sftp->nlist('.')
 print_r($sftp->rawlist()); // == $sftp->rawlist('.')</span><span style="display: none">
-</span><span class="chmod">$sftp->chmod(0777, 'filename.remote');
-//$sftp->chmod(0777, 'dirname.remote', true); // recursively change permissions on a directory</span><span style="display: none">
+</span><span class="attr">$sftp->chmod(0777, 'filename.remote');
+//$sftp->chmod(0777, 'dirname.remote', true); // recursively change permissions on a directory
+// has the same syntax as <a href="http://php.net/touch">http://php.net/touch</a>
+$sftp->touch('filename.remote');
+$sftp->chown('filename.remote', $uid);
+//$sftp->chown('filename.remote', $uid, true); // recursively change the owner
+$sftp->chgrp('filename.remote', $gid);
+//$sftp->chgrp('filename.remote', $gid, true); // recursively change the group
+$sftp->truncate('filename.remote', $size);</span><span style="display: none">
 </span><span class="stat">echo $sftp->size('filename.remote');
 print_r($sftp->stat('filename.remote'));
 print_r($sftp->lstat('filename.remote'));</span><span class="delete">$sftp->delete('filename.remote'); // doesn't delete directories
