@@ -304,7 +304,11 @@ function make_printable($result, $i = 0)
             }
             break;
         case FILE_ASN1_TYPE_INTEGER:
-            print_line($result['start'], $i, $length, $result['headerlength'], false, 'INTEGER', strtoupper($result['content']->toHex()));
+            $value = $result['content']->toHex();
+            if (empty($value)) {
+                $value = '00';
+            }
+            print_line($result['start'], $i, $length, $result['headerlength'], false, 'INTEGER', strtoupper($value));
             break;
         case FILE_ASN1_TYPE_OBJECT_IDENTIFIER:
             print_line($result['start'], $i, $length, $result['headerlength'], false, 'OBJECT', strtr($result['content'], $oids));
