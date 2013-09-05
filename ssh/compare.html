@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="google-site-verification" content="DHz4kg_uhBzFTmMZSrMTtF9lqPofgrUucAmZrsakViI" />
+<meta name="keywords" content="SSH,SFTP,RSA,PHP,AES,Rijndael,3DES,RC4,SSH2,SSH1,X.509,X509" />
+<meta name="description" content="In a comparison between libssh2 (ssh2 in PECL) vs phpseclib, phpseclib comes out on top, being faster and more feature packed." />
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-19770173-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<title>phpseclib: libssh2 vs phpseclib</title>
+
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+<link rel="stylesheet" href="../css/prettify.css"/>
+
+<script src="../js/prettify.js"></script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }.red { color: #e11 }
+.prettyprint { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+table { border: 1px outset; border-spacing: 2px; border-collapse: separate }
+td { border: 1px inset gray; padding: 3px }
+thead { background: yellow }
+thead td { font-weight: bold }
+tbody td {text-align: right }
+</style>
+</head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: libssh2 vs phpseclib</h1>
+    <div id="pgup">(return to <a href="intro.html">phpseclib: SSH2 Feature List</a>)</div>
+  </div>
+  <div class="grid_4">
+    <h2>Compared to libssh2, phpseclib:</h2>
+    <ul>
+      <li><a href="#speed">is faster</a></li>
+      <li><a href="#pubkey">has better public key support</a></li>
+      <li><a href="#diagnosis">is better at diagnosing problems</a></li>
+      <li><a href="#chdir">supports chdir in SFTP</a></li>
+      <li><a href="#interactive">has better interactive shell support</a></li>
+      <li><a href="#portable">is more portable</a></li>
+    </ul>
+  </div>
+  <div class="grid_8">
+    <p>Whether or not the API is better to libssh2 is debatable. This comparison looks at more objective criteria.</p>
+    <h2 id="speed">Speed</h2>
+    <p>The following table shows how long, in seconds, it took to <b>upload</b> a 1mb file via phpseclib and libssh2 to localhost and to a remote host.</p>
+    <table border="1">
+      <thead>
+        <tr><td style="border: 0; background: white" colspan="2"></td><td>remote host</td><td>localhost</td></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="background: wheat" rowspan="2">Upload</td>
+          <td style="background: yellow"><b>libssh2</b></td>
+          <td>13.0037</td>
+          <td>1.1250</td>
+        </tr>
+        <tr>
+          <td style="background: yellow"><b>phpseclib</b></td>
+          <td style="background: lightgreen">11.1086</td>
+          <td style="background: lightgreen">0.3380</td>
+        </tr>
+        <tr>
+          <td style="background: wheat" rowspan="2">Download</td>
+          <td style="background: yellow"><b>libssh2</b></td>
+          <td>4.8302</td>
+          <td>0.7680</td>
+        </tr>
+        <tr>
+          <td style="background: yellow"><b>phpseclib</b></td>
+          <td style="background: lightgreen">2.4311</td>
+          <td style="background: lightgreen">0.4400</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>This test was conducted on an Intel Core i5-3320M CPU @ 2.6GHz running Windows 7 64-bit and <a href="http://windows.php.net/downloads/releases/php-5.4.19-nts-Win32-VC9-x86.zip">PHP 5.4.19</a> and <a href="http://windows.php.net/downloads/pecl/releases/ssh2/0.12/php_ssh2-0.12-5.4-nts-vc9-x86.zip">libssh 0.12</a> and the latest Git version of phpseclib with the gmp and mcrypt extensions installed.</p>
+    <p>The connection to the remote host was done with a <a href="http://www.timewarnercable.com/en/residential-home/internet/plans.html">1MB upload speed</a>. Here's the <a href="https://en.wikipedia.org/wiki/Speedtest.net">speedtest.net</a> results:</p>
+    <p><a href="http://www.speedtest.net/my-result/2945636098"><img src="http://www.speedtest.net/result/2945636098.png" alt="speed test" /></a></p>
+    <p>The code used to conduct these tests is at <a href="upload.phps">upload.phps</a> and <a href="download.phps">download.phps</a>.</p>
+    <p>The motivation for doing a separate test for remote hosts and localhosts was to compare the speeds with different bottlenecks. ie. with the remote host the bandwidth is the bottleneck. With localhost bandwidth is eliminated as a bottleneck. This shows that phpseclib performs better under a multitude of conditions.</p>
+    <h2 id="pubkey">Public Key Support</h2>
+    <p>How you do it with libssh2:</p>
+    <pre class="prettyprint">&lt;?php
+$ssh = ssh2_connect('domain.tld');
+ssh2_auth_pubkey_file($ssh, 'username', '/home/ubuntu/pubkey', '/home/ubuntu/privkey'/*, 'password'*/);
+
+$stream = ssh2_exec($ssh, 'ls -la');
+echo stream_get_contents($stream);</pre>
+    <p>Both have to be of the right format too. If you didn't use ssh-keygen to generate your keys good luck in converting them.</p>
+    <pre class="prettyprint">&lt;?php
+include('Net/SSH2.php');
+include('Crypt/RSA.php');
+
+$rsa = new Crypt_RSA();
+$rsa->loadKey('...');
+
+$ssh = new Net_SSH2('domain.tld');
+$ssh->login('username', $rsa);
+//$ssh->setPassword('password');
+
+echo $ssh->exec('ls -la');</pre>
+    <p>Ignoring the API for the time being there are a few clear ways phpseclib comes out on top here:</p>
+    <p><ul>
+      <li>phpseclib takes in strings - not file paths. If you want to do a file you can do file_get_contents.</li>
+      <li>phpseclib doesn't require a public key. Most private key formats have the public key embedded within them. And if they don't... phpseclib supports that too.</li>
+      <li>phpseclib can take in pretty much any standardized format, from PKCS#1 formatted keys, to PuTTY keys, to XML Signature keys</li>
+    </ul></p>
+    <h2 id="diagnosis">Diagnosing Problems</h2>
+    <p>Why didn't top or sudo work? With phpseclib you can <a href="examples.html#oneoff,logging">get logs</a>. They look like this:</p>
+    <p><a href="http://phpseclib.sourceforge.net/ssh/log.txt">http://phpseclib.sourceforge.net/ssh/log.txt</a></p>
+    <p>You can also do print_r($ssh->getErrors()) or echo $ssh->getLastError()</p>
+    <h2 id="chdir">Changing Directories</h2>
+    <p>I don't see any cd or chdir functions at <a href="http://php.net/ssh2">http://php.net/ssh2</a>. phpseclib, however, has it - Net_SFTP::chdir(...)</p>
+    <h2 id="interactive">Interactive Shell</h2>
+    <p>Let's try to do sudo on the remote system.</p>
+    <p>With phpseclib: <a href="examples.html#sudo">examples.html#sudo</a></p>
+    <p>With libssh2? I have no clue. My best guess (doesn't work):</p>
+    <pre class="prettyprint">&lt;?php
+$ssh = ssh2_connect('domain.tld'); 
+ssh2_auth_password($ssh, 'username', 'password');
+
+$shell = ssh2_shell($ssh);
+echo fread($shell, 1024*1024);
+fwrite($shell, "sudo ls -la\n");
+$output = fread($shell, 1024*1024);
+echo $output;
+if (preg_match('#[pP]assword[^:]*:#', $output)) {
+    fwrite($shell, "password\n");
+}
+echo fread($shell, 1024*1024);</pre>
+    <p>It is additionally unclear how to get top working with libssh2 but it works perfectly fine with phpseclib: <a href="examples.html#top">examples.html#top</a>.</p>
+    <h2 id="portable">Portability</h2>
+    <p>Does your host even have libssh2 installed right now?</p>
+  </div>
+</body>
+</html>
