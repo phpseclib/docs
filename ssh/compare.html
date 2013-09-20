@@ -53,16 +53,19 @@ tbody td {text-align: right }
   <div class="grid_4">
     <h2>Compared to libssh2, phpseclib:</h2>
     <ul>
+      <li><a href="#portable">is more portable</a></li>
       <li><a href="#speed">is faster</a></li>
       <li><a href="#pubkey">has better public key support</a></li>
       <li><a href="#diagnosis">is better at diagnosing problems</a></li>
       <li><a href="#chdir">supports chdir in SFTP</a></li>
       <li><a href="#interactive">has better interactive shell support</a></li>
-      <li><a href="#portable">is more portable</a></li>
     </ul>
   </div>
   <div class="grid_8">
     <p>Whether or not the API is better to libssh2 is debatable. This comparison looks at more objective criteria.</p>
+    <h2 id="portable">Portability</h2>
+    <p>phpseclib is designed to be ultra-portable, even to the point of working on PHP4. Not a single extension is required, either (although if they're available they'll be used, for speed).</p>
+    <p>libssh2, in contrast... if you're on a shared host that doesn't have it installed (and most don't) you're S.O.L. And even if your server is running on a dedicated box it's still one extra step you have to do to install it. As if migrating to a new server wasn't enough of a challenge do you really want to compound the challenge by adding an additional server dependency like libssh2?</p>
     <h2 id="speed">Speed</h2>
     <p>The following table shows how long, in seconds, it took to transfer a 1mb file via phpseclib and libssh2 to localhost and to a remote host.</p>
     <table border="1">
@@ -150,8 +153,6 @@ if (preg_match('#[pP]assword[^:]*:#', $output)) {
 }
 echo fread($shell, 1024*1024);</pre>
     <p>It is additionally unclear how to get top working with libssh2 but it works perfectly fine with phpseclib: <a href="examples.html#top">examples.html#top</a>.</p>
-    <h2 id="portable">Portability</h2>
-    <p>Does your host even have libssh2 installed right now?</p>
   </div>
 </body>
 </html>
