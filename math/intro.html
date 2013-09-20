@@ -91,7 +91,7 @@ tbody td {text-align: right }
   </div>
   <div class="grid_8">
     <h2>Speed Analysis</h2>
-    <p>The following <a href="http://en.wikipedia.org/wiki/Heat_map">heat map</a> shows how many <b>seconds</b> Math_BigInteger takes to perform encryption / decryption with a 2048-bit RSA key on a 1.73GHz Intel Core i7-820QM under various environments. See <a href="speed.phps">speed.phps</a> for the source code.</p>
+    <p>The following <a href="http://en.wikipedia.org/wiki/Heat_map">heat map</a> shows how many <b>seconds</b> Math_BigInteger takes to perform encryption / decryption with a 2048-bit RSA key on an Intel Core i5-3320M CPU @ 2.6GHz under various environments. <a href="generate.phps">generate.phps</a> was used to generate the heatmap. col*.php are all variations of <a href="speed.phps">speed.phps</a>.</p>
     <p>Math_BigInteger automatically picks the fastest settings to use depending on what extensions it has available at its disposal.</p>
     <table border="1">
       <thead>
@@ -99,21 +99,13 @@ tbody td {text-align: right }
         <tr><td style="border: 0; background: white"></td><td colspan="2" style="background: wheat; font-weight: normal; text-align: center">w/o OpenSSL</td><td colspan="2" style="background: wheat; font-weight: normal; text-align: center">w/ OpenSSL</td><td style="border: 0; background: white"></td></tr>
       </thead>
       <tbody>
-<!--
-$cur = 0.087;
-$max = 26.448;
-$r = intval(($cur / $max) * 255);
-$gb = 255 - $r;
-$r = str_pad(dechex($r), 2, '0', STR_PAD_RIGHT);
-$gb = str_pad(dechex($gb), 2, '0', STR_PAD_RIGHT);
-echo 'ff' . $gb . $gb;
--->
-        <tr><td style="background: yellow"><b>PHP 4.4</b></td><td style="background: #ff0000">26.448</td><td style="background: #ffcfcf">5.003</td><td style="background: #ffe1e1">3.205</td><td style="background: #fffbfb">0.454</td><td style="border: 0; background: white"></td></tr>
-        <tr><td style="background: yellow"><b>PHP 5.0</b></td><td style="background: #ff0202">25.802</td><td style="background: #ffd1d1">4.873</td><td style="background: #ffe0e0">3.279</td><td style="background: #fffbfb">0.455</td><td style="border: 0; background: white"></td></tr>
-        <tr><td style="background: yellow"><b>PHP 5.1</b></td><td style="background: #ffaaaa">8.907</td><td style="background: #ffd0d0">4.962</td><td style="background: #ffeeee">1.778</td><td style="background: #fffbfb">0.434</td><td>0.021</td></tr>
-        <tr><td style="background: yellow"><b>PHP 5.2</b></td><td style="background: #ffafaf">8.363</td><td style="background: #ffd2d2">4.672</td><td style="background: #fff0f0">1.595</td><td style="background: #fffcfc">0.391</td><td>0.018</td></tr>
-        <tr><td style="background: yellow"><b>PHP 5.3</b></td><td style="background: #ffc1c1">6.477</td><td style="background: #ffd5d5">4.454</td><td style="background: #fff5f5">1.124</td><td style="background: #fffafa">0.570</td><td>0.087</td></tr>
-        <tr><td style="background: yellow"><b>PHP 5.4</b></td><td style="background: #ffd0d0">4.970</td><td style="background: #ffa7a7">9.146</td><td style="background: #fff9f9">0.702</td><td style="background: #fffcfc">0.403</td><td>0.013</td></tr>
+        <tr><td style="background: yellow"><b>PHP 4.4</b></td><td style="background: #ff7070">19.840</td><td style="background: #ffcccc">4.125</td><td style="background: #ffe4e4">2.227</td><td style="background: #fffdfd">0.186</td><td style="border: 0; background: white"></td></tr>
+        <tr><td style="background: yellow"><b>PHP 5.0</b></td><td style="background: #ff0000">20.338</td><td style="background: #ffcccc">4.099</td><td style="background: #ffe2e2">2.353</td><td style="background: #fffdfd">0.193</td><td style="border: 0; background: white"></td></tr>
+        <tr><td style="background: yellow"><b>PHP 5.1</b></td><td style="background: #ff9898">8.290</td><td style="background: #ffcbcb">4.160</td><td style="background: #ffefef">1.343</td><td style="background: #fffdfd">0.187</td><td style="background: #ffffff">0.014</td></tr>
+        <tr><td style="background: yellow"><b>PHP 5.2</b></td><td style="background: #ff9c9c">7.944</td><td style="background: #ffcdcd">3.995</td><td style="background: #fff0f0">1.210</td><td style="background: #fffdfd">0.177</td><td style="background: #ffffff">0.014</td></tr>
+        <tr><td style="background: yellow"><b>PHP 5.3</b></td><td style="background: #ffb7b7">5.758</td><td style="background: #ffd6d6">3.293</td><td style="background: #fff6f6">0.791</td><td style="background: #fffcfc">0.246</td><td style="background: #ffffff">0.017</td></tr>
+        <tr><td style="background: yellow"><b>PHP 5.4</b></td><td style="background: #ffd8d8">3.159</td><td style="background: #ffbcbc">5.415</td><td style="background: #fff9f9">0.519</td><td style="background: #fffcfc">0.293</td><td style="background: #ffffff">0.019</td></tr>
+        <tr><td style="background: yellow"><b>PHP 5.5</b></td><td style="background: #ffd1d1">3.719</td><td style="background: #ffc8c8">4.459</td><td style="background: #fff9f9">0.485</td><td style="background: #fffdfd">0.227</td><td style="background: #ffffff">0.020</td></tr>
       </tbody>
     </table>
     <h2>Internal Engine</h2>
