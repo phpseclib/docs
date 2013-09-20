@@ -290,7 +290,7 @@ echo $cipher->decrypt($cipher->encrypt($plaintext));
       <div id="speed" class="aes rijndael">
         <div class="cbc ecb">
         <h2>Speed Comparisons</h2>
-        <p>The following table compares the speed of five different pure-PHP implementations of AES (one of which is Crypt_Rijndael and one of which is Crypt_AES) when ran on 1MB of text on a 1.73GHz Intel Core i7-820QM with PHP 5.4.3. The numbers listed are averaged from five different trials and are measured in seconds. phpseclib's two implementations are highlighted. All implementations can be viewed by clicking on their names.</p>
+        <p>The following table compares the speed of five different pure-PHP implementations of AES when ran on 1MB of text on an Intel Core i5-3320M CPU @ 2.6GHz with PHP 5.5.3. The numbers listed are averaged from two different trials and are measured in seconds. phpseclib's implementation is highlighted. All implementations can be viewed by clicking on their names and the table was generated with <a href="benchmark.phps">benchmark.phps</a>.</p>
         <table>
           <thead>
             <tr>
@@ -301,31 +301,27 @@ echo $cipher->decrypt($cipher->encrypt($plaintext));
           <tbody>
             <tr>
               <td><a href="movable-type.phps">movable-type.phps</a></td>
-              <td>28.2514320611955</td>
+              <td>21.164710998535</td>
             </tr>
             <tr>
               <td><a href="phpaes.phps">phpaes.phps</a></td>
-              <td>50.1811164617535</td>
+              <td>37.811162352562</td>
             </tr>
             <tr>
               <td><a href="phpclasses1.phps">phpclasses1.phps</a></td>
-              <td>22.9090529680255</td>
+              <td>17.648010134697</td>
             </tr>
             <tr>
               <td><a href="phpclasses2.phps">phpclasses2.phps</a></td>
-              <td>51.9629266262055</td>
+              <td>43.407482504844</td>
             </tr>
             <tr style="background: yellow">
-              <td><a href="phpseclib-aes.phps">phpseclib-aes.phps</a></td>
-              <td>1.92589354515075</td>
-            </tr>
-            <tr style="background: yellow">
-              <td><a href="phpseclib-rijndael.phps">phpseclib-rijndael.phps</a></td>
-              <td>3.30701446533205</td>
+              <td><a href="phpseclib.phps">phpseclib.phps</a></td>
+              <td>1.0410599708557</td>
             </tr>
           </tbody>
         </table>
-        <p>As can be seen, phpseclib's implementations are the fastest. phpseclib-aes.phps is faster than phpseclib-rijndael.phps because phpseclib-rijndael.phps has to contend with multiple block sizes whereas phpseclib-aes.phps does not. Note that if mcrypt weren't explicitily disabled phpseclib would have been even faster.</p>
+        <p>As can be seen, phpseclib's implementations are the fastest. Note that if mcrypt weren't explicitily disabled phpseclib would have been even faster.</p>
         </div>
       </div>
     </div>
