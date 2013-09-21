@@ -147,6 +147,7 @@ ul { margin-bottom: 0 }
         <option value="pkcs1pub">PKCS#1</option>
         <option value="openssh">OpenSSH</option>
         <option value="xmlpub">XML Signature</option>
+        <option value="raw">Raw</option>
       </select>
     </p>
     <p class="sign">
@@ -171,7 +172,7 @@ ul { margin-bottom: 0 }
 include('Crypt/RSA.php');
 
 $rsa = new Crypt_RSA();
-<span class="timeout">
+<span class="timeout"> <!-- section -->
 <span class="encpkcs1 encputty">$rsa->setPassword('password');
 </span><span class="putty encputty">$rsa->setPrivateKeyFormat(CRYPT_RSA_PRIVATE_FORMAT_PUTTY);
 </span><span class="xml">$rsa->setPrivateKeyFormat(CRYPT_RSA_PRIVATE_FORMAT_XML);
@@ -179,11 +180,12 @@ $rsa = new Crypt_RSA();
 </span><span class="pkcs1pub">//$rsa->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_PKCS1);
 </span><span class="openssh">$rsa->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_OPENSSH);
 </span><span class="xmlpub">$rsa->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_XML);
+</span><span class="raw">$rsa->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_RAW);
 </span>
 // initial call
 extract($rsa->createKey(1024, 10));
 // subsequent calls
-extract($rsa->createKey(1024, 10, $partialkey));</span><span class="create">
+extract($rsa->createKey(1024, 10, $partialkey));</span><span class="create"> <!-- section -->
 <span class="encpkcs1 encputty">$rsa->setPassword('password');
 </span><span class="putty encputty">$rsa->setPrivateKeyFormat(CRYPT_RSA_PRIVATE_FORMAT_PUTTY);
 </span><span class="xml">$rsa->setPrivateKeyFormat(CRYPT_RSA_PRIVATE_FORMAT_XML);
@@ -191,10 +193,11 @@ extract($rsa->createKey(1024, 10, $partialkey));</span><span class="create">
 </span><span class="pkcs1pub">//$rsa->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_PKCS1);
 </span><span class="openssh">$rsa->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_OPENSSH);
 </span><span class="xmlpub">$rsa->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_XML);
+</span><span class="raw">$rsa->setPublicKeyFormat(CRYPT_RSA_PUBLIC_FORMAT_RAW);
 </span>
 //define('CRYPT_RSA_EXPONENT', 65537);
 //define('CRYPT_RSA_SMALLEST_PRIME', 64); // makes it so multi-prime RSA is used
-extract($rsa->createKey()); // == $rsa->createKey(1024) where 1024 is the key size</span><span class="convert">//$rsa->setPassword('password');
+extract($rsa->createKey()); // == $rsa->createKey(1024) where 1024 is the key size</span><span class="convert">//$rsa->setPassword('password'); <!-- section -->
 $rsa->loadKey('...');
 <span class="putty pkcs1 xml">
 //$rsa->setPassword(); // clear the password if there was one</span><span class="encputty encpkcs1">
@@ -204,13 +207,15 @@ $privatekey = $rsa->getPrivateKey(CRYPT_RSA_PRIVATE_FORMAT_PUTTY);</span><span c
 $privatekey = $rsa->getPrivateKey(CRYPT_RSA_PRIVATE_FORMAT_XML);</span><span class="pkcs1pub">
 $publickey = $rsa->getPublicKey(); // could do CRYPT_RSA_PUBLIC_FORMAT_PKCS1 too</span><span class="openssh">
 $publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_OPENSSH);</span><span class="xmlpub">
-$publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_XML);</span></span><span class="public">
+$publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_XML);</span><span class="raw">
+$publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_RAW);</span></span><span class="public"> <!-- section -->
 $rsa->loadKey('...');
 $rsa->setPublicKey();
 <span class="pkcs1pub">
 $publickey = $rsa->getPublicKey(); // could do CRYPT_RSA_PUBLIC_FORMAT_PKCS1 too</span><span class="openssh">
 $publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_OPENSSH);</span><span class="xmlpub">
-$publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_XML);</span></span><span class="sign">//$rsa->setPassword('password');
+$publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_XML);</span><span class="raw">
+$publickey = $rsa->getPublicKey(CRYPT_RSA_PUBLIC_FORMAT_RAW);</span></span><span class="sign">//$rsa->setPassword('password');
 $rsa->loadKey('...'); // private key
 
 $plaintext = '...';
@@ -343,6 +348,15 @@ FPqri0cb2JZfXJ/DgYSF6vUpwmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/
   &lt;Exponent>AQAB&lt;/Exponent>
 &lt;/RSAKeyValue></pre>
         </div>
+        <div class="raw">
+        <b>var_dump($publickey)</b>:
+        <pre class="pre">array(2) {
+  ["e"]=>
+  object(Math_BigInteger) ...
+  ["n"]=>
+  object(Math_BigInteger) ...
+}</pre>
+        </div>
       </div>
       <div class="public">
         <h2>Values of $publickey:</h2>
@@ -361,6 +375,15 @@ FPqri0cb2JZfXJ/DgYSF6vUpwmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/
   &lt;Modulus>AKoYq6Q7UN7vOFmPr4fSq2NORXHBMKm8p7h4JnQU+quLRxvYll9cn8OBhIXq9SnCYkbzBVBkqN4ZyMM4vlSWy66wWdwLNYFDtEo1RJ6yZBExIaRVvX/eP6yRnpS1b7m7T2Uc2yPq1DnWzVI+sIGR51s1/ROnQZswkPJHh71PThln&lt;/Modulus>
   &lt;Exponent>AQAB&lt;/Exponent>
 &lt;/RSAKeyValue></pre>
+        </div>
+        <div class="raw">
+        <p>Output of <code>var_dump($publickey)</code>:</p>
+        <pre class="pre">array(2) {
+  ["e"]=>
+  object(Math_BigInteger) ...
+  ["n"]=>
+  object(Math_BigInteger) ...
+}</pre>
         </div>
       </div>
       <div class="sign">
