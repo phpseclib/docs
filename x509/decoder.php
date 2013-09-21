@@ -179,7 +179,7 @@ Upload certificate:<br />
 </form>
 <?php
 else:
-    $cert = !empty($_POST['cert']) ? $_POST['cert'] : file_get_contents($_FILES['pem']['tmp_name']);
+    $cert = !strlen($_FILES['pem']['tmp_name']) ? $_POST['cert'] : file_get_contents($_FILES['pem']['tmp_name']);
 
     include('File/X509.php');
 

@@ -93,7 +93,7 @@ echo '<pre style="whitespace: nowrap">';
 include_once('File/ASN1.php'); 
 
 $asn1 = new File_ASN1();
-$str = !empty($_POST['cert']) ? $_POST['cert'] : file_get_contents($_FILES['pem']['tmp_name']);
+$str = !strlen($_FILES['pem']['tmp_name']) ? $_POST['cert'] : file_get_contents($_FILES['pem']['tmp_name']);
 /*
     X.509 certs are assumed to be base64 encoded but sometimes they'll have additional things in them above and beyond the ceritificate. ie.
     some may have the following preceeding the -----BEGIN CERTIFICATE----- line:
