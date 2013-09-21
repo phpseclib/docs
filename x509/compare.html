@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="google-site-verification" content="DHz4kg_uhBzFTmMZSrMTtF9lqPofgrUucAmZrsakViI" />
+<meta name="keywords" content="SSH,SFTP,RSA,PHP,AES,Rijndael,3DES,RC4,SSH2,SSH1,X.509,X509" />
+<meta name="description" content="In a comparison between OpenSSL vs phpseclib, phpseclib has some capabilities OpenSSL doesn't." />
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-19770173-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<title>phpseclib: libssh2 vs phpseclib</title>
+
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+<link rel="stylesheet" href="../css/prettify.css"/>
+
+<script src="../js/prettify.js"></script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }.red { color: #e11 }
+.prettyprint { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+table { border: 1px outset; border-spacing: 2px; border-collapse: separate }
+td { border: 1px inset gray; padding: 3px }
+thead { background: yellow }
+thead td { font-weight: bold }
+tbody td {text-align: right }
+</style>
+</head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: OpenSSL vs phpseclib</h1>
+    <div id="pgup">(return to <a href="intro.html">phpseclib: X.509 Feature List</a>)</div>
+  </div>
+  <div class="grid_4">
+    <h2>Unlike OpenSSL, phpseclib can:</h2>
+    <ul>
+      <li><a href="#noprivkey">create a certificate without the private key</a></li>
+      <li><a href="#csrattr">set CSR attributes and extension requests</a></li>
+      <li><a href="#csrupdate">update CSR before signing</a></li>
+      <li><a href="#certrenew">renew a certificate</a></li>
+      <li><a href="#createcrl">create CRLs</a></li>
+      <li><a href="#certrevoked">check if a cert has been revoked</a></li>
+      <li><a href="#crlupdate">update and renew a CRL</a></li>
+    </ul>
+  </div>
+  <div class="grid_8">
+    <p>OpenSSL's PHP bindings offer a great many features phpseclib (currently) does not, however, phpseclib offers some features OpenSSL's PHP bindings do not.</p>
+    <h2 id="noprivkey">Create a certificate without the private key</h2>
+    <p>Unlike OpenSSL, phpseclib does not need a certificate request to create a certificate: since certificate requests have to be signed with the private key, OpenSSL is unable to produce a certificate without knowing the private key.</p>
+    <pre class="prettyprint">&lt;?php
+require_once 'Crypt/RSA.php';
+require_once 'File/X509.php';
+
+// Load the CA and its private key.
+$pemcakey = file_get_contents('myCAprivkey.pem');
+$cakey = new Crypt_RSA();
+$cakey->loadKey($pemcakey);
+$pemca = file_get_contents('myCA.pem');
+$ca = new File_X509();
+$ca->loadX509($pemca);
+$ca->setPrivateKey($cakey);
+
+// Load the certificate public key.
+$pubkey = new Crypt_RSA();
+$pubkey->loadKey(file_get_contents('pubkey.pem'));
+$pubkey->setPublicKey();
+
+// Build the new certificate.
+$x509 = new File_X509();
+$x509->loadCA($pemca);
+$x509->setPublicKey($pubkey);
+$x509->setDN('CN=www.example.org');
+$x509->setStartDate('-1 day');
+$x509->setEndDate('+ 1 year');
+$x509->setSerialNumber('1234', 10);
+
+// Sign new certificate.
+$cert = $x509->sign($ca, $x509);
+
+// Output it.
+echo $x509->saveX509($cert) . "\n";</pre>
+    <h2 id="csrattr">Setting CSR attributes and extension requests</h2>
+    <p>OpenSSL can only do it via a configuration file.</p>
+    <pre class="prettyprint">&lt;?php
+require_once 'Crypt/RSA.php';
+require_once 'File/X509.php';
+
+// Create key pair.
+$rsa = new Crypt_RSA();
+$key = $rsa->createKey();
+$privkey = new Crypt_RSA();
+$privkey->loadKey($key['privatekey']);
+$pubkey = new Crypt_RSA();
+$pubkey->loadKey($key['publickey']);
+$pubkey->setPublicKey();
+
+// Create certificate request.
+$csr = new File_X509();
+$csr->setPrivateKey($privkey);
+$csr->setPublicKey($pubkey);
+$csr->setDN('CN=www.example.org');
+$csr->loadCSR($csr->saveCSR($csr->signCSR()));
+
+// Set CSR attribute.
+$csr->setAttribute('pkcs-9-at-unstructuredName', array('directoryString' => array('utf8String' => 'myCSR')), FILE_X509_ATTR_REPLACE);
+
+// Set extension request.
+$csr->setExtension('id-ce-keyUsage', array('encipherOnly'));
+
+// Generate CSR.
+echo $csr->saveCSR($csr->signCSR()) . "\n";</pre>
+    <h2 id="csrupdate">Update certificate request before signing</h2>
+    <p>Since OpenSSL can only produce certificate from valid certificate requests, there is no way to alter subject and/or extensions before signing. These features are available in phpseclib.</p>
+    <pre class="prettyprint">&lt;?php
+require_once 'Crypt/RSA.php';
+require_once 'File/X509.php';
+
+// Read certificate request and validate it.
+$csr = new File_X509();
+$csr->loadCSR(file_get_contents('mycsr.pem'));
+if ($csr->validateSignature() !== 1) {
+	exit("Invalid CSR\n");
+}
+
+// Alter certificate request.
+$csr->setDNProp('CN', 'www.example.org');
+$csr->removeExtension('id-ce-basicConstraints');
+
+// Load the CA and its private key.
+$pemcakey = file_get_contents('myCAprivkey.pem');
+$cakey = new Crypt_RSA();
+$cakey->loadKey($pemcakey);
+$pemca = file_get_contents('myCA.pem');
+$ca = new File_X509();
+$ca->loadX509($pemca);
+$ca->setPrivateKey($cakey);
+
+// Sign the updated request, producing the certificate.
+$x509 = new File_X509();
+$cert = $x509->loadX509($x509->saveX509($x509->sign($ca, $csr)));
+
+// Generate the certificate.
+echo $x509->saveX509($cert) . "\n";</pre>
+    <h2 id="certrenew">Renewing a certificate</h2>
+    <p>OpenSSL can only sign a certificate request, but the certificate's private key is needed to produce this certificate request. By directly resigning a certificate, phpseclib can renew it.</p>
+    <pre class="prettyprint">&lt;?php
+require_once 'Crypt/RSA.php';
+require_once 'File/X509.php';
+
+// Load the CA and its private key.
+$pemcakey = file_get_contents('myCAprivkey.pem');
+$cakey = new Crypt_RSA();
+$cakey->loadKey($pemcakey);
+$pemca = file_get_contents('myCA.pem');
+$ca = new File_X509();
+$ca->loadX509($pemca);
+$ca->setPrivateKey($cakey);
+
+// Read the old certificate.
+$oldcert = new File_X509();
+$oldcert->loadCA($pemca);
+$oldcert->loadX509(file_get_contents('oldcert.pem'));
+if ($oldcert->validateSignature() !== 1) {
+    exit("Cannot validate old certificate\n");
+}
+
+// Set new dates and serial number.
+$newcert = new File_X509();
+$newcert->setStartDate('-1 day');
+$newcert->setEndDate('+2 years');
+$newcert->setSerialNumber('1234', 10);
+
+// Produce the new certificate by signing the old one.
+$crt = $newcert->loadX509($newcert->saveX509($newcert->sign($ca, $oldcert)));
+
+// Output new certificate.
+echo $newcert->saveX509($crt) . "\n";</pre>
+    <h2 id="createcrl">Create certificate revocation lists</h2>
+    <p>Although requested to PHP openSSL support for several years, certificate revocation lists are still not implemented in standard PHP: <a href="https://bugs.php.net/bug.php?id=40046">https://bugs.php.net/bug.php?id=40046</a>.</p>
+    <pre class="prettyprint">&lt;?php
+require_once 'Crypt/RSA.php';
+require_once 'File/X509.php';
+
+// Load the CA and its private key.
+$pemcakey = file_get_contents('myCAprivkey.pem');
+$cakey = new Crypt_RSA();
+$cakey->loadKey($pemcakey);
+$pemca = file_get_contents('myCA.pem');
+$ca = new File_X509();
+$ca->loadX509($pemca);
+$ca->setPrivateKey($cakey);
+
+// Build the (empty) certificate revocation list.
+$crl = new File_X509();
+$crl->loadCRL($crl->saveCRL($crl->signCRL($ca, $crl)));
+
+// Revoke a certificate.
+$crl->setRevokedCertificateExtension('1234', 'id-ce-cRLReasons', 'privilegeWithdrawn');
+
+// Sign the CRL.
+$crl->setSerialNumber(1, 10);
+$crl->setEndDate('+3 months');
+$newcrl = $crl->signCRL($ca, $crl);
+
+// Output it.
+echo $crl->saveCRL($newcrl) . "\n";</pre>
+    <h2 id="certrevoked">Check if a certificate has been revoked</h2>
+    <pre class="prettyprint">&lt;?php
+require_once 'Crypt/RSA.php';
+require_once 'File/X509.php';
+
+// Load the CA and its private key.
+$pemcakey = file_get_contents('myCAprivkey.pem');
+$cakey = new Crypt_RSA();
+$cakey->loadKey($pemcakey);
+$pemca = file_get_contents('myCA.pem');
+$ca = new File_X509();
+$ca->loadX509($pemca);
+$ca->setPrivateKey($cakey);
+
+// Load the CRL.
+$crl = new File_X509();
+$crl->loadCA($pemca); // For later signature check.
+$pemcrl = file_get_contents('myCRL.pem');
+$crl->loadCRL($pemcrl);
+
+// Validate the CRL.
+if ($crl->validateSignature() !== 1) {
+    exit("CRL signature is invalid\n");
+}
+
+// Load the certificate to check.
+$x509 = new File_X509();
+$x509->loadCA($pemca);
+$cert = $x509->loadX509(file_get_contents('myCert.pem'));
+if ($x509->validateSignature() !== 1) {
+    exit("Certificate signature is invalid\n");
+}
+
+// Get the certificate's serial number.
+$csn = $cert['tbsCertificate']['serialNumber']->toString();
+
+// Check certificate revocation status.
+$revoked = $crl->getRevoked($csn);
+
+if (empty($revoked)) {
+    exit("certificate is not revoked\n");
+}
+
+echo 'certificate has been revoked on ' . implode('', $revoked['revocationDate']);
+$reason = $crl->getRevokedCertificateExtension($csn, 'id-ce-cRLReasons');
+if (!empty($reason)) {
+    echo "; reason is $reason";
+}
+exit(".\n");</pre>
+    <h2 id="crlupdate">Update and renew a certificate revocation list</h2>
+    <pre class="prettyprint">&lt;?php
+require_once 'Crypt/RSA.php';
+require_once 'File/X509.php';
+
+// Load the CA and its private key.
+$pemcakey = file_get_contents('myCAprivkey.pem');
+$cakey = new Crypt_RSA();
+$cakey->loadKey($pemcakey);
+$pemca = file_get_contents('myCA.pem');
+$ca = new File_X509();
+$ca->loadX509($pemca);
+$ca->setPrivateKey($cakey);
+
+// Load the CRL.
+$crl = new File_X509();
+$crl->loadCA($pemca); // For later signature check.
+$pemcrl = file_get_contents('myCRL.pem');
+$crl->loadCRL($pemcrl);
+
+// Validate the CRL.
+if ($crl->validateSignature() !== 1) {
+    exit("CRL signature is invalid\n");
+}
+
+// Update the revocation list.
+$crl->setRevokedCertificateExtension('4321', 'id-ce-cRLReasons', 'privilegeWithdrawn');
+
+// Generate the new CRL.
+$crl->setEndDate('+3 months');
+$newcrl = $crl->signCRL($ca, $crl);
+
+// Output it.
+echo $crl->saveCRL($newcrl) . "\n";</pre>
+  </div>
+</body>
+</html>
