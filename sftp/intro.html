@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8" />
 <meta name="google-site-verification" content="DHz4kg_uhBzFTmMZSrMTtF9lqPofgrUucAmZrsakViI" />
-<meta name="keywords" content="SSH,SFTP,RSA,PHP,AES,Rijndael,3DES,RC4,SSH2,SSH1,X.509,X509" />
 <meta name="description" content="phpseclib's SFTP implementation is feature rich and has pretty much zero server requirements above and beyond PHP" />
 <script type="text/javascript">
 
@@ -18,7 +17,19 @@
   })();
 
 </script>
-<title>phpseclib: SFTP Introduction</title>
+
+<link rel="stylesheet" href="../css/jquery-ui-1.8.21.button.css" />
+
+<script src="../js/jquery-1.7.2.min.js"></script>
+<script src="../js/jquery-ui-1.8.21.button.min.js"></script>
+
+<script>
+$(document).ready(function() {
+  $('.button').button();
+});
+</script>
+
+<title>SFTP Introduction | phpseclib</title>
 <link rel="stylesheet" href="../css/reset.css" />
 <link rel="stylesheet" href="../css/text.css" />
 <link rel="stylesheet" href="../css/960.css" />
@@ -35,11 +46,15 @@ ul { margin-bottom: 0 }
 #pgup { font-size: 10px; margin-bottom: 2em }</style></head>
 <body onload="prettyPrint()">
 <div class="container_12">
-  <div class="grid_12">
+  <div class="grid_6">
     <h1>php<span class="red">sec</span>lib: SFTP Feature List</h1>
     <div id="pgup">(return to <a href="../index.html">phpseclib Feature List</a>)</div>
     <p>Click on any of the following for examples.</p>
   </div>
+  <div class="grid_6" style="text-align: right; margin-top: 5px">
+    <a href="http://sourceforge.net/projects/phpseclib/files/phpseclib0.3.5.zip/download" class="button">Download Now</a>
+  </div>
+  <div class="clear"></div>
   <div class="grid_4">
     <h2>SFTP extends SSH2</h2>
     <p>SFTP has <a href="../ssh/intro.html">all the functions SSH2 has</a> and then some.</p>

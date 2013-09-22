@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8" />
 <meta name="google-site-verification" content="DHz4kg_uhBzFTmMZSrMTtF9lqPofgrUucAmZrsakViI" />
-<meta name="keywords" content="SSH,SFTP,RSA,PHP,AES,Rijndael,3DES,RC4,SSH2,SSH1,X.509,X509" />
 <meta name="description" content="A pure-PHP ASN.1 parser returning output identical to OpenSSL's asn1parse" />
 <script type="text/javascript">
 
@@ -18,7 +17,7 @@
   })();
 
 </script>
-<title>phpseclib: ASN.1 Parser</title>
+<title>ASN.1 Parser | phpseclib</title>
 <link rel="stylesheet" href="../css/reset.css" />
 <link rel="stylesheet" href="../css/text.css" />
 <link rel="stylesheet" href="../css/960.css" />

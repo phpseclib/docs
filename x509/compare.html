@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8" />
 <meta name="google-site-verification" content="DHz4kg_uhBzFTmMZSrMTtF9lqPofgrUucAmZrsakViI" />
-<meta name="keywords" content="SSH,SFTP,RSA,PHP,AES,Rijndael,3DES,RC4,SSH2,SSH1,X.509,X509" />
 <meta name="description" content="In a comparison between OpenSSL vs phpseclib, phpseclib has some capabilities OpenSSL doesn't." />
 <script type="text/javascript">
 
@@ -18,7 +17,19 @@
   })();
 
 </script>
-<title>phpseclib: libssh2 vs phpseclib</title>
+
+<link rel="stylesheet" href="../css/jquery-ui-1.8.21.button.css" />
+
+<script src="../js/jquery-1.7.2.min.js"></script>
+<script src="../js/jquery-ui-1.8.21.button.min.js"></script>
+
+<script>
+$(document).ready(function() {
+  $('.button').button();
+});
+</script>
+
+<title>OpenSSL vs phpseclib | phpseclib</title>
 
 <link rel="stylesheet" href="../css/reset.css" />
 <link rel="stylesheet" href="../css/text.css" />
@@ -46,10 +57,14 @@ tbody td {text-align: right }
 </head>
 <body onload="prettyPrint()">
 <div class="container_12">
-  <div class="grid_12">
+  <div class="grid_6">
     <h1>php<span class="red">sec</span>lib: OpenSSL vs phpseclib</h1>
     <div id="pgup">(return to <a href="intro.html">phpseclib: X.509 Feature List</a>)</div>
   </div>
+  <div class="grid_6" style="text-align: right; margin-top: 5px">
+    <a href="http://sourceforge.net/projects/phpseclib/files/phpseclib0.3.5.zip/download" class="button">Download phpseclib</a>
+  </div>
+  <div class="clear"></div>
   <div class="grid_4">
     <h2>Unlike OpenSSL, phpseclib can:</h2>
     <ul>

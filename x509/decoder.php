@@ -18,7 +18,7 @@
   })();
 
 </script>
-<title>phpseclib: X.509 Decoder</title>
+<title>X.509 Decoder | phpseclib</title>
 <link rel="stylesheet" href="../css/reset.css" />
 <link rel="stylesheet" href="../css/text.css" />
 <link rel="stylesheet" href="../css/960.css" />
