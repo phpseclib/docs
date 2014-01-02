@@ -183,6 +183,10 @@ echo $ssh->read();</span>
         <h2>On Failure</h2>
         <p>If you're absolutely certain that the password / username you've entered are correct it's possible the server isn't using SSH authentication and that what's prompting you for your credentials is the terminal itself. In this scenario you would want to authenticate in the manner demonstrated in the <a href="auth.html#noauth" onclick="$('select').val('noauth').change()">No Authentication</a> example.</p>
       </div>
+      <div class="rsakey">
+        <h2>Supported Formats</h2>
+        <p>For a discussion of the supported formats see <a href="http://phpseclib.sourceforge.net/rsa/intro.html">RSA Feature List</a></p>
+      </div>
       <div class="keyboard">
         <h2>Keyboard-Interactive Authentication</h2>
         <p>When doing password authentication phpseclib tries keyboard-interactive if password auth fails. Only after both fail does <code>$ssh->login()</code> return false. The reason for this is that a lot of systems just prompt for the password via keyboard-interactive. So if your server only has one keyboard-interactive prompt using the password authentication method would be sufficient.</p>
