@@ -163,7 +163,7 @@ echo $ssh->exec('ls -la');</span><span class="chdir">echo $ssh->exec('pwd'); // 
 $ssh->exec('cd /');
 echo $ssh->exec('pwd'); // (despite the previous command) outputs /home/username</span><span style="display: none">
 </span><span class="interactive">echo $ssh->read('username@username:~$');
-$ssh->write("ls -la\n");
+$ssh->write("ls -la\n"); // note the "\n"
 echo $ssh->read('username@username:~$');</span><span class="sudo">echo $ssh->read('username@username:~$');
 $ssh->write("sudo ls -la\n");
 $output = $ssh->read('#[pP]assword[^:]*:|username@username:~\$#', NET_SSH2_READ_REGEX);
