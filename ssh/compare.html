@@ -131,11 +131,11 @@ include('Net/SSH2.php');
 include('Crypt/RSA.php');
 
 $rsa = new Crypt_RSA();
+//$rsa->setPassword('password');
 $rsa->loadKey('...');
 
 $ssh = new Net_SSH2('domain.tld');
 $ssh->login('username', $rsa);
-//$ssh->setPassword('password');
 
 echo $ssh->exec('ls -la');</pre>
     <p>Ignoring the API for the time being there are a few clear ways phpseclib comes out on top here:</p>
