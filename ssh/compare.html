@@ -50,7 +50,7 @@ ul { margin-bottom: 0 }
 #pgup { font-size: 10px; margin-bottom: 2em }
 table { border: 1px outset; border-spacing: 2px; border-collapse: separate }
 td { border: 1px inset gray; padding: 3px }
-thead { background: yellow }
+thead { background: whitesmoke }
 thead td { font-weight: bold }
 tbody td {text-align: right }
 </style>
@@ -84,31 +84,44 @@ tbody td {text-align: right }
     <h2 id="speed">Speed</h2>
     <p>The following table shows how long, in seconds, it took to transfer a 1mb file via phpseclib and libssh2 to localhost and to a remote host.</p>
     <table border="1">
-      <thead>
-        <tr><td style="border: 0; background: white" colspan="2"></td><td>remote host</td><td>localhost</td></tr>
-      </thead>
       <tbody>
         <tr>
-          <td style="background: wheat" rowspan="2">Upload</td>
-          <td style="background: yellow"><b>libssh2</b></td>
+          <td style="background: tan" rowspan="4">Upload</td>
+          <td style="background: wheat" rowspan="2">remote host</td>
+          <td><b>libssh2</b></td>
           <td>13.0037</td>
-          <td>1.1250</td>
         </tr>
         <tr>
-          <td style="background: yellow"><b>phpseclib</b></td>
+          <td><b>phpseclib</b></td>
           <td style="background: lightgreen">11.1086</td>
-          <td style="background: lightgreen">0.3380</td>
         </tr>
         <tr>
-          <td style="background: wheat" rowspan="2">Download</td>
-          <td style="background: yellow"><b>libssh2</b></td>
+          <td style="background: wheat" rowspan="2">localhost</td>
+          <td style="background: whitesmoke"><b>libssh2</b></td>
+          <td style="background: whitesmoke">1.1250</td>
+        </tr>
+        <tr>
+          <td style="background: whitesmoke"><b>phpseclib</b></td>
+          <td style="background: yellowgreen">0.3380</td>
+        </tr>
+        <tr>
+          <td style="background: tan" rowspan="4">Download</td>
+          <td style="background: wheat" rowspan="2">remote host</td>
+          <td><b>libssh2</b></td>
           <td>4.8302</td>
-          <td>0.7680</td>
         </tr>
         <tr>
-          <td style="background: yellow"><b>phpseclib</b></td>
+          <td><b>phpseclib</b></td>
           <td style="background: lightgreen">2.4311</td>
-          <td style="background: lightgreen">0.4400</td>
+        </tr>
+        <tr>
+          <td style="background: wheat" rowspan="2">localhost</td>
+          <td style="background: whitesmoke"><b>libssh2</b></td>
+          <td style="background: whitesmoke">0.7680</td>
+        </tr>
+        <tr>
+          <td style="background: whitesmoke"><b>phpseclib</b></td>
+          <td style="background: yellowgreen">0.4400</td>
         </tr>
       </tbody>
     </table>
