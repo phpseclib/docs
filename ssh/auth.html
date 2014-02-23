@@ -154,6 +154,7 @@ if (!$ssh-&gt;login('username', $key)) {
     array('Password' =&gt; 'pass1'),
     array('Verification code' =&gt; 'code1')
 );
+//$result = $ssh-&gt;login($username, 'pass1') && !$ssh-&gt;login('username', 'code1');
 if (!$result) {
     exit('Login failed');
 }</span><span class="multifactor">if (!$ssh-&gt;login('username', 'pass1', 'code1')) {

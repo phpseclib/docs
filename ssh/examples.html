@@ -183,7 +183,7 @@ $ansi->appendString($ssh->read('username@username:~$'));
 $ssh->write("top\n");
 $ssh->setTimeout(5);
 $ansi->appendString($ssh->read());
-echo $ansi->getScreen(); // or $ansi->getHistory()</span><span style="display: none">
+echo $ansi->getScreen(); // outputs HTML</span><span style="display: none">
 </span><span class="f1f2">$ssh->setTimeout(2);
 $ssh->read();
 $ssh->write("vim\n");
