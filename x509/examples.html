@@ -126,6 +126,26 @@ var showPathCSR = function() {
 
 };
 
+var showPathSPKAC = function() {
+
+  path = '';
+
+  parents = $(this).parents('li:visible');
+
+  for (var i = parents.length - 1; i >= 0; i--) {
+
+    name = $('.name', parents[i])[0].textContent;
+
+    delimiter = isNaN(name) ? '\'' : '';
+
+    path+= '[' + delimiter + name + delimiter + ']';
+
+  }
+
+  $('#pathspkac').html('<code id="pathspkac">$spkac' + path + '</code>:');
+
+};
+
 
 $(document).ready(function() {
   //$('pre span[id]').hide();
@@ -161,6 +181,7 @@ $(document).ready(function() {
 
   $('.loadx509 .name,.hitarea').click(showPath);
   $('.csrload .name,.hitarea').click(showPathCSR);
+  $('.spkacload .name,.hitarea').click(showPathSPKAC);
 
 
   $('select').change(manageSelects);
@@ -200,6 +221,8 @@ ul { margin-bottom: 0 }
         <option value="validate">Validate certificate</option>
         <option value="csr">Create CSR</option>
         <option value="readcsr">Read CSR</option>
+        <option value="spkac">Create SPKAC CSR</option>
+        <option value="readspkac">Read SPKAC CSR</option>
       </select>
     </p>
     <p class="reading">
@@ -233,6 +256,12 @@ ul { margin-bottom: 0 }
         <option value="csrgetdn">getDN()</option>
         <option value="csrgetdnstr">getDN() as string</option>
         <option value="csrgetpublickey">getPublicKey()</option>
+      </select>
+    <p class="readspkac">
+      Method:<br />
+      <select>
+        <option value="spkacload">loadSPKAC()</option>
+        <option value="spkacgetpublickey">getPublicKey()</option>
       </select>
     </p>
 
@@ -297,6 +326,13 @@ print_r($x509->getDNProp('O'));</span><span class="csrgetdn">
 print_r($x509->getDN());</span><span class="csrgetdnstr">
 echo $x509->getDN(true);</span><span class="csrgetpublickey">
 echo $x509->getPublicKey();</span>
+</span><span class="readspkac">include('File/X509.php');
+
+$x509 = new File_X509();
+$spkac = $x509->loadSPKAC('...'); // see <a href="spkac.txt">spkac.spkac</a>
+
+print_r($spkac);
+//echo $x509->validateSignature() ? 'valid' : 'invalid';
 </span>?&gt;</pre>
     </div>
     <div id="permlink"><span>permanent link</span></div>
@@ -391,6 +427,17 @@ Fi8UoYp8w1cplbHX/wIDAQAB
 -----END PUBLIC KEY-----</pre>
   </div>
   </div>
+  <div class="readspkac">
+  <h2>Output:</h2>
+  <div class="spkacload">
+  <code id="pathspkac">$spkac:</code>
+<ul class="printr"><li><span class="name">publicKeyAndChallenge</span><ul><li><span class="name">spki</span><ul><li><span class="name">algorithm</span><ul><li><span class="name">algorithm</span><ul><li>rsaEncryption</li></ul></li><li><span class="name">parameters</span><ul><li><span class="name">null</span><ul><li></li></ul></li></ul></li></ul></li><li><span class="name">subjectPublicKey</span><ul><li>-----BEGIN PUBLIC KEY-----
+MIGJAoGBAIzTQEESviJEW6LxBEAuRNn/ImNNtWx6bJ6R8hiUiyaqiWmCSFc2Re/Z
+E1KQzzJYZLv7jlgSjZVvdf3z/bP7yPhvbhx4HmDRnoH9FdzoSm8edfUZgxih+x+M
+/ZTeKzypha+7M++ZzvEP5A5vrAXmn0VdI4aNeae6WOM9p4vAAXcDAgMBAAE=
+-----END PUBLIC KEY-----</li></ul></li></ul></li><li><span class="name">challenge</span><ul><li>123456789</li></ul></li></ul></li><li><span class="name">signatureAlgorithm</span><ul><li><span class="name">algorithm</span><ul><li>md5WithRSAEncryption</li></ul></li><li><span class="name">parameters</span><ul><li><span class="name">null</span><ul><li></li></ul></li></ul></li></ul></li><li><span class="name">signature</span><ul><li>AIfIg6pR1bSrC7FZISLMeZnvvg7xPOOiCPRAaarxs+h9rPzesrtJT8hDhI7MdOpWefoV2tD8JSAn+tQARecqb5556B9v0sIdUYLJSZ3YIt6e3sJJvNlTSvnPgQ0st4AhgOz7DcWTghRbFQUo8uTamYdk8NOw7w88STSmWp4pJi30</li></ul></li></ul>
+    </div>
+    </div>
   <!-- end .grid_9 -->
 </div>
 <!-- end .container_16 -->
