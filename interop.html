@@ -29,19 +29,62 @@
 <script src="js/jquery-ui-1.8.20.custom.min.js"></script>
 
 <script>
-$(document).ready(function(){
-  $('.accordion').accordion({
-    clearstyle: true
-  });
-});
+var accordionPositions = {};
+
+var permLink = function() {
+  var id = $('.grid_9 div[id]:visible').not('#permlink').attr('id');
+  if (accordionPositions[id]) {
+    p1 = accordionPositions[id]['p1'] ? 'p1'+accordionPositions[id]['p1'] : 'p1openssl';
+    p2 = accordionPositions[id]['p2'] ? 'p2'+accordionPositions[id]['p2'] : 'p2phpseclib';
+  } else {
+    p1 = 'p1openssl';
+    p2 = 'p2phpseclib';
+  }
+
+  var attrs = id+','+p1+','+p2;
+  hashPos = window.location.href.indexOf('#');
+  newURL = hashPos == -1 ? window.location.href : window.location.href.substring(0, hashPos);
+  window.location.href = newURL + '#' + attrs;
+};
+
+var saveAccordion = function() {
+  var part = $(this).attr('class').substring(0, 2);
+  var type = $(this).attr('class').substring(2);
+  var parent = $(this).closest('div[id]');
+  if (!accordionPositions[parent.attr('id')]) {
+    accordionPositions[parent.attr('id')] = {};
+  }
+  accordionPositions[parent.attr('id')][part] = type;
+}
 
 function show(id) {
-  $('.grid_9 div[id]').hide();
+  $('.grid_9 div[id]').not("#permlink").hide();
   $('#' + id).show();
 }
 
 $(document).ready(function() {
-  show('rsaencpkcs1');
+  $('.accordion').accordion({
+    clearstyle: true
+  });
+  options = window.location.href.split('#');
+  options = options.length > 1 ? options[1].split(',') : new Array();
+  var novalidoption = true;
+  var currentID = false;
+  for (var i = 0; i < options.length; i++) {
+    if ($('#' + options[i]).length) {
+      currentID = options[i];
+      show(currentID);
+      novalidoption = false;
+    } else if (currentID) {
+      $('#' + currentID + ' .' + options[i]).click();
+    }
+  }
+  if (novalidoption) {
+    show('rsaencpkcs1');
+  }
+
+  $('.p1phpseclib,.p2phpseclib,.p1openssl,.p2openssl').click(saveAccordion);
+  $('#permlink span').click(permLink);
 });
 </script>
 
@@ -94,11 +137,11 @@ ul { margin-bottom: 0 }
        <p>
        <h2>Encrypt (PKCS#1) with</h2>
        <div class="accordion" style="margin: 0; padding: 0">
-	<h3><a href="#">OpenSSL</a></h3>
+	<h3><a href="#" class="p1openssl">OpenSSL</a></h3>
 	<div>
           <code>openssl rsautl -inkey privatekey.txt -encrypt -in plaintext.txt -out ciphertext.txt</code>
 	</div>
-	<h3><a href="#">phpseclib</a></h3>
+	<h3><a href="#" class="p1phpseclib">phpseclib</a></h3>
 	<div>
 <pre class="prettyprint" style="margin: 0; padding: 0">&lt;?php
 include('Crypt/RSA.php');
@@ -114,7 +157,7 @@ echo $rsa->encrypt('1234567890');</pre>
       <p>
         <h2>Decrypt with</h2>
         <div class="accordion">
-	<h3><a href="#">phpseclib</a></h3>
+	<h3><a href="#" class="p2phpseclib">phpseclib</a></h3>
 	<div>
 <pre class="prettyprint" style="margin: 0; padding: 0">&lt;?php
 include('Crypt/RSA.php');
@@ -124,7 +167,7 @@ $rsa->loadKey(file_get_contents('privatekey.txt'));
 $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
 echo $rsa->decrypt(file_get_contents('ciphertext.txt'));</pre>
 	</div>
-	<h3><a href="#">OpenSSL</a></h3>
+	<h3><a href="#" class="p2openssl">OpenSSL</a></h3>
 	<div>
           <code>openssl rsautl -inkey privatekey.txt -encrypt -in plaintext.txt -out ciphertext.txt</code>
 	</div>
@@ -140,11 +183,11 @@ echo $rsa->decrypt(file_get_contents('ciphertext.txt'));</pre>
        <p>
        <h2>Encrypt (OAEP) with</h2>
        <div class="accordion" style="margin: 0; padding: 0">
-	<h3><a href="#">OpenSSL</a></h3>
+	<h3><a href="#" class="p1openssl">OpenSSL</a></h3>
 	<div>
           <code>openssl rsautl -inkey privatekey.txt -encrypt -oaep -in plaintext.txt -out ciphertext.txt</code>
 	</div>
-	<h3><a href="#">phpseclib</a></h3>
+	<h3><a href="#" class="p1phpseclib">phpseclib</a></h3>
 	<div>
 <pre class="prettyprint" style="margin: 0; padding: 0">&lt;?php
 include('Crypt/RSA.php');
@@ -159,7 +202,7 @@ echo $rsa->encrypt('1234567890');</pre>
       <p>
         <h2>Decrypt with</h2>
         <div class="accordion">
-	<h3><a href="#">phpseclib</a></h3>
+	<h3><a href="#" class="p2phpseclib">phpseclib</a></h3>
 	<div>
 <pre class="prettyprint" style="margin: 0; padding: 0">&lt;?php
 include('Crypt/RSA.php');
@@ -169,7 +212,7 @@ $rsa->loadKey(file_get_contents('privatekey.txt'));
 $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
 echo $rsa->decrypt(file_get_contents('ciphertext.txt'));</pre>
 	</div>
-	<h3><a href="#">OpenSSL</a></h3>
+	<h3><a href="#" class="p2openssl">OpenSSL</a></h3>
 	<div>
           <code>openssl rsautl -inkey privatekey.txt -decrypt -oaep -in ciphertext.txt -out plaintext.txt</code>
 	</div>
@@ -186,11 +229,11 @@ echo $rsa->decrypt(file_get_contents('ciphertext.txt'));</pre>
        <p>
        <h2>Sign (PKCS#1) with</h2>
        <div class="accordion" style="margin: 0; padding: 0">
-	<h3><a href="#">OpenSSL</a></h3>
+	<h3><a href="#" class="p1openssl">OpenSSL</a></h3>
 	<div>
           <code>openssl dgst -sha1 -out signature.txt -sign privatekey.txt plaintext.txt</code>
 	</div>
-	<h3><a href="#">phpseclib</a></h3>
+	<h3><a href="#" class="p1phpseclib">phpseclib</a></h3>
 	<div>
 <pre class="prettyprint" style="margin: 0; padding: 0">&lt;?php
 include('Crypt/RSA.php');
@@ -208,7 +251,7 @@ file_put_contents(
       <p>
         <h2>Verify with</h2>
         <div class="accordion">
-	<h3><a href="#">phpseclib</a></h3>
+	<h3><a href="#" class="p2phpseclib">phpseclib</a></h3>
 	<div>
 <pre class="prettyprint" style="margin: 0; padding: 0">&lt;?php
 include('Crypt/RSA.php');
@@ -222,7 +265,7 @@ echo $rsa->verify(
     file_get_contents('signature.txt') 
 ) ? 'verified' : 'unverified'; </pre>
 	</div>
-	<h3><a href="#">OpenSSL</a></h3>
+	<h3><a href="#" class="p2openssl">OpenSSL</a></h3>
 	<div>
           <code>openssl dgst -sha1 -prverify privatekey.txt -signature signature.txt plaintext.txt</code>
 	</div>
@@ -241,11 +284,11 @@ echo $rsa->verify(
        <p>
        <h2>Sign (PSS) with</h2>
        <div class="accordion" style="margin: 0; padding: 0">
-	<h3><a href="#">OpenSSL</a></h3>
+	<h3><a href="#" class="p1openssl">OpenSSL</a></h3>
 	<div>
           <code>openssl dgst -sha1 -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1 -out signature.txt -sign privatekey.txt plaintext.txt</code>
 	</div>
-	<h3><a href="#">phpseclib</a></h3>
+	<h3><a href="#" class="p1phpseclib">phpseclib</a></h3>
 	<div>
 <pre class="prettyprint" style="margin: 0; padding: 0">&lt;?php
 include('Crypt/RSA.php');
@@ -262,7 +305,7 @@ file_put_contents(
       <p>
         <h2>Verify with</h2>
         <div class="accordion">
-	<h3><a href="#">phpseclib</a></h3>
+	<h3><a href="#" class="p2phpseclib">phpseclib</a></h3>
 	<div>
 <pre class="prettyprint" style="margin: 0; padding: 0">&lt;?php
 include('Crypt/RSA.php');
@@ -275,7 +318,7 @@ echo $rsa->verify(
     file_get_contents('signature.txt')
 ) ? 'verified' : 'unverified'; </pre>
 	</div>
-	<h3><a href="#">OpenSSL</a></h3>
+	<h3><a href="#" class="p2openssl">OpenSSL</a></h3>
 	<div>
           <code>openssl dgst -sha1 -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1 -prverify privatekey.txt -signature signature.txt plaintext.txt</code>
 	</div>
@@ -291,7 +334,7 @@ echo $rsa->verify(
        <p>
        <h2>Encrypt with</h2>
        <div class="accordion" style="margin: 0; padding: 0">
-	<h3><a href="#">OpenSSL</a></h3>
+	<h3><a href="#" class="p1openssl">OpenSSL</a></h3>
 	<div>
           <code>openssl enc -aes-128-cbc -e -in plaintext.txt -out ciphertext.txt -nosalt -K AA -iv AA -p</code>
 	</div>
@@ -300,7 +343,7 @@ echo $rsa->verify(
       <p>
         <h2>Decrypt with</h2>
         <div class="accordion">
-	<h3><a href="#">phpseclib</a></h3>
+	<h3><a href="#" class="p2phpseclib">phpseclib</a></h3>
 	<div>
 <pre class="prettyprint" style="margin: 0; padding: 0">&lt;?php
 include('Crypt/AES.php');
@@ -324,7 +367,7 @@ echo $aes->decrypt(file_get_contents('ciphertext.txt'));</pre>
        <p>
        <h2>"Seal" with</h2>
        <div class="accordion" style="margin: 0; padding: 0">
-	<h3><a href="#">OpenSSL</a></h3>
+	<h3><a href="#" class="p1openssl">OpenSSL</a></h3>
 	<div>
 <pre class="prettyprint" style="margin: 0; padding: 0">&lt;?php
 $plaintext = 'hello world!'; 
@@ -343,7 +386,7 @@ $res_pubkey = openssl_get_publickey($str_cert);
 openssl_seal($plaintext, $ciphertext, $enckey, array($res_pubkey)); 
 $enckey = $enckey[0];</pre>
 	</div>
-	<h3><a href="#">phpseclib</a></h3>
+	<h3><a href="#" class="p1phpseclib">phpseclib</a></h3>
 	<div>
 <pre class="prettyprint" style="margin: 0; padding: 0">&lt;?php
 include_once('Crypt/RSA.php'); 
@@ -379,7 +422,7 @@ $ciphertext = $rc4->encrypt($plaintext); </pre>
       <p>
         <h2>"Open" with</h2>
         <div class="accordion">
-	<h3><a href="#">phpseclib</a></h3>
+	<h3><a href="#" class="p2phpseclib">phpseclib</a></h3>
 	<div>
 <pre class="prettyprint" style="margin: 0; padding: 0">// continuing from the above
 
@@ -398,7 +441,7 @@ $result = $rc4->decrypt($ciphertext);
 echo $result;
 ?></pre>
 	</div>
-	<h3><a href="#">OpenSSL</a></h3>
+	<h3><a href="#" class="p2openssl">OpenSSL</a></h3>
 	<div>
 <pre class="prettyprint" style="margin: 0; padding: 0">// continuing from the above
 
@@ -419,14 +462,14 @@ echo $result;
        <p>
        <h2>Encrypt with</h2>
        <div class="accordion" style="margin: 0; padding: 0">
-	<h3><a href="#">OpenSSL</a></h3>
+	<h3><a href="#" class="p1openssl">OpenSSL</a></h3>
 	<div>
 <pre class="prettyprint" style="margin: 0; padding: 0">&lt;?php
 $privkey = file_get_contents('/path/to/private.key');
 
 openssl_private_encrypt('ddd', $ciphertext, $privkey);</pre>
 	</div>
-	<h3><a href="#">phpseclib</a></h3>
+	<h3><a href="#" class="p1phpseclib">phpseclib</a></h3>
 	<div>
 <pre class="prettyprint" style="margin: 0; padding: 0">&lt;?php
 include_once('Crypt/RSA.php'); 
@@ -458,7 +501,7 @@ $ciphertext = $rsa->encrypt('ddd'); </pre>
       <p>
         <h2>Decrypt with</h2>
         <div class="accordion">
-	<h3><a href="#">phpseclib</a></h3>
+	<h3><a href="#" class="p2phpseclib">phpseclib</a></h3>
 	<div>
 <pre class="prettyprint" style="margin: 0; padding: 0">// continuing from the above
 
@@ -469,7 +512,7 @@ $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
 echo $rsa->decrypt($ciphertext);
 ?></pre>
 	</div>
-	<h3><a href="#">OpenSSL</a></h3>
+	<h3><a href="#" class="p2openssl">OpenSSL</a></h3>
 	<div>
 <pre class="prettyprint" style="margin: 0; padding: 0">// continuing from the above
 
@@ -494,6 +537,8 @@ echo $plaintext;
 
 
 
+
+<div id="permlink"><span>permanent link</span></div>
 
 
 
