@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="google-site-verification" content="DHz4kg_uhBzFTmMZSrMTtF9lqPofgrUucAmZrsakViI" />
+<meta name="description" content="A tutorial on how to interprete the output of asn1parse" />
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-19770173-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<title>asn1parse Interpretation Guide | phpseclib</title>
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+<link rel="stylesheet" href="../css/prettify.css"/>
+<link rel="stylesheet" href="../css/jquery.qtip.min.css"/>
+<link rel="stylesheet" href="../css/jquery.treeview.css" /> 
+<script src="../js/prettify.js"></script>
+<script src="../js/jquery-1.7.2.min.js"></script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }.red { color: #e11 }
+.prettyprint, .pre { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+#cert:hover { cursor: hand }
+table { border: 1px outset; border-spacing: 2px; border-collapse: separate }
+td { border: 1px inset gray; padding: 3px }
+</style></head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: asn1parse Interpretation Guide</h1>
+    <div id="pgup">(return to <a href="asn1parse.php">phpseclib: ASN.1 Parser</a>)</div>
+  </div>
+  <div class="clear"></div>
+  <div class="grid_3">
+    &nbsp;
+  </div>
+  <!-- end .grid_3 -->
+  <div class="grid_9">
+    <h2>asn1parse Interpretation Guide</h2>
+    <p>Let's say you're trying to decode this: </p>
+    <pre class="prettyprint">MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCunhp5XEEptnE/+jhfdTF1ryjr 
+756tUJs26RTKgVa/6isdO+SzTdHRvsOqle8Ze58Y9Qj8goVGkcsxrSHr+nEWcN6O 
+oQK+e1Inux5PDwVOE9kiWbjDN4hs41+d6ZgdN6l8h4bhPeAVgQoS2F4a2TKMyLY5 
+dyzwj7RK98mLwbfaNwIDAQAB</pre>
+    <p>Here's the ASN.1 decoding you'll get back: </p>
+    <pre class="prettyprint">    0:d=0  hl=3 l= 159 cons: SEQUENCE 
+    3:d=1  hl=2 l=  13 cons:  SEQUENCE 
+    5:d=2  hl=2 l=   9 prim:   OBJECT            :rsaEncryption 
+   16:d=2  hl=2 l=   0 prim:   NULL 
+   18:d=1  hl=3 l= 141 prim:  BIT STRING</pre>
+    <p>Great. So you have an RSA public key. But what is contained within BIT STRING?</p>
+    <p>To figure that out let's first explain the format of the output.</p>
+    <p>Consider this line:</p>
+    <pre class="prettyprint">   18:d=1  hl=3 l= 141 prim:  BIT STRING</pre>
+    <p>18 is the offset from the beginning, d=1 is the depth and hl=3 is the header length.</p> 
+    <p>Here's how you can isolate the BIT STRING:</p>
+    <pre class="prettyprint">&lt;?php 
+$data = 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCunhp5XEEptnE/+jhfdTF1ryjr 
+756tUJs26RTKgVa/6isdO+SzTdHRvsOqle8Ze58Y9Qj8goVGkcsxrSHr+nEWcN6O 
+oQK+e1Inux5PDwVOE9kiWbjDN4hs41+d6ZgdN6l8h4bhPeAVgQoS2F4a2TKMyLY5 
+dyzwj7RK98mLwbfaNwIDAQAB'; 
+$data = preg_replace('#\s#', '', $data); 
+$data = base64_decode($data); 
+$data = substr($data, 18); 
+$data = base64_encode($data); 
+echo $data;</pre>
+    <p>That'll get you this: </p>
+    <pre class="prettyprint">    0:d=0  hl=3 l= 137 cons: SEQUENCE 
+    3:d=1  hl=3 l= 129 prim:  INTEGER           :AE9E1A795C4129B6713FFA385F753175AF28EBEF9EAD509B36E914CA8156BFEA2B1D3BE4B34DD1D1BEC3AA95EF197B9F18F508FC82854691CB31AD21EBFA711670DE8EA102BE7B5227BB1E4F0F054E13D92259B8C337886CE35F9DE9981D37A97C8786E13DE015810A12D85E1AD9328CC8B639772CF08FB44AF7C98BC1B7DA37
+  135:d=1  hl=2 l=   3 prim:  INTEGER           :010001</pre>
+    <p>ie. you have to go one past the offset from the beginning and the headerlength.</p>
+
+  <!-- end .grid_9 -->
+</div>
+<!-- end .container_16 -->
+</body>
+</html>

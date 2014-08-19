@@ -51,7 +51,8 @@ table,td { border: 1px solid black; padding: 4px }
   <div class="clear"></div>
   <div class="grid_3">
     <div style="color: gray">
-      The asn1parse command is a diagnostic utility that can parse ASN.1 structures. It can also be used to extract data from ASN.1 formatted data.
+      <p>The asn1parse command is a diagnostic utility that can parse ASN.1 structures. It can also be used to extract data from ASN.1 formatted data.</p>
+      <p>Read <a href="asn1tutorial.html">asn1parse Interpretation Guide</a> for more information.</p>
     </div>
   </div>
   <!-- end .grid_3 -->
