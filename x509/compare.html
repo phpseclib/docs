@@ -86,9 +86,7 @@ tbody td {text-align: right }
 $x509 = new File_X509();
 
 $x509->loadCA('...'); // see <a href="googleca.txt">googleca.pem</a>
-
-$result = $x509->loadX509('...'); // see <a href="google2.txt">google2.pem</a>
-
+$x509->loadX509('...'); // see <a href="google2.txt">google2.pem</a>
 echo $x509->validateSignature() ? 'valid' : 'invalid';
 </pre>
     <p>Here's how you'd do it with OpenSSL's PHP bindings:</p>
