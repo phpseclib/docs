@@ -185,7 +185,7 @@ echo $rsa->decrypt(file_get_contents('ciphertext.txt'));</pre>
        <div class="accordion" style="margin: 0; padding: 0">
 	<h3><a href="#" class="p1openssl">OpenSSL</a></h3>
 	<div>
-          <code>openssl rsautl -inkey privatekey.txt -encrypt -oaep -in plaintext.txt -out ciphertext.txt</code>
+          <code>openssl rsautl -inkey publickey.txt -encrypt -oaep -in plaintext.txt -out ciphertext.txt</code>
 	</div>
 	<h3><a href="#" class="p1phpseclib">phpseclib</a></h3>
 	<div>
