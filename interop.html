@@ -139,7 +139,7 @@ ul { margin-bottom: 0 }
        <div class="accordion" style="margin: 0; padding: 0">
 	<h3><a href="#" class="p1openssl">OpenSSL</a></h3>
 	<div>
-          <code>openssl rsautl -inkey privatekey.txt -encrypt -in plaintext.txt -out ciphertext.txt</code>
+          <code>openssl rsautl -inkey publickey.txt -pubin -encrypt -in plaintext.txt -out ciphertext.txt</code>
 	</div>
 	<h3><a href="#" class="p1phpseclib">phpseclib</a></h3>
 	<div>
@@ -150,7 +150,7 @@ $rsa = new Crypt_RSA();
 $rsa->loadKey(file_get_contents('privatekey.txt'));
 $rsa->loadKey($rsa->getPublicKey());
 $rsa->setEncryptionMode(CRYPT_RSA_ENCRYPTION_PKCS1);
-echo $rsa->encrypt('1234567890');</pre>
+echo $rsa->encrypt(file_get_contents('plaintext.txt'));</pre>
 	</div>
        </div>
       </p>
@@ -169,7 +169,7 @@ echo $rsa->decrypt(file_get_contents('ciphertext.txt'));</pre>
 	</div>
 	<h3><a href="#" class="p2openssl">OpenSSL</a></h3>
 	<div>
-          <code>openssl rsautl -inkey privatekey.txt -encrypt -in plaintext.txt -out ciphertext.txt</code>
+          <code>openssl rsautl -inkey privatekey.txt -decrypt -in ciphertext.txt -out plaintext.txt</code>
 	</div>
        </div>
        </p>
@@ -185,7 +185,7 @@ echo $rsa->decrypt(file_get_contents('ciphertext.txt'));</pre>
        <div class="accordion" style="margin: 0; padding: 0">
 	<h3><a href="#" class="p1openssl">OpenSSL</a></h3>
 	<div>
-          <code>openssl rsautl -inkey privatekey.txt -encrypt -oaep -in plaintext.txt -out ciphertext.txt</code>
+          <code>openssl rsautl -inkey publickey.txt -encrypt -oaep -in plaintext.txt -out ciphertext.txt</code>
 	</div>
 	<h3><a href="#" class="p1phpseclib">phpseclib</a></h3>
 	<div>
@@ -195,7 +195,7 @@ include('Crypt/RSA.php');
 $rsa = new Crypt_RSA();
 $rsa->loadKey(file_get_contents('privatekey.txt'));
 $rsa->loadKey($rsa->getPublicKey());
-echo $rsa->encrypt('1234567890');</pre>
+echo $rsa->encrypt(file_get_contents('plaintext.txt'));</pre>
 	</div>
        </div>
       </p>
@@ -267,7 +267,7 @@ echo $rsa->verify(
 	</div>
 	<h3><a href="#" class="p2openssl">OpenSSL</a></h3>
 	<div>
-          <code>openssl dgst -sha1 -prverify privatekey.txt -signature signature.txt plaintext.txt</code>
+          <code>openssl dgst -sha1 -verify publickey.txt -signature signature.txt plaintext.txt</code>
 	</div>
        </div>
        </p>
@@ -320,7 +320,7 @@ echo $rsa->verify(
 	</div>
 	<h3><a href="#" class="p2openssl">OpenSSL</a></h3>
 	<div>
-          <code>openssl dgst -sha1 -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1 -prverify privatekey.txt -signature signature.txt plaintext.txt</code>
+          <code>openssl dgst -sha1 -sigopt rsa_padding_mode:pss -sigopt rsa_pss_saltlen:-1 -verify publickey.txt -signature signature.txt plaintext.txt</code>
 	</div>
        </div>
        </p>

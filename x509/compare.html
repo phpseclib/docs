@@ -68,6 +68,7 @@ tbody td {text-align: right }
   <div class="grid_4">
     <h2>Unlike OpenSSL, phpseclib can:</h2>
     <ul>
+      <li><a href="#verify">verify a signature</a></li>
       <li><a href="#noprivkey">create a certificate without the private key</a></li>
       <li><a href="#csrattr">set CSR attributes and extension requests</a></li>
       <li><a href="#csrupdate">update CSR before signing</a></li>
@@ -79,6 +80,48 @@ tbody td {text-align: right }
   </div>
   <div class="grid_8">
     <p>OpenSSL's PHP bindings offer a great many features phpseclib (currently) does not, however, phpseclib offers some features OpenSSL's PHP bindings do not.</p>
+    <h2 id="verify">Verify a signature</h2>
+    <p>OpenSSL's PHP bindings do not provide an easy way for you to verify that a certificate was signed by a certificate authority (or even that it was self-signed). phpseclib does.</p>
+    <pre class="prettyprint">&lt;?php
+$x509 = new File_X509();
+
+$x509->loadCA('...'); // see <a href="googleca.txt">googleca.pem</a>
+$x509->loadX509('...'); // see <a href="google2.txt">google2.pem</a>
+echo $x509->validateSignature() ? 'valid' : 'invalid';
+</pre>
+    <p>Here's how you'd do it with OpenSSL's PHP bindings:</p>
+    <pre class="prettyprint">&lt;?php
+function pem2der($str)
+{
+    $temp = preg_replace('#.*?^-+[^-]+-+#ms', '', $str, 1);
+    // remove the -----BEGIN CERTIFICATE----- and -----END CERTIFICATE----- stuff
+    $temp = preg_replace('#-+[^-]+-+#', '', $temp);
+    // remove new lines
+    $temp = str_replace(array("\r", "\n", ' '), '', $temp);
+    $temp = preg_match('#^[a-zA-Z\d/+]*={0,2}$#', $temp) ? base64_decode($temp) : false;
+    if ($temp != false) {
+        $str = $temp;
+    }
+    return $str;
+}
+
+// the offsets were calculated by analyzing the output of <a href="http://phpseclib.sourceforge.net/x509/asn1parse.php">asn1parse.php</a> with
+// <a href="google2.txt">google2.pem</a>
+
+$subject = '...'; // see <a href="google2.txt">google2.pem</a>
+$subject = pem2der($subject);
+// in <a href="http://phpseclib.sourceforge.net/x509/asn1tutorial.html">asn1tutorial.html</a> we don't want the header since we're trying to see in
+// the BIT STRING. in this case, however, we do want the header to be included.
+// that means we also have to add the header length to the content length
+$data = substr($subject, 4, 862 + 4);
+// to get the hash, however, we do need to peer inside the BIT STRING, as is done in <a href="http://phpseclib.sourceforge.net/x509/asn1tutorial.html">asn1tutorial.html</a>
+$signature = substr($subject, 885 + 4 + 1, 257);
+
+$pubKey = openssl_pkey_get_public('...'); // see <a href="googleca.txt">googleca.pem</a>
+
+echo openssl_verify($data, $signature, $pubKey) ? 'valid' : 'invalid';
+    </pre>
+    Validate another certificate and you'd have to calculate the offsets all over again. And to do that you'd need to have some way of parsing ASN1. phpseclib takes care of all of this for you.</p>
     <h2 id="noprivkey">Create a certificate without the private key</h2>
     <p>Unlike OpenSSL, phpseclib does not need a certificate request to create a certificate: since certificate requests have to be signed with the private key, OpenSSL is unable to produce a certificate without knowing the private key.</p>
     <pre class="prettyprint">&lt;?php
