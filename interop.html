@@ -349,8 +349,8 @@ echo $rsa->verify(
 include('Crypt/AES.php');
 
 $aes = new Crypt_AES(); 
-$aes->setKey('AA'); // null-padded to 128 bits
-$aes->setIV('AA'); // null-padded to 128 bits
+$aes->setKey(pack('H*', 'AA')); // null-padded to 128 bits
+$aes->setIV(pack('H*', 'AA')); // null-padded to 128 bits
 echo $aes->decrypt(file_get_contents('ciphertext.txt'));</pre>
 	</div>
        </div>
