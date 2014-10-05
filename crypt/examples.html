@@ -289,6 +289,7 @@ echo $cipher->decrypt($cipher->encrypt($plaintext));
       <div id="speed" class="aes rijndael">
         <div class="cbc ecb">
         <h2>Speed Comparisons</h2>
+        <p><b>phpseclib uses mcrypt</b> if it is available and a pure-PHP implementation when it is not. mcrypt cannot be beaten in terms of speed, however, as the following demonstrates, even phpseclib's pure-PHP implementation is surprisingly fast.</p>
         <p>The following table compares the speed of five different pure-PHP implementations of AES when ran on 1MB of text on an Intel Core i5-3320M CPU @ 2.6GHz with PHP 5.5.3. The numbers listed are averaged from two different trials and are measured in seconds. phpseclib's implementation is highlighted. All implementations can be viewed by clicking on their names and the table was generated with <a href="benchmark.phps">benchmark.phps</a>.</p>
         <table>
           <thead>
