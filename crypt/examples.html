@@ -239,7 +239,7 @@ $cipher = new Crypt_<span class="aes">AES</span><span class="rijndael">Rijndael<
 </span></span><span class="blowfish">// keys can range in length from 32 bits to 448 in steps of 8
 </span><span class="rc2">// keys can range in length from 8 bits to 1024 in steps of 8
 //$cipher->setKeyLength(...);
-</span>$cipher->setKey('abcdefgh<span class="3des rc4">ijklmnopqrstuvwx</span><span class="aes rijndael twofish"><span class="k128 k192 k256">ijklmnop</span><span class="kr128 kr160 kr192 kr224 kr256">ijklmnop</span><span class="kr160 kr192 kr224 kr256">qrst</span><span class="kr192 kr224 kr256">uvwx</span><span class="k192 k256">qrstuvwx</span><span class="kr224 kr256">yz12</span><span class="kr256">3456</span><span class="k256">yz3456</span></span>');
+</span>$cipher->setKey('abcdefgh<span class="3des rc4">ijklmnopqrstuvwx</span><span class="rijndael">ijklmnop</span><span class="kr160 kr192 kr224 kr256">qrst</span><span class="kr192 kr224 kr256">uvwx</span><span class="kr224 kr256">yz12</span><span class="kr256">3456</span></span><span class="aes twofish">ijklmnop<span class="k192 k256">qrstuvwx</span><span class="k256">yz123456</span></span>');
 </span><span class="pbkdf2">$cipher->setPassword('whatever');
 // the following does the same thing:
 //$cipher->setPassword('whatever', 'pbkdf2', 'sha1', 'phpseclib/salt', 1000<span class="rc4">, 128 / 8</span><span class="aes">, <span class="k128">128</span><span class="k192">192</span><span class="k256">256</span> / 8</span><span class="rijndael">, <span class="kr128">128</span><span class="kr160">160</span><span class="kr192">192</span><span class="kr224">224</span><span class="kr256">256</span> / 8</span>);
