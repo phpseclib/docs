@@ -284,12 +284,19 @@ function make_printable($result, $i = 0)
 {
     global $oids, $str;
 
-    $length = $result['length'] - $result['headerlength'];
+    if (isset($result['headerlength'])) {
+        $length = $result['length'] - $result['headerlength'];
+    } else {
+        $length = 'inf';
+        $result['headerlength'] = 2;
+    }
     if (isset($result['constant'])) {
         $constructed = is_array($result['content'][0]);
         print_line($result['start'], $i, $length, $result['headerlength'], $constructed, 'cont [ ' . $result['constant'] . ' ]');
         if ($constructed) {
-            make_printable($result['content'][0], $i + 1);
+            foreach ($result['content'] as $content) {
+                make_printable($content, $i + 1);
+            }
         }
         return;
     }
@@ -304,14 +311,15 @@ function make_printable($result, $i = 0)
             }
             break;
         case FILE_ASN1_TYPE_INTEGER:
-            $value = $result['content']->toHex();
+            $value = $result['content']->toHex(true);
             if (empty($value)) {
                 $value = '00';
             }
             print_line($result['start'], $i, $length, $result['headerlength'], false, 'INTEGER', strtoupper($value));
             break;
         case FILE_ASN1_TYPE_OBJECT_IDENTIFIER:
-            print_line($result['start'], $i, $length, $result['headerlength'], false, 'OBJECT', strtr($result['content'], $oids));
+            $oid = isset($oids[$result['content']]) ? $oids[$result['content']] : $result['content'];
+            print_line($result['start'], $i, $length, $result['headerlength'], false, 'OBJECT', $oid);
             break;
         case FILE_ASN1_TYPE_BIT_STRING:
             print_line($result['start'], $i, $length, $result['headerlength'], false, 'BIT STRING');
@@ -321,6 +329,11 @@ function make_printable($result, $i = 0)
             break;
         case FILE_ASN1_TYPE_OCTET_STRING:
             print_line($result['start'], $i, $length, $result['headerlength'], false, 'OCTET STRING');
+            /*if (is_array($result['content'])) {
+                for ($j = 0; $j < count($result['content']); $j++) {
+                    make_printable($result['content'][$j], $i + 1);
+                }
+            }*/
             break;
         case FILE_ASN1_TYPE_NULL:
             print_line($result['start'], $i, $length, $result['headerlength'], false, 'NULL');
