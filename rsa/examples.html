@@ -392,9 +392,10 @@ FPqri0cb2JZfXJ/DgYSF6vUpwmJG8wVQZKjeGcjDOL5UlsuusFncCzWBQ7RKNUSesmQRMSGkVb1/
         <p class="sign1"><code>$rsa->setSaltLength()</code> sets the salt length. The PKCS#1 standard recommends this value either be 0 (which is what it is by default) or the length of the output of the hash function as set via setHash().</p>
       </div>
       <div class="encrypt">
-        <h2 class="enc1">Options</h2>
+        <h2 class="enc1 enc2">Options</h2>
         <p class="enc1"><code>$rsa->setHash()</code> tells Crypt_RSA which hash algorithm to use. The default hash algorithm is sha1.</p>
         <p class="enc1"><code>$rsa->setMGFHash()</code> tells Crypt_RSA which hash to use as the mask generation function. The default hash algorithm is sha1.</p>
+        <p class="enc2">phpseclib implements PKCS#1 v2.1 whereas OpenSSL implemenents PKCS#1 v1.5. The problem with this is that strings encrypted with phpseclib won't be able to be decrypted by OpenSSL. Not unless you do <code>define('CRYPT_RSA_PKCS15_COMPAT', true);</code> before the <code>encrypt()</code> call.</p>
       </div>
       <div class="timeout">
         <h2>Partial Keys</h2>
