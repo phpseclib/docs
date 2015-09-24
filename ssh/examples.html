@@ -210,6 +210,7 @@ echo $ssh->getLog();</span>
         <h2>Successive calls to exec()</h2>
         <p>If done on an interactive shell, the output you'd receive for the first pwd would (depending on how your system is setup) be different than the output of the second pwd. The above code snippet, however, will yield two identical lines.</p>
         <p>The reason for this is that any "state changes" you make to the one-time shell are gone once the exec() has been ran and the channel has been deleted.</p>
+        <p>You can workaround this on Linux by doing <code>$ssh->exec('cd /; pwd')</code></p>
       </div>
       <div class="timeout">
         <h2>setTimeout</h2>
