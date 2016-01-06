@@ -52,7 +52,7 @@ ul { margin-bottom: 0 }
 <body onload="prettyPrint()">
 <div class="container_12">
   <div class="grid_12" style="margin-bottom: 20px">
-    <h1>php<span class="red">sec</span>lib: An Introduction</h1>
+    <h1>php<span class="red">sec</span>lib 1.0: An Introduction</h1>
   </div>
   <div class="grid_4">
     <h2>Pure-PHP implementations of:</h2>
@@ -100,7 +100,11 @@ set_include_path(get_include_path() . PATH_SEPARATOR . 'phpseclib');
 
 include('Net/SSH2.php');
 ?></pre>
+    <h2>Other Branches: 2.0 and master</h2>
+    <p>The 2.0 branch has pretty much the exact same API as the 1.0 branch, save for that it is namespaced, uses PHP5-style constructors (thereby avoiding E_DEPRECATED errors) and requires the use of an autoloader. <a href="2.0.html">A few examples</a>.</p>
+    <p>The master branch has an unstable API that is subject to change. The master branch will eventually turn into 3.0, at which point, this website will be re-designed with an emphasis on that version.</p>
   </div>
+
   <div class="grid_24">
     <p style="float: left; width: 25%">
       <img src="images/pear-icon.png" alt="PEAR Icon" width="16" height="16" /> PEAR Channel:<br /><a href="pear.htm">phpseclib.sourceforge.net</a>
