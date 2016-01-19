@@ -243,8 +243,9 @@ $cipher = new Crypt_<span class="aes">AES</span><span class="rijndael">Rijndael<
 </span><span class="pbkdf2">$cipher->setPassword('whatever');
 // the following does the same thing:
 //$cipher->setPassword('whatever', 'pbkdf2', 'sha1', 'phpseclib/salt', 1000<span class="rc4">, 128 / 8</span><span class="aes">, <span class="k128">128</span><span class="k192">192</span><span class="k256">256</span> / 8</span><span class="rijndael">, <span class="kr128">128</span><span class="kr160">160</span><span class="kr192">192</span><span class="kr224">224</span><span class="kr256">256</span> / 8</span>);
-</span><span class="des 3des aes rijndael"><span class="cbc ctr ofb cfb">// IV defaults to all-NULLs if not explicitly defined;
+</span><span class="des 3des aes rijndael"><span class="cbc ctr ofb cfb">// The IV defaults to all-NULLs if not explicitly defined;
 // it should be randomly generated for each encryption
+// and its length should equal the key length.
 $cipher->setIV('...');
 </span></span><span class="padding"><span class="aes rijndael des 3des"><span class="cbc ecb">$cipher->disablePadding();
 </span></span></span>
