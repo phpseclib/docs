@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="google-site-verification" content="DHz4kg_uhBzFTmMZSrMTtF9lqPofgrUucAmZrsakViI" />
+<meta name="description" content="A few examples of how to use phpseclib 2.0.x" />
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-19770173-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+<link rel="stylesheet" href="../css/jquery-ui-1.8.21.button.css" />
+
+<script src="../js/jquery-1.7.2.min.js"></script>
+<script src="../js/jquery-ui-1.8.21.button.min.js"></script>
+
+<script>
+$(document).ready(function() {
+  $('.button').button();
+});
+</script>
+
+<title>phpseclib 2.0.x examples | phpseclib</title>
+
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+<link rel="stylesheet" href="../css/prettify.css"/>
+
+<script src="../js/prettify.js"></script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }.red { color: #e11 }
+.prettyprint { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+table { border: 1px outset; border-spacing: 2px; border-collapse: separate }
+td { border: 1px inset gray; padding: 3px }
+thead { background: yellow }
+thead td { font-weight: bold }
+tbody td {text-align: right }
+</style>
+</head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_6">
+    <h1>php<span class="red">sec</span>lib 2.0 examples</h1>
+    <div id="pgup">(return to <a href="index.html">phpseclib Feature List</a>)</div>
+  </div>
+  <div class="grid_6" style="text-align: right; margin-top: 5px">
+    <a href="http://sourceforge.net/projects/phpseclib/files/phpseclib0.3.5.zip/download" class="button">Download phpseclib</a>
+  </div>
+  <div class="clear"></div>
+  <div class="grid_4">
+    <h2>Examples:</h2>
+    <ul>
+      <li><a href="#rsassh">Log into SSH server with RSA key</a></li>
+    </ul>
+  </div>
+  <div class="grid_8">
+    <p>These examples utilize <a href="https://github.com/composer/composer/blob/master/src/Composer/Autoload/ClassLoader.php">Composer's autoloader</a></p>
+    <h2 id="rsassh">Log into SSH server with RSA key</h2>
+    <pre class="prettyprint">&lt;?php
+include 'autoload.php';
+
+$loader = new \Composer\Autoload\ClassLoader();
+$loader->addPsr4('phpseclib\\', __DIR__ . '/path/to/phpseclib2.0');
+$loader->register();
+
+use phpseclib\Crypt\RSA;
+use phpseclib\Net\SSH2;
+
+$key = new RSA();
+$key->loadKey(file_get_contents('private-key.txt'));
+
+// Domain can be an IP too
+$ssh = new SSH2('www.domain.tld');
+if (!$ssh->login('username', $key)) {
+    exit('Login Failed');
+}
+
+echo $ssh->exec('pwd');
+echo $ssh->exec('ls -la');
+    </pre>
+  </div>
+</body>
+</html>

@@ -152,24 +152,22 @@ thead td { font-weight: bold }</style></head>
     <p class="des 3des rijndael aes twofish blowfish rc2">
       Encryption Mode:<br />
       <select>
-        <option value="ecb">ECB</option>
         <option value="cbc">CBC</option>
         <option value="ctr">CTR</option>
         <option value="ofb">OFB</option>
         <option value="cfb">CFB</option>
+        <option value="ecb">ECB</option>
       </select>
     </p>
-    <p>
-      <div class="cbc">
-      <div class="3des">
-      Chaining:<br />
-      <select>
-        <option value="outer">Outer</option>
-        <option value="inner">Inner</option>
-      </select>
-      </div>
-      </div>
-    </p>
+    <div class="cbc">
+    <div class="3des">
+    Chaining:<br />
+    <select>
+      <option value="outer">Outer</option>
+      <option value="inner">Inner</option>
+    </select>
+    </div>
+    </div>
     <p class="aes twofish">
       Key Length:<br />
       <select>
@@ -205,14 +203,12 @@ thead td { font-weight: bold }</style></head>
         <option value="pbkdf2">PBKDF2</option>
       </select>
     </p>
-    <p>
-      <div class="des 3des rijndael aes">
-      <div class="cbc ecb">
-      <button value="padding" class="buttonOff">Enable Padding</button>
-      <button value="padding" class="buttonOn disableCode">Disable Padding</button>
-      </div>
-      </div>
-    </p>
+    <div class="des 3des rijndael aes">
+    <div class="cbc ecb">
+    <button value="padding" class="buttonOff">Enable Padding</button>
+    <button value="padding" class="buttonOn disableCode">Disable Padding</button>
+    </div>
+    </div>
     <p>
       <button value="continuous" class="buttonOn">Enable Continuous Buffer</button>
       <button value="continuous" class="buttonOff disableCode">Disable Continuous Buffer</button>
@@ -223,7 +219,8 @@ thead td { font-weight: bold }</style></head>
     <div>
 <pre class="prettyprint" style="margin-bottom: 0">&lt;?php
 include('Crypt/<span class="aes">AES</span><span class="rijndael">Rijndael</span><span class="des">DES</span><span class="3des">TripleDES</span><span class="rc4">RC4</span><span class="twofish">Twofish</span><span class="blowfish">Blowfish</span><span class="rc2">RC2</span>.php');
-
+<span class="des 3des aes rijndael"><span class="cbc ctr ofb cfb">include('Crypt/Random.php');
+</span></span>
 $cipher = new Crypt_<span class="aes">AES</span><span class="rijndael">Rijndael</span><span class="des">DES</span><span class="3des">TripleDES</span><span class="rc4">RC4</span><span class="twofish">Twofish</span><span class="blowfish">Blowfish</span><span class="rc2">RC2</span>(<span style="display: none">
 </span><span class="ecb ctr ofb cfb"><span class="aes rijndael des 3des">CRYPT_<span class="des 3des">DES</span><span class="aes">AES</span><span class="rijndael">RIJNDAEL</span>_MODE_<span style="display: none">
 </span><span class="ecb">ECB</span><span class="cfb">CFB</span><span class="ofb">OFB</span><span class="ctr">CTR</span></span></span><span class="cbc"><span class="3des"><span class="inner">CRYPT_DES_MODE_3CBC</span></span></span>);<span style="display: none">
@@ -239,18 +236,19 @@ $cipher = new Crypt_<span class="aes">AES</span><span class="rijndael">Rijndael<
 </span></span><span class="blowfish">// keys can range in length from 32 bits to 448 in steps of 8
 </span><span class="rc2">// keys can range in length from 8 bits to 1024 in steps of 8
 //$cipher->setKeyLength(...);
-</span>$cipher->setKey('abcdefgh<span class="3des rc4">ijklmnopqrstuvwx</span><span class="rijndael">ijklmnop</span><span class="kr160 kr192 kr224 kr256">qrst</span><span class="kr192 kr224 kr256">uvwx</span><span class="kr224 kr256">yz12</span><span class="kr256">3456</span></span><span class="aes twofish">ijklmnop<span class="k192 k256">qrstuvwx</span><span class="k256">yz123456</span></span>');
+</span>$cipher->setKey('abcdefgh<span class="3des rc4">ijklmnopqrstuvwx</span><span class="rijndael">ijklmnop</span><span class="kr160 kr192 kr224 kr256">qrst</span><span class="kr192 kr224 kr256">uvwx</span><span class="kr224 kr256">yz12</span><span class="kr256">3456</span><span class="aes twofish">ijklmnop<span class="k192 k256">qrstuvwx</span><span class="k256">yz123456</span></span>');
 </span><span class="pbkdf2">$cipher->setPassword('whatever');
 // the following does the same thing:
 //$cipher->setPassword('whatever', 'pbkdf2', 'sha1', 'phpseclib/salt', 1000<span class="rc4">, 128 / 8</span><span class="aes">, <span class="k128">128</span><span class="k192">192</span><span class="k256">256</span> / 8</span><span class="rijndael">, <span class="kr128">128</span><span class="kr160">160</span><span class="kr192">192</span><span class="kr224">224</span><span class="kr256">256</span> / 8</span>);
-</span><span class="des 3des aes rijndael"><span class="cbc ctr ofb cfb">//$cipher->setIV('...'); // defaults to all-NULLs if not explicitely defined
+</span><span class="des 3des aes rijndael"><span class="cbc ctr ofb cfb">// the IV defaults to all-NULLs if not explicitly defined
+$cipher->setIV(crypt_random_string($cipher->getBlockLength() >> 3));
 </span></span><span class="padding"><span class="aes rijndael des 3des"><span class="cbc ecb">$cipher->disablePadding();
 </span></span></span>
 $size = 10 * 1024;
 <span class="padding"><span class="ecb cbc"><span class="3des">$size-= 16; // make the plaintext length a multiple of the block length
 </span><span class="rijndael"><span class="b192">$size-= 16; // make the plaintext length a multiple of the block length
 </span></span><span class="rijndael"><span class="b224">$size-= 4; // make the plaintext length a multiple of the block length
-</span></span></span></span></span>$plaintext = str_repeat('a', $size);
+</span></span></span></span>$plaintext = str_repeat('a', $size);
 
 echo $cipher->decrypt($cipher->encrypt($plaintext));
 <span class="continuous">
@@ -289,7 +287,7 @@ echo $cipher->decrypt($cipher->encrypt($plaintext));
       <div id="speed" class="aes rijndael">
         <div class="cbc ecb">
         <h2>Speed Comparisons</h2>
-        <p><b>phpseclib uses mcrypt</b> if it is available and a pure-PHP implementation when it is not. mcrypt cannot be beaten in terms of speed by a pure-PHP implementation, however, as the following demonstrates, even phpseclib's pure-PHP implementation is surprisingly fast.</p>
+        <p><b>phpseclib uses OpenSSL or mcrypt</b> (in that order) if they're available and a pure-PHP implementation when it is not. Neither OpenSSL or mcrypt can be beaten in terms of speed by a pure-PHP implementation, however, as the following demonstrates, even phpseclib's pure-PHP implementation is surprisingly fast.</p>
         <p>The following table compares the speed of five different pure-PHP implementations of AES when ran on 1MB of text on an Intel Core i5-3320M CPU @ 2.6GHz with PHP 5.5.3. The numbers listed are averaged from two different trials and are measured in seconds. phpseclib's implementation is highlighted. All implementations can be viewed by clicking on their names and the table was generated with <a href="benchmark.phps">benchmark.phps</a>.</p>
         <table>
           <thead>
@@ -321,7 +319,7 @@ echo $cipher->decrypt($cipher->encrypt($plaintext));
             </tr>
           </tbody>
         </table>
-        <p>As can be seen, phpseclib's implementations are the fastest. Note that if mcrypt weren't explicitily disabled phpseclib would have been even faster.</p>
+        <p>As can be seen, phpseclib's implementations are the fastest. Note that if mcrypt and OpenSSL weren't explicitily disabled phpseclib would have been even faster.</p>
         </div>
       </div>
     </div>
