@@ -159,17 +159,15 @@ thead td { font-weight: bold }</style></head>
         <option value="ecb">ECB</option>
       </select>
     </p>
-    <p>
-      <div class="cbc">
-      <div class="3des">
-      Chaining:<br />
-      <select>
-        <option value="outer">Outer</option>
-        <option value="inner">Inner</option>
-      </select>
-      </div>
-      </div>
-    </p>
+    <div class="cbc">
+    <div class="3des">
+    Chaining:<br />
+    <select>
+      <option value="outer">Outer</option>
+      <option value="inner">Inner</option>
+    </select>
+    </div>
+    </div>
     <p class="aes twofish">
       Key Length:<br />
       <select>
@@ -205,14 +203,12 @@ thead td { font-weight: bold }</style></head>
         <option value="pbkdf2">PBKDF2</option>
       </select>
     </p>
-    <p>
-      <div class="des 3des rijndael aes">
-      <div class="cbc ecb">
-      <button value="padding" class="buttonOff">Enable Padding</button>
-      <button value="padding" class="buttonOn disableCode">Disable Padding</button>
-      </div>
-      </div>
-    </p>
+    <div class="des 3des rijndael aes">
+    <div class="cbc ecb">
+    <button value="padding" class="buttonOff">Enable Padding</button>
+    <button value="padding" class="buttonOn disableCode">Disable Padding</button>
+    </div>
+    </div>
     <p>
       <button value="continuous" class="buttonOn">Enable Continuous Buffer</button>
       <button value="continuous" class="buttonOff disableCode">Disable Continuous Buffer</button>
@@ -252,7 +248,7 @@ $size = 10 * 1024;
 <span class="padding"><span class="ecb cbc"><span class="3des">$size-= 16; // make the plaintext length a multiple of the block length
 </span><span class="rijndael"><span class="b192">$size-= 16; // make the plaintext length a multiple of the block length
 </span></span><span class="rijndael"><span class="b224">$size-= 4; // make the plaintext length a multiple of the block length
-</span></span></span></span></span>$plaintext = str_repeat('a', $size);
+</span></span></span></span>$plaintext = str_repeat('a', $size);
 
 echo $cipher->decrypt($cipher->encrypt($plaintext));
 <span class="continuous">
