@@ -277,12 +277,12 @@ echo $a->toBits(true);                // outputs 011111010</span>
         Absolute Value
       </div>
       <div class="compare">
-        <p><code>$a->compare($b)</code> returns 1 if <code>$a > $b</code>, 0 if <code>$a == $b</code>, and -1 if <code>$a < $b</code>. The reason for this is demonstrated thusly:</p>
+        <p><code>$a->compare($b)</code> returns 1 if <code>$a > $b</code>, 0 if <code>$a == $b</code>, and -1 if <code>$a &lt; $b</code>. The reason for this is demonstrated thusly:</p>
 <pre style="background: #ffa">$x  > $y: $x->compare($y)  > 0
-$x  < $y: $x->compare($y)  < 0
+$x  &lt; $y: $x->compare($y)  &lt; 0
 $x == $y: $x->compare($y) == 0
 $x >= $y: $x->compare($y) >= 0
-$x <= $y: $x->compare($y) <= 0</pre>
+$x &lt;= $y: $x->compare($y) &lt;= 0</pre>
         <p>As a consequence of this, <code>!$x->compare($y)</code> does not mean <code>$x != $y</code> but rather <code>$x == $y</code>.  If you want to test for equality, use <code>$x->equals($y)</code>.</p>
     </div>
     <div class="equals">
@@ -311,8 +311,10 @@ $x <= $y: $x->compare($y) <= 0</pre>
     <div class="tobits tobytes tohex">
       If the optional parameter is set to bool(true) the number will be encoded in <a href="http://en.wikipedia.org/wiki/Two%27s_complement">two's complement</a>.
     </div>
+    </div>
+  </div>
   <!-- end .grid_9 -->
 </div>
-<!-- end .container_16 -->
+<!-- end .container_12 -->
 </body>
 </html>

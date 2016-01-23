@@ -152,11 +152,11 @@ $ssh->login('username', $rsa);
 
 echo $ssh->exec('ls -la');</pre>
     <p>Ignoring the API for the time being there are a few clear ways phpseclib comes out on top here:</p>
-    <p><ul>
+    <ul>
       <li>phpseclib takes in strings - not file paths. If you want to do a file you can do file_get_contents.</li>
       <li>phpseclib doesn't require a public key. Most private key formats have the public key embedded within them. And if they don't... phpseclib supports that too.</li>
       <li>phpseclib can take in pretty much any standardized format, from PKCS#1 formatted keys, to PuTTY keys, to XML Signature keys</li>
-    </ul></p>
+    </ul>
     <h2 id="diagnosis">Diagnosing Problems</h2>
     <p>Why didn't top or sudo work? With phpseclib you can <a href="examples.html#oneoff,logging">get logs</a>. They look like this:</p>
     <p><a href="http://phpseclib.sourceforge.net/ssh/log.txt">http://phpseclib.sourceforge.net/ssh/log.txt</a></p>
@@ -182,5 +182,8 @@ if (preg_match('#[pP]assword[^:]*:#', $output)) {
 echo fread($shell, 1024*1024);</pre>
     <p>It is additionally unclear how to get top working with libssh2 but it works perfectly fine with phpseclib: <a href="examples.html#top">examples.html#top</a>.</p>
   </div>
+  <!-- end .grid_8 -->
+</div>
+<!-- end .container_12 -->
 </body>
 </html>

@@ -163,13 +163,13 @@ $cert = $x509->loadX509('...');
 
 print_r($cert);
 ?></pre>
-    <p>Specific values can be retrieved by accessing the appropriate array indices in <code>$cert</code> or with the following (self-explanatory) functions:
+    <p>Specific values can be retrieved by accessing the appropriate array indices in <code>$cert</code> or with the following (self-explanatory) functions:</p>
     <ul>
       <li><code>getDNProp()</code>: See <a href="#dns">Distinguished Names</a> for more information.</li>
       <li><code>getDN()</code></li>
       <li><code>getIssuerDN()</code></li>
       <li><code>getPublicKey()</code>: Returns a Crypt_RSA object</li>
-    </ul></p>
+    </ul>
     <p>The contents of <code>$cert</code> are as follows:</p>
 <code id="path">$cert</code>:
 <ul class="printr"><li id="tbsCertificate"><span class="name">tbsCertificate</span><ul><li><span class="name">version</span><ul><li>v3</li></ul></li><li><span class="name">serialNumber</span><ul><li>105827261859531100510423749949966875981</li></ul></li><li><span class="name">signature</span><ul><li><span class="name">algorithm</span><ul><li>sha1WithRSAEncryption</li></ul></li></ul></li><li id="issuer"><span class="name">issuer</span><ul><li><span class="name">rdnSequence</span><ul><li><span class="name">0</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-countryName</li></ul></li><li><span class="name">value</span><ul><li>ZA</li></ul></li></ul></li></ul></li><li><span class="name">1</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-organizationName</li></ul></li><li><span class="name">value</span><ul><li>Thawte Consulting (Pty) Ltd.</li></ul></li></ul></li></ul></li><li><span class="name">2</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-commonName</li></ul></li><li><span class="name">value</span><ul><li>Thawte SGC CA</li></ul></li></ul></li></ul></li></ul></li></ul></li><li><span class="name">validity</span><ul><li><span class="name">notBefore</span><ul><li><span class="name">utcTime</span><ul><li>Oct 25 19:00:00 2011 CDT</li></ul></li></ul></li><li><span class="name">notAfter</span><ul><li><span class="name">utcTime</span><ul><li>Sep 30 18:59:59 2013 CDT</li></ul></li></ul></li></ul></li><li id="subject"><span class="name">subject</span><ul><li><span class="name">rdnSequence</span><ul><li><span class="name">0</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-countryName</li></ul></li><li><span class="name">value</span><ul><li>US</li></ul></li></ul></li></ul></li><li><span class="name">1</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-stateOrProvinceName</li></ul></li><li><span class="name">value</span><ul><li>California</li></ul></li></ul></li></ul></li><li><span class="name">2</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-localityName</li></ul></li><li><span class="name">value</span><ul><li>Mountain View</li></ul></li></ul></li></ul></li><li><span class="name">3</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-organizationName</li></ul></li><li><span class="name">value</span><ul><li>Google Inc</li></ul></li></ul></li></ul></li><li><span class="name">4</span><ul><li><span class="name">0</span><ul><li><span class="name">type</span><ul><li>id-at-commonName</li></ul></li><li><span class="name">value</span><ul><li>www.google.com</li></ul></li></ul></li></ul></li></ul></li></ul></li><li id="subjectPublicKeyInfo"><span class="name">subjectPublicKeyInfo</span><ul><li><span class="name">algorithm</span><ul><li><span class="name">algorithm</span><ul><li>rsaEncryption</li></ul></li></ul></li><li id="subjectPublicKey"><span class="name">subjectPublicKey</span><ul><li><pre>-----BEGIN PUBLIC KEY-----
@@ -256,19 +256,17 @@ bcV0oveifHtgPHfNDs5IAn8BL7abN+AqKjbc1YXWrOU/VG+WHgWv
       </div>
     </div>
     <p>Pass that cert into <code>$x509->loadCA()</code> and then pass <a href="#cert1">Certificate 1</a> into <code>$x509->loadX509()</code> and the above code will output "valid". Use <a href="#cert2">Certificate 2</a> and the above code will output "invalid".</p>
-    <p>Other validation methods are as follows:</code>
-    <p>
-      <ul>
-        <li><code>$x509->validateSignature(FILE_X509_VALIDATE_SIGNATURE_BY_CA)</code> does not accept self-signed certs as being valid.</li>
-        <li><code>$x509->validateURL()</code></li>
-        <li><code>$x509->validateDate()</code> validates against the current date.</li>
-        <li><code>$x509->validateDate('June 1, 1983')</code> validates against June 1, 1983</li>
-      </ul>
-    </p>
+    <p>Other validation methods are as follows:</p>
+    <ul>
+      <li><code>$x509->validateSignature(FILE_X509_VALIDATE_SIGNATURE_BY_CA)</code> does not accept self-signed certs as being valid.</li>
+      <li><code>$x509->validateURL()</code></li>
+      <li><code>$x509->validateDate()</code> validates against the current date.</li>
+      <li><code>$x509->validateDate('June 1, 1983')</code> validates against June 1, 1983</li>
+    </ul>
     <h2 id="selfsigning">Creating a self-signed cert</h2>
     <p>As <a href="#creating">Creating an X.509 cert fail</a> demonstrated, simply saving an X.509 associative array is insufficient. The array needs to be properly signed. This can be done by calling <code>$x509->sign($issuer, $subject)</code>.</p>
     <p>The following is a discussion of the various options that can be set on each of the parameters in the <code>$x509->sign($issuer, $subject)</code> call. Feel free to skip ahead to <a href="#example1">the example</a>.</p>
-    <p><code>$issuer</code> properties consist of the following:
+    <p><code>$issuer</code> properties consist of the following:</p>
     <ul>
       <li>The distinguished name.
         <ul>
@@ -286,8 +284,7 @@ bcV0oveifHtgPHfNDs5IAn8BL7abN+AqKjbc1YXWrOU/VG+WHgWv
           <li>Corresponds to the <code>id-ce-authorityKeyIdentifier</code> extension</li>
         </ul></li>
     </ul>
-    </p>
-    <p><code>$subject</code> properties consist of the following:
+    <p><code>$subject</code> properties consist of the following:</p>
     <ul>
       <li>The distinguished name.
         <ul>
@@ -310,8 +307,7 @@ bcV0oveifHtgPHfNDs5IAn8BL7abN+AqKjbc1YXWrOU/VG+WHgWv
           <li>Corresponds to the <code>id-ce-subjectKeyIdentifier</code> extension</li>
         </ul></li>
     </ul>
-    </p>
-    <p><code>$x509</code> properties (ie. those that don't belong to either the <code>$issuer</code> or <code>$subject</code> consist of the following:
+    <p><code>$x509</code> properties (ie. those that don't belong to either the <code>$issuer</code> or <code>$subject</code> consist of the following:</p>
     <ul>
       <li>The start date.
         <ul>
@@ -334,7 +330,6 @@ bcV0oveifHtgPHfNDs5IAn8BL7abN+AqKjbc1YXWrOU/VG+WHgWv
           <li>Corresponds to <code>id-ce-keyUsage</code> and <code>id-ce-basicConstraints</code></li>
         </ul></li>
     </ul>
-    </p>
     <pre class="prettyprint" id="example1">&lt;?php
 include('File/X509.php');
 include('Crypt/RSA.php');

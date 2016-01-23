@@ -121,7 +121,7 @@ $pubKey = openssl_pkey_get_public('...'); // see <a href="googleca.txt">googleca
 
 echo openssl_verify($data, $signature, $pubKey) ? 'valid' : 'invalid';
     </pre>
-    Validate another certificate and you'd have to calculate the offsets all over again. And to do that you'd need to have some way of parsing ASN1. phpseclib takes care of all of this for you.</p>
+    <p>Validate another certificate and you'd have to calculate the offsets all over again. And to do that you'd need to have some way of parsing ASN1. phpseclib takes care of all of this for you.</p>
     <h2 id="noprivkey">Create a certificate without the private key</h2>
     <p>Unlike OpenSSL, phpseclib does not need a certificate request to create a certificate: since certificate requests have to be signed with the private key, OpenSSL is unable to produce a certificate without knowing the private key.</p>
     <pre class="prettyprint">&lt;?php
@@ -365,5 +365,8 @@ $newcrl = $crl->signCRL($ca, $crl);
 // Output it.
 echo $crl->saveCRL($newcrl) . "\n";</pre>
   </div>
+  <!-- end .grid_8 -->
+</div>
+<!-- end .container_12 -->
 </body>
 </html>
