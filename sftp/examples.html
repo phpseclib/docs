@@ -169,7 +169,7 @@ echo $sftp->pwd(); // show that we're in the 'test' directory
 $sftp->chdir('..'); // go back to the parent directory
 $sftp->rmdir('test'); // delete the directory
 // if the directory had files in it we'd need to do a recursive delete
-//$sftp->delete('test', true);</span><span style="display: none">
+//$sftp->delete('test');</span><span style="display: none">
 </span><span class="list">print_r($sftp->nlist()); // == $sftp->nlist('.')
 print_r($sftp->rawlist()); // == $sftp->rawlist('.')</span><span style="display: none">
 </span><span class="attr">$sftp->chmod(0777, 'filename.remote');
@@ -183,9 +183,9 @@ $sftp->chgrp('filename.remote', $gid);
 $sftp->truncate('filename.remote', $size);</span><span style="display: none">
 </span><span class="stat">echo $sftp->size('filename.remote');
 print_r($sftp->stat('filename.remote'));
-print_r($sftp->lstat('filename.remote'));</span><span class="delete">$sftp->delete('filename.remote'); // doesn't delete directories
-// recursive delete
-$sftp->delete('dirname.remote', true); // deletes a directory and all its contents
+print_r($sftp->lstat('filename.remote'));</span><span class="delete">$sftp->delete('filename.remote'); // deletes directories recursively
+// non-recursive delete
+$sftp->delete('dirname.remote', false);
 $sftp->rename('filename.remote', 'newname.remote');</span><span class="logging">
 
 echo $sftp->getSFTPLog();</span>
