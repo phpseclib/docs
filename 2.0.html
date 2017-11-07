@@ -27,17 +27,30 @@
 $(document).ready(function() {
   $('.button').button();
   $('a').click(function() {
-    if($(this).attr('href') == '#rsaencrypt') {
+    if ($(this).attr('href') == '#rsaencrypt') {
       $('.prettyprint').html("&lt;?php\n\n" +
-        "require_once 'vendor/autoload.php'; // with Composer\n\n" +
+        "require_once 'vendor/autoload.php'; // with Composer\n" +
           "use phpseclib\Crypt\RSA;\n\n" +
           "$rsa = new RSA();\n" +
           "$rsa->loadKey('...'); // your public key\n" +
           "$rsa->setEncryptionMode(RSA::ENCRYPTION_PKCS1);\n" +
           "$result = $rsa->encrypt('your message  ');\n" +
           "echo $result;\n");
-    } else {
-      prettyPrint();
+    } else if ($(this).attr('href') == '#rsassh') {
+      $('.prettyprint').html("&lt;?php\n" +
+        "require_once 'vendor/autoload.php'; // with Composer\n" +
+        "use phpseclib\Crypt\RSA;\n" +
+        "use phpseclib\Net\SSH2;\n\n" +
+        "$key = new RSA();\n" +
+        "$key->loadKey(file_get_contents('private-key.txt'));\n\n" +
+        "// Domain can be an IP too\n" +
+        "$ssh = new SSH2('www.domain.tld');\n" +
+        "if (!$ssh->login('username', $key)) {\n" +
+        "    exit('Login Failed');\n" +
+        "}\n\n" +
+        "echo $ssh->exec('pwd');" +
+        "echo $ssh->exec('ls -la');"
+      );
     }
   });
 });
