@@ -26,6 +26,20 @@
 <script>
 $(document).ready(function() {
   $('.button').button();
+  $('a').click(function() {
+    if($(this).attr('href') == '#rsaencrypt') {
+      $('.prettyprint').html("&lt;?php\n\n" +
+        "require_once 'vendor/autoload.php'; // with Composer\n\n" +
+          "use phpseclib\Crypt\RSA;\n\n" +
+          "$rsa = new RSA();\n" +
+          "$rsa->loadKey('...'); // your public key\n" +
+          "$rsa->setEncryptionMode(RSA::ENCRYPTION_PKCS1);\n" +
+          "$result = $rsa->encrypt('your message  ');\n" +
+          "echo $result;\n");
+    } else {
+      prettyPrint();
+    }
+  });
 });
 </script>
 
@@ -69,18 +83,14 @@ tbody td {text-align: right }
     <h2>Examples:</h2>
     <ul>
       <li><a href="#rsassh">Log into SSH server with RSA key</a></li>
+      <li><a href="#rsaencrypt  ">Encrypt the message with the public key</a></li>
     </ul>
   </div>
   <div class="grid_8">
-    <p>These examples utilize <a href="https://github.com/composer/composer/blob/master/src/Composer/Autoload/ClassLoader.php">Composer's autoloader</a></p>
+    <p>These examples utilize <a href="https://getcomposer.org/">Composer</a></p>
     <h2 id="rsassh">Log into SSH server with RSA key</h2>
     <pre class="prettyprint">&lt;?php
-include 'autoload.php';
-
-$loader = new \Composer\Autoload\ClassLoader();
-$loader->addPsr4('phpseclib\\', __DIR__ . '/path/to/phpseclib2.0');
-$loader->register();
-
+require_once 'vendor/autoload.php'; // with Composer
 use phpseclib\Crypt\RSA;
 use phpseclib\Net\SSH2;
 

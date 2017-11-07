@@ -168,9 +168,10 @@ ul { margin-bottom: 0 }
   <div class="grid_9">
     <div>
 <pre class="prettyprint" style="margin-bottom: 0">&lt;?php
-include('Crypt/RSA.php');
+include 'Crypt/RSA.php'; // without Composer
+require_once 'vendor/autoload.php'; // with Composer
 
-$rsa = new Crypt_RSA();
+$rsa = new \Crypt_RSA();
 <span class="timeout"> <!-- section -->
 <span class="encpkcs1 encputty">$rsa->setPassword('password');
 </span><span class="putty encputty">$rsa->setPrivateKeyFormat(CRYPT_RSA_PRIVATE_FORMAT_PUTTY);
