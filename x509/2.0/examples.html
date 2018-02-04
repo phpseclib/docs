@@ -224,7 +224,7 @@ $x509 = new X509();
 <span class="sig">$x509->loadCA('...'); // see <a href="signer.txt">signer.crt</a>
 </span>$cert = $x509->loadX509('...'); <span class="sig url date customdate">// see <a href="google.txt">google.crt</a></span><span class="selfsign">// see <a href="selfsigned.txt">selfsigned.crt</a></span>
 <span class="sig">echo $x509->validateSignature() ? 'valid' : 'invalid';
-</span><span class="selfsign">echo $x509->validateSignature(true) ?
+</span><span class="selfsign">echo $x509->validateSignature(false) ?
     'valid' :
     'invalid';
 </span><span class="url">// try it with "http://www.bing.com/search?q=phpseclib" too
