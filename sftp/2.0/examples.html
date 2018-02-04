@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="google-site-verification" content="DHz4kg_uhBzFTmMZSrMTtF9lqPofgrUucAmZrsakViI" />
+<meta name="description" content="phpseclib's SFTP implementation is feature rich and has pretty much zero server requirements above and beyond PHP" />
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-19770173-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<title>SFTP Examples and Notes | phpseclib</title>
+<link rel="stylesheet" href="../../css/reset.css" />
+<link rel="stylesheet" href="../../css/text.css" />
+<link rel="stylesheet" href="../../css/960.css" />
+<link rel="stylesheet" href="../../css/prettify.css"/>
+<!--<link rel="stylesheet" href="../../css/jquery.qtip.min.css"/>-->
+<link rel="stylesheet" href="../../css/jquery.treeview.css" />
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+
+<script src="../../js/prettify.js"></script>
+<script src="../../js/jquery-1.7.2.min.js"></script>
+<!--<script src="../../js/jquery.qtip.min.js"></script>-->
+<script src="../../js/jquery.cookie.js"></script>
+<script src="../../js/jquery.treeview.js"></script> 
+<script src="//cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="../../js/common.js"></script>
+
+<script>
+$(document).ready(function() {
+  $('.printr').treeview({     persist: "location",     collapsed: true,     unique: true   });
+});
+</script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }.red { color: #e11 }
+.prettyprint, .pre { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+
+</style>
+</head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: SFTP Examples and Notes</h1>
+    <div id="pgup">(return to <a href="/sftp/intro.html">phpseclib: SFTP Feature List</a>)</div>
+  </div>
+  <div class="clear"></div>
+  <div class="grid_3">
+    <p>
+      Action:<br />
+      <select>
+        <option value="put">Upload File</option>
+        <option value="get">Download File</option>
+        <option value="dir">Directory Management</option>
+        <option value="list">Directory Listing</option>
+        <option value="attr">File Attributes</option>
+        <option value="stat">File Information</option>
+        <option value="delete">Delete and Rename</option>
+      </select>
+    </p>
+    <p>
+      <button value="logging" class="buttonOn">Enable Logging</button>
+      <button value="logging" class="buttonOff disableCode">Disable Logging</button>
+    </p>
+  </div>
+  <!-- end .grid_3 -->
+  <div class="grid_9">
+    <div>
+<pre class="prettyprint" style="margin-bottom: 0">&lt;?php
+require __DIR__ . '/vendor/autoload.php';
+
+use phpseclib\Net\SFTP;
+<span class="logging">
+define('NET_SFTP_LOGGING', SFTP::LOG_COMPLEX);
+</span>
+$sftp = new SFTP('www.domain.tld');
+if (!$sftp-&gt;login('username', 'password')) {
+    exit('Login Failed');
+}
+
+<span class="put">// puts a three-byte file named filename.remote on the SFTP server
+$sftp->put('filename.remote', 'xxx');
+// puts an x-byte file named filename.remote on the SFTP server,
+// where x is the size of filename.local
+$sftp->put('filename.remote', 'filename.local', SFTP::SOURCE_LOCAL_FILE);</span><span class="get">// outputs the contents of filename.remote to the screen
+echo $sftp->get('filename.remote');
+// copies filename.remote to filename.local from the SFTP server
+$sftp->get('filename.remote', 'filename.local');</span><span class="dir">$sftp->mkdir('test'); // create directory 'test'
+$sftp->chdir('test'); // open directory 'test'
+echo $sftp->pwd(); // show that we're in the 'test' directory
+$sftp->chdir('..'); // go back to the parent directory
+$sftp->rmdir('test'); // delete the directory
+// if the directory had files in it we'd need to do a recursive delete
+//$sftp->delete('test');</span><span style="display: none">
+</span><span class="list">print_r($sftp->nlist()); // == $sftp->nlist('.')
+print_r($sftp->rawlist()); // == $sftp->rawlist('.')</span><span style="display: none">
+</span><span class="attr">$sftp->chmod(0777, 'filename.remote');
+//$sftp->chmod(0777, 'dirname.remote', true); // recursively change permissions on a directory
+// has the same syntax as <a href="http://php.net/touch">http://php.net/touch</a>
+$sftp->touch('filename.remote');
+$sftp->chown('filename.remote', $uid);
+//$sftp->chown('filename.remote', $uid, true); // recursively change the owner
+$sftp->chgrp('filename.remote', $gid);
+//$sftp->chgrp('filename.remote', $gid, true); // recursively change the group
+$sftp->truncate('filename.remote', $size);</span><span style="display: none">
+</span><span class="stat">echo $sftp->size('filename.remote');
+print_r($sftp->stat('filename.remote'));
+print_r($sftp->lstat('filename.remote'));</span><span class="delete">$sftp->delete('filename.remote'); // deletes directories recursively
+// non-recursive delete
+$sftp->delete('dirname.remote', false);
+$sftp->rename('filename.remote', 'newname.remote');</span><span class="logging">
+
+echo $sftp->getSFTPLog();</span>
+?&gt;</pre>
+    </div>
+    <div id="permlink"><span>permanent link</span></div>
+    <div id="notes">
+      <div class="list">
+        <h2>Output of nlist() and rawlist()</h2>
+        <b>$sftp->nlist():</b>
+        <ul class="printr" style="margin-bottom: 15px"><li><span class="name">0</span><ul><li>uploads</li></ul></li><li><span class="name">1</span><ul><li>..</li></ul></li><li><span class="name">2</span><ul><li>.</li></ul></li><li><span class="name">3</span><ul><li>.profile</li></ul></li><li><span class="name">4</span><ul><li>.bashrc</li></ul></li><li><span class="name">5</span><ul><li>.bash_logout</li></ul></li></ul>
+        <b>$sftp->rawlist():</b>
+        <ul class="printr" style="margin-bottom: 15px"><li><span class="name">uploads</span><ul><li><span class="name">size</span><ul><li>4096</li></ul></li><li><span class="name">uid</span><ul><li>1001</li></ul></li><li><span class="name">gid</span><ul><li>1002</li></ul></li><li><span class="name">permissions</span><ul><li>16877</li></ul></li><li><span class="name">atime</span><ul><li>1338498490</li></ul></li><li><span class="name">mtime</span><ul><li>1338497853</li></ul></li><li><span class="name">type</span><ul><li>2</li></ul></li></ul></li><li><span class="name">..</span><ul><li><span class="name">size</span><ul><li>4096</li></ul></li><li><span class="name">uid</span><ul><li>0</li></ul></li><li><span class="name">gid</span><ul><li>0</li></ul></li><li><span class="name">permissions</span><ul><li>16877</li></ul></li><li><span class="name">atime</span><ul><li>1338499576</li></ul></li><li><span class="name">mtime</span><ul><li>1338497853</li></ul></li><li><span class="name">type</span><ul><li>2</li></ul></li></ul></li><li><span class="name">.</span><ul><li><span class="name">size</span><ul><li>4096</li></ul></li><li><span class="name">uid</span><ul><li>0</li></ul></li><li><span class="name">gid</span><ul><li>0</li></ul></li><li><span class="name">permissions</span><ul><li>16877</li></ul></li><li><span class="name">atime</span><ul><li>1338499576</li></ul></li><li><span class="name">mtime</span><ul><li>1338497853</li></ul></li><li><span class="name">type</span><ul><li>2</li></ul></li></ul></li><li><span class="name">.profile</span><ul><li><span class="name">size</span><ul><li>675</li></ul></li><li><span class="name">uid</span><ul><li>1012</li></ul></li><li><span class="name">gid</span><ul><li>1013</li></ul></li><li><span class="name">permissions</span><ul><li>33188</li></ul></li><li><span class="name">atime</span><ul><li>1338497357</li></ul></li><li><span class="name">mtime</span><ul><li>1338497357</li></ul></li><li><span class="name">type</span><ul><li>1</li></ul></li></ul></li><li><span class="name">bashrc</span><ul><li><span class="name">size</span><ul><li>3353</li></ul></li><li><span class="name">uid</span><ul><li>1012</li></ul></li><li><span class="name">gid</span><ul><li>1013</li></ul></li><li><span class="name">permissions</span><ul><li>33188</li></ul></li><li><span class="name">atime</span><ul><li>1338497357</li></ul></li><li><span class="name">mtime</span><ul><li>1338497357</li></ul></li><li><span class="name">type</span><ul><li>1</li></ul></li></ul></li><li><span class="name">.bash_lougout</span><ul><li><span class="name">size</span><ul><li>270</li></ul></li><li><span class="name">uid</span><ul><li>1012</li></ul></li><li><span class="name">gid</span><ul><li>1013</li></ul></li><li><span class="name">permissions</span><ul><li>33188</li></ul></li><li><span class="name">atime</span><ul><li>1338497357</li></ul></li><li><span class="name">mtime</span><ul><li>1338497357</li></ul></li><li><span class="name">type</span><ul><li>1</li></ul></li></ul></li></ul>
+        The type index corresponds to one of the following named constants:
+        <ul>
+          <li>NET_SFTP_TYPE_REGULAR</li>
+          <li>NET_SFTP_TYPE_DIRECTORY</li>
+          <li>NET_SFTP_TYPE_SYMLINK</li>
+          <li>NET_SFTP_TYPE_SPECIAL</li>
+        </ul>
+      </div>
+      <div class="stat">
+        <h2>stat() vs. lstat() vs. size()</h2>
+        <p>stat() and lstat() return associative arrays with misc information about the files. lstat() and stat() are identical with the caveat that when the file in question is a <a href="http://en.wikipedia.org/wiki/Symbolic_link">symbolic link</a> the information returned refers to the link itself and not the file (or directory) being linked to.</p>
+        <p>size() returns the 'size' index of the associative array returned by lstat()</p>
+      </div>
+      <div class="put">
+        <h2>Uploading files</h2>
+        <p>The function definition for put() is as follows:</p>
+        <pre class="prettyprint">function put($remote_file, $data, $mode = SFTP::SOURCE_STRING, $start = -1, $local_start = -1)</pre>
+        <p><b>Uploading strings vs. files</b></p>
+        <p><code>$sftp->put('filename.remote', 'filename.local')</code> creates filename.remote on the remote server with 'filename.local' as the contents.<p>
+        <p><code>$sftp->put('filename.remote', 'xxx', SFTP::SOURCE_LOCAL_FILE)</code> creates filename.remote on the remote server such that the contents of it and filename.local match. ie. with SFTP::SOURCE_LOCAL_FILE it uploads a file and without it it uploads a string.</p>
+        <p><b>Resuming transfers</b></p>
+        <p><code>$sftp->put('filename.remote', 'xxx', SFTP::RESUME)</code> will append 'xxx' to filename.remote.</p>
+        <p><code>$sftp->put('filename.remote', 'filename.local', SFTP::SOURCE_LOCAL_FILE | SFTP::RESUME_START)</code> will append filename.remote to filename.local.</p>
+        <p><code>$sftp->put('filename.remote', 'filename.local', SFTP::SOURCE_LOCAL_FILE | SFTP::RESUME)</code> will append all but the first <code>$sftp->size('filename.remote')</code> bytes of filename.local to filename.remote. The idea being that if your transfer is interupted you can restart it.</p>
+        <p><b>Positional control</b></p>
+        <p>$start and $local_start give you more fine grained control over this process and take precident over SFTP::RESUME when they're non-negative. ie. $start could let you write at the end of a file (like SFTP::RESUME) or in the middle of one. $local_start could let you start your reading from the end of a file (like SFTP::RESUME_START) or in the middle of one.</p>
+    </div>
+    <div class="get">
+      <h2>Downloading files</h2>
+      <p>The function definition for get() is as follows:</p>
+      <pre class="prettyprint">function get($remote_file, $local_file = false, $offset = 0, $length = -1)</pre>
+      <p>Returns a string containing the contents of $remote_file if $local_file is left undefined or a boolean false if the operation was unsuccessful.  If $local_file is defined, returns true or false depending on the success of the operation.</p>
+    </div>
+  </div>
+  </div>
+  <!-- end .grid_9 -->
+</div>
+<!-- end .container_12 -->
+
+<div id="version" title="Version Identification" style="display: none">
+<div>Which version of phpseclib are you using?</div>
+<div style="margin: 0 auto; text-align: center">
+<select name="version" id="versionsel" style="display: block; margin: 0 auto; text-align: center">
+  <option value="1.0">1.0</option>
+  <option value="2.0">2.0</option>
+</select>
+<button id="versionnext" style="margin-top: 20px; background: #4CAF50; border: none; color: white; padding: 7px 15px">Continue &gt;</button>
+</div>
+</div>
+
+</body>
+</html>

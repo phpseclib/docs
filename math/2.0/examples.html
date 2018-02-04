@@ -18,17 +18,17 @@
 
 </script>
 <title>BigInteger Examples and Notes | phpseclib</title>
-<link rel="stylesheet" href="../css/reset.css" />
-<link rel="stylesheet" href="../css/text.css" />
-<link rel="stylesheet" href="../css/960.css" />
-<link rel="stylesheet" href="../css/prettify.css"/>
+<link rel="stylesheet" href="../../css/reset.css" />
+<link rel="stylesheet" href="../../css/text.css" />
+<link rel="stylesheet" href="../../css/960.css" />
+<link rel="stylesheet" href="../../css/prettify.css"/>
 <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 
-<script src="../js/prettify.js"></script>
-<script src="../js/jquery-1.7.2.min.js"></script>
+<script src="../../js/prettify.js"></script>
+<script src="../../js/jquery-1.7.2.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-<script src="../js/common.js"></script>
+<script src="../../js/common.js"></script>
 
 <style media="screen">
 h1 { text-align: left; margin-bottom: 0 }.red { color: #e11 }
@@ -47,7 +47,7 @@ ul { margin-bottom: 0 }
 <div class="container_12">
   <div class="grid_12">
     <h1>php<span class="red">sec</span>lib: BigInteger Examples and Notes</h1>
-    <div id="pgup">(return to <a href="intro.html">phpseclib: BigInteger Feature List</a>)</div>
+    <div id="pgup">(return to <a href="/math/intro.html">phpseclib: BigInteger Feature List</a>)</div>
   </div>
   <div class="clear"></div>
   <div class="grid_3">
@@ -91,22 +91,24 @@ ul { margin-bottom: 0 }
   <div class="grid_9">
     <div>
 <pre class="prettyprint" style="margin-bottom: 0">&lt;?php
-include('Math/BigInteger.php');
+require __DIR__ . '/vendor/autoload.php';
+
+use phpseclib\Math\BigInteger;
 <span class="add subtract multiply divide powmod modinverse compare equals">
-$a = new Math_BigInteger(5);
-$b = new Math_BigInteger(3);
-<span class="powmod">$c = new Math_BigInteger(4);
+$a = new BigInteger(5);
+$b = new BigInteger(3);
+<span class="powmod">$c = new BigInteger(4);
 </span></span><span class="gcd extendedgcd">
-$a = new Math_BigInteger(50);
-$b = new Math_BigInteger(30);
+$a = new BigInteger(50);
+$b = new BigInteger(30);
 </span><span class="random randomprime">
-$a = new Math_BigInteger(30);
-$b = new Math_BigInteger(50);
+$a = new BigInteger(30);
+$b = new BigInteger(50);
 </span><span class="bitwiseand bitwiseor bitwisexor">
-$a = new Math_BigInteger('1100', 2);
-$b = new Math_BigInteger('1010', 2);
+$a = new BigInteger('1100', 2);
+$b = new BigInteger('1010', 2);
 </span><span class="tostring tobytes tobits tohex">
-$a = new Math_BigInteger(pack('H*', 'FA'), 256);
+$a = new BigInteger(pack('H*', 'FA'), 256);
 </span><span class="add">
 echo $a->add($b); // outputs 5</span><span class="subtract">
 echo $a->subtract($b); // outputs 2</span><span class="multiply">
@@ -122,20 +124,20 @@ extract($a->extendedGCD($b));
 echo $gcd. "\r\n&lt;br />\r\n"; // outputs  10
 echo $x  . "\r\n&lt;br />\r\n"; // outputs  29
 echo $y;                     // outputs -48</span><span class="abs">
-$a = new Math_BigInteger(-5);
+$a = new BigInteger(-5);
 
 echo $a->abs(); // outputs 5</span><span class="compare">
 echo $a->compare($b) . "\r\n&lt;br />\r\n"; // outputs  1
 echo $b->compare($a) . "\r\n&lt;br />\r\n"; // outputs -1
 echo $a->compare($a);                    // outputs  0</span><span class="equals">
 var_dump($a->equals($b)); // outputs bool(false)</span><span class="random">
-$rand = new Math_BigInteger();
+$rand = new BigInteger();
 echo $rand->random($a, $b); // outputs random number between 30 and 50, inclusive</span><span class="randomprime">
-$rand = new Math_BigInteger();
+$rand = new BigInteger();
 echo $rand->randomPrime($a, $b); // outputs random prime between 30 and 50, inclusive</span><span class="isprime">
-$a = new Math_BigInteger(47);
+$a = new BigInteger(47);
 var_dump($a->isPrime()); // outputs bool(true)</span><span class="setprecision">
-$a = new Math_BigInteger(347);
+$a = new BigInteger(347);
 $a->setPrecision(8);
 
 echo $a->toBits() . "\r\n&lt;br />\r\n"; // outputs 01011011
@@ -144,39 +146,39 @@ echo $a->toBits();                    // outputs 01101101</span><span class="bit
 echo $a->bitwise_and($b)->toBits(); // outputs 1000</span><span class="bitwiseor">
 echo $a->bitwise_or($b)->toBits(); // outputs 1110</span><span class="bitwisexor">
 echo $a->bitwise_xor($b)->toBits(); // outputs 110</span><span class="bitwisenot">
-$a = new Math_BigInteger('010', 2);
+$a = new BigInteger('010', 2);
 $a->setPrecision(3);
 
 echo $a->bitwise_not()->toBits(); // outputs 101</span><span class="bitwiseleftshift">
-$a = new Math_BigInteger('11', 2);
+$a = new BigInteger('11', 2);
 
 echo $a->bitwise_leftShift(2)->toBits(); // outputs 1100</span><span class="bitwiseleftrotate">
-$a = new Math_BigInteger('1001', 2);
+$a = new BigInteger('1001', 2);
 $a->setPrecision(4);
 
 echo $a->bitwise_leftRotate(2)->toBits(); // outputs 0110</span><span class="bitwiserightshift">
-$a = new Math_BigInteger('11', 2);
+$a = new BigInteger('11', 2);
 
 echo $a->bitwise_leftShift(1)->toBits(); // outputs 1</span><span class="bitwiserightrotate">
-$a = new Math_BigInteger('1001', 2);
+$a = new BigInteger('1001', 2);
 $a->setPrecision(4);
 
 echo $a->bitwise_leftRotate(2)->toBits(); // outputs 0110</span><span class="constructor">
 // all of these are equal to 250
-new Math_BigInteger(pack('H*', 'FA'),   256);
-new Math_BigInteger(pack('H*', '00FA'),-256);
-new Math_BigInteger('FA',   16);
-new Math_BigInteger('00FA',-16);
-new Math_BigInteger('250',  10);
-new Math_BigInteger('250',-10);
-new Math_BigInteger('11111010',  2);
-new Math_BigInteger('011111010',-2);
+new BigInteger(pack('H*', 'FA'),   256);
+new BigInteger(pack('H*', '00FA'),-256);
+new BigInteger('FA',   16);
+new BigInteger('00FA',-16);
+new BigInteger('250',  10);
+new BigInteger('250',-10);
+new BigInteger('11111010',  2);
+new BigInteger('011111010',-2);
 
 // all of these are equal to -6
-new Math_BigInteger(pack('H*', 'FA'), -256);
-new Math_BigInteger('FA', -16);
-new Math_BigInteger('-6', -10);
-new Math_BigInteger('11111010', -2);</span><span class="tostring">
+new BigInteger(pack('H*', 'FA'), -256);
+new BigInteger('FA', -16);
+new BigInteger('-6', -10);
+new BigInteger('11111010', -2);</span><span class="tostring">
 echo $a->toString(); // outputs 250</span><span class="tobytes">
 echo bin2hex($a->toBytes()) . "\r\n&lt;br />\r\n"; // outputs fa
 echo bin2hex($a->toBytes(true));                // outputs 00fa</span><span class="tohex">

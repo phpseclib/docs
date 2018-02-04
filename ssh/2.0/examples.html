@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="google-site-verification" content="DHz4kg_uhBzFTmMZSrMTtF9lqPofgrUucAmZrsakViI" />
+<meta name="keywords" content="SSH,SFTP,RSA,PHP,AES,Rijndael,3DES,RC4,SSH2,SSH1,X.509,X509" />
+<meta name="description" content="phpseclib's SSH2 implementation is feature rich and has pretty much zero server requirements above and beyond PHP" />
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-19770173-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<title>phpseclib: SSH2 Examples and Notes</title>
+<link rel="stylesheet" href="../../css/reset.css" />
+<link rel="stylesheet" href="../../css/text.css" />
+<link rel="stylesheet" href="../../css/960.css" />
+<link rel="stylesheet" href="../../css/prettify.css"/>
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+
+<script src="../../js/prettify.js"></script>
+<script src="../../js/jquery-1.7.2.min.js"></script>
+<script src="//cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="../../js/common.js"></script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }.red { color: #e11 }
+.prettyprint { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+.ui-widget-overlay { background: black; opacity: .80; filter: Alpha(Opacity=80); }
+</style>
+</head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: SSH2 Examples and Notes</h1>
+    <div id="pgup">(return to <a href="/ssh/intro.html">phpseclib: SSH2 Feature List</a>)</div>
+  </div>
+  <div class="clear"></div>
+  <div class="grid_3">
+    <p>
+      Action:<br />
+      <select>
+        <option value="oneoff">One-off commands</option>
+        <option value="chdir">One-off commands: cd: a note</option>
+        <option value="callback">One-off commands: callbacks</option>
+        <option value="interactive">Interactive Shell</option>
+        <option value="sudo">Advanced Interactive Shell: sudo</option>
+        <option value="timeout">setTimeout: Identifying the prompt</option>
+        <option value="top">Interactive Shell: ANSI Codes</option>
+        <option value="f1f2">Interactive Shell: F1, F2, etc</option>
+      </select>
+    </p>
+    <p>
+      <button value="logging" class="buttonOn">Enable Logging</button>
+      <button value="logging" class="buttonOff disableCode">Disable Logging</button>
+    </p>
+    <p>
+      <button value="hostkey" class="buttonOn">Verify Host Key</button>
+      <button value="hostkey" class="buttonOff disableCode">Ignore Host Key</button>
+    </p>
+  </div>
+  <!-- end .grid_3 -->
+  <div class="grid_9">
+    <div>
+<pre class="prettyprint" style="margin-bottom: 0">&lt;?php
+require __DIR__ . '/vendor/autoload.php';
+
+use phpseclib\Net\SSH2;<span class="top f1f2">
+use phpseclib\File\ANSI;</span>
+<span class="logging">
+define('NET_SSH2_LOGGING', SSH2::LOG_COMPLEX);
+</span>
+$ssh = new SSH2('www.domain.tld');
+if (!$ssh-&gt;login('username', 'password')) {
+    exit('Login Failed');
+}<span class="hostkey">
+// save $ssh->getServerPublicHostKey() if this is your first time connecting
+// check $ssh->getServerPublicHostKey() against previously saved value on subsequent connections</span>
+
+<span class="oneoff">echo $ssh->exec('pwd');
+echo $ssh->exec('ls -la');</span><span class="chdir">echo $ssh->exec('pwd'); // outputs /home/username
+$ssh->exec('cd /');
+echo $ssh->exec('pwd'); // (despite the previous command) outputs /home/username</span><span style="display: none">
+</span><span class="interactive">echo $ssh->read('username@username:~$');
+$ssh->write("ls -la\n"); // note the "\n"
+echo $ssh->read('username@username:~$');</span><span class="sudo">echo $ssh->read('username@username:~$');
+$ssh->write("sudo ls -la\n");
+$output = $ssh->read('#[pP]assword[^:]*:|username@username:~\$#', SSH2::READ_REGEX);
+echo $output;
+if (preg_match('#[pP]assword[^:]*:#', $output)) {
+    $ssh->write("password\n");
+    echo $ssh->read('username@username:~$');
+}</span><span class="timeout">$ssh->setTimeout(1);
+echo $ssh->read();</span><span class="callback">function packet_handler($str)
+{
+    echo $str;
+}
+
+$ssh->exec('ping 127.0.0.1', 'packet_handler');</span><span class="top">$ansi = new ANSI();
+
+$ansi->appendString($ssh->read('username@username:~$'));
+$ssh->write("top\n");
+$ssh->setTimeout(5);
+$ansi->appendString($ssh->read());
+echo $ansi->getScreen(); // outputs HTML</span><span style="display: none">
+</span><span class="f1f2">$ssh->setTimeout(2);
+$ssh->read();
+$ssh->write("vim\n");
+$ssh->read();
+$ssh->write("\x1BOP"); // send F1
+
+$ansi = new ANSI();
+$ansi->appendString($ssh->read());
+
+echo $ansi->getScreen();</span><span class="logging">
+
+echo $ssh->getLog();</span>
+?&gt;</pre>
+    </div>
+    <div id="permlink"><span>permanent link</span></div>
+    <div id="notes">
+      <div class="oneoff">
+        <h2>stderr and exit status</h2>
+        <p>By default <code>$ssh->exec()</code> returns both stdout and stderr. To suppress stderr you can call <code>$ssh->enableQuietMode()</code>. To re-enable it call <code>$ssh->disableQuietMode()</code>.</p>
+        <p>To get stderr separately from stdout you'll need to call <code>$ssh->enableQuietMode()</code> and then call <code>$ssh->getStdError()</code>. These functions work with <code>$ssh->read()</code> as well.</p>
+        <p>To get the exit status you can call <code>$ssh->getExitStatus()</code></p>
+      </div>
+      <div class="chdir">
+        <h2>Successive calls to exec()</h2>
+        <p>If done on an interactive shell, the output you'd receive for the first pwd would (depending on how your system is setup) be different than the output of the second pwd. The above code snippet, however, will yield two identical lines.</p>
+        <p>The reason for this is that any "state changes" you make to the one-time shell are gone once the exec() has been ran and the channel has been deleted.</p>
+        <p>You can workaround this on Linux by doing <code>$ssh->exec('cd /; pwd')</code></p>
+      </div>
+      <div class="timeout">
+        <h2>setTimeout</h2>
+        <p>After each <code>$ssh->read()</code> the timeout resets to what you set it to last. By default the "channel" remains open so if you do <code>$ssh->write("ping 127.0.0.1\n")</code> and do two successive <code>$ssh->read()</code> you'll get ping output in both of those calls. If you don't want it to do that you can either send Ctrl + C via <code>$ssh->write("\x03")</code> or you can reset the whole channel by calling <code>$ssh->reset()</code>.</p>
+        <p><code>$ssh->isTimeout()</code> will return true if the result of the last <code>$ssh->read()</code> or <code>$ssh->exec()</code> was due to a timeout. Otherwise it will return false.</p>
+        <p><code>$ssh->setTimeout()</code> works with <code>$ssh->read()</code> and <code>$ssh->exec()</code>.</p>
+      </div>
+      <div class="interactive">
+        <h2>New lines needed to send commands</h2>
+        <p>On a terminal you normally don't just type the command and expect to get the output. You type the command <i>and then</i> hit enter. To simulate that you'll need to add <code>"\n"</code> to the commands you send via <code>write()</code></p>
+      </div>
+      <div class="sudo">
+        <h2>sudo with read() / write()</h2>
+        <p>By default, <a href="http://en.wikipedia.org/wiki/Sudo">sudo</a> caches passwords for 5 minutes after they've been entered. So while <code>$ssh->read('Password:')</code> will work the first time you try it, it won't work if you try it within a five minutes after having initially ran it.</p>
+      </div>
+      <div class="callback">
+        <h2>Callbacks</h2>
+        <p>This example is best run via the CLI. Run it via the webbrowser and you may need to <a href="http://php.net/flush">flush</a> the output buffer and even then YMMV.</p>
+      </div>
+      <div class="top">
+        <h2>ANSI Escape Codes</h2>
+        <p>Some commands issued to a terminal may yield <a href="http://en.wikipedia.org/wiki/ANSI_escape_code">ANSI escape codes</a>.  eg. <code>^[[H</code>.  These provide the terminal with information on the formating of the characters and their positioning.</p>
+        <p>Since Net_SSH2 uses vt100 as the "TERM environment variable value" a <a href="http://en.wikipedia.org/wiki/VT100">VT100</a> <a href="http://en.wikipedia.org/wiki/Terminal_emulator">terminal emulator</a> is needed to properly handle the ANSI escape codes.  File_ANSI aims to be such an emulator.  The default screen size is 80x24.</p>
+        <p><code>$ansi->getScreen()</code> returns what'd be seen on the current screen.  In the case of <a href="http://en.wikipedia.org/wiki/Top_%28software%29">top</a> this is desirable as it'll produce output like this:</p>
+<pre style="color: white; background: black">top - 23:39:24 up 77 days,  1:13,  1 user,  load average: 0.00, 0.00, 0.00
+Tasks:  45 total,   2 running,  43 sleeping,   0 stopped,   0 zombie
+Cpu(s):  0.0%us,  0.0%sy,  0.0%ni,100.0%id,  0.0%wa,  0.0%hi,  0.0%si,  0.0%st
+Mem:   1740956k total,  1079288k used,   661668k free,   221240k buffers
+Swap:        0k total,        0k used,        0k free,   399940k cached
+
+<span style="color: black; background: white">  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND            </span>
+    1 root      16   0  2128  696  600 S  0.0  0.0   0:01.10 init               
+    2 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/0        
+    3 root      34  19     0    0    0 S  0.0  0.0   0:00.05 ksoftirqd/0        
+    4 root      RT   0     0    0    0 S  0.0  0.0   0:00.01 watchdog/0         
+    5 root      10  -5     0    0    0 S  0.0  0.0   0:00.25 events/0           
+    6 root      11  -5     0    0    0 S  0.0  0.0   0:00.63 khelper            
+    7 root      10  -5     0    0    0 S  0.0  0.0   0:00.00 kthread            
+    8 root      14  -5     0    0    0 S  0.0  0.0   0:00.00 xenwatch           
+    9 root      10  -5     0    0    0 S  0.0  0.0   0:00.00 xenbus             
+   17 root      10  -5     0    0    0 S  0.0  0.0   0:00.00 kblockd/0          
+   46 root      20  -5     0    0    0 S  0.0  0.0   0:00.00 aio/0              
+   45 root      15   0     0    0    0 S  0.0  0.0   0:00.64 kswapd0            
+  562 root      20  -5     0    0    0 S  0.0  0.0   0:00.00 kseriod            
+  657 root      15   0     0    0    0 S  0.0  0.0   0:04.23 kjournald          
+  718 root      13  -4  2360  656  424 S  0.0  0.0   0:00.18 udevd              
+ 1592 root      14  -2  2396  848  560 S  0.0  0.0   0:00.03 dhclient           
+ 1647 root      15   0     0    0    0 S  0.0  0.0   0:00.16 kjournald</pre>
+      <p>In the case of <a href="http://en.wikipedia.org/wiki/Ls">ls</a>, however, it is less desirable.  For commands like ls it may be preferable to do <code>$ansi->getHistory()</code>. For top, that'd return the following:</p>
+<pre style="color: white; background: black">         __|  __|_  )  Fedora 8
+         _|  (     /    32-bit
+        ___|\___|___|
+
+ Welcome to an EC2 Public Image
+                       :-)
+
+    Base
+
+ --[ see /etc/ec2/release-notes ]--
+
+[username@username:~$]$top
+
+top - 23:51:56 up 77 days,  1:25,  1 user,  load average: 0.00, 0.00, 0.00
+Tasks:  45 total,   2 running,  43 sleeping,   0 stopped,   0 zombie
+Cpu(s):  0.0%us,  0.0%sy,  0.0%ni,100.0%id,  0.0%wa,  0.0%hi,  0.0%si,  0.0%st
+Mem:   1740956k total,  1079256k used,   661700k free,   221240k buffers
+Swap:        0k total,        0k used,        0k free,   399940k cached
+
+<span style="color: black; background: white">  PID USER      PR  NI  VIRT  RES  SHR S %CPU %MEM    TIME+  COMMAND            </span>
+    1 root      16   0  2128  696  600 S  0.0  0.0   0:01.10 init               
+    2 root      RT   0     0    0    0 S  0.0  0.0   0:00.00 migration/0        
+    3 root      34  19     0    0    0 S  0.0  0.0   0:00.05 ksoftirqd/0        
+    4 root      RT   0     0    0    0 S  0.0  0.0   0:00.01 watchdog/0         
+    5 root      10  -5     0    0    0 S  0.0  0.0   0:00.25 events/0           
+    6 root      11  -5     0    0    0 S  0.0  0.0   0:00.63 khelper            
+    7 root      10  -5     0    0    0 S  0.0  0.0   0:00.00 kthread            
+    8 root      14  -5     0    0    0 S  0.0  0.0   0:00.00 xenwatch           
+    9 root      10  -5     0    0    0 S  0.0  0.0   0:00.00 xenbus             
+   17 root      10  -5     0    0    0 S  0.0  0.0   0:00.00 kblockd/0          
+   46 root      20  -5     0    0    0 S  0.0  0.0   0:00.00 aio/0              
+   45 root      15   0     0    0    0 S  0.0  0.0   0:00.64 kswapd0            
+  562 root      20  -5     0    0    0 S  0.0  0.0   0:00.00 kseriod            
+  657 root      15   0     0    0    0 S  0.0  0.0   0:04.23 kjournald          
+  718 root      13  -4  2360  656  424 S  0.0  0.0   0:00.18 udevd              
+ 1592 root      14  -2  2396  848  560 S  0.0  0.0   0:00.03 dhclient           
+ 1647 root      15   0     0    0    0 S  0.0  0.0   0:00.16 kjournald</pre>
+      <p>The history, by default, stores 200 lines (not including the current screen).  Both functions return HTML with the various formatting properties specified by HTML.  If you don't want HTML and want just the raw text of the terminal without any formatting do <code>htmlspecialchars_decode(strip_tags($ansi->getScreen()))</code>.
+    </div>
+      <div class="f1f2">
+        <h2>Sending Special Characters</h2>
+        <p>A table of special characters and the keys they correspond to can be found at <a href="keys.html">SSH2 Special Characters</a>. The output of the above program is as follows:</p>
+        <pre style="color: white; background: black">*<u>help.txt</u>*      For <u>Vim version 7.3.</u>  Last change: 2010 Jul 20
+
+  VIM - main help file
+  k
+      Move around:  Use the cursor keys, or &quot;h&quot; to go left, h   l
+  &quot;j&quot; to go down, &quot;k&quot; to go up, &quot;l&quot; to go right.       j
+Close this window:  Use &quot;:q<b>&lt;Enter&gt;</b>&quot;.
+   Get out of Vim:  Use &quot;:qa!<b>&lt;Enter&gt;</b>&quot; (careful, all changes are lost!).
+
+Jump to a subject:  Position the cursor on a tag (e.g. |<u>bars</u>|) and hit <b>CTRL-]</b>.
+   With the mouse:  &quot;:set mouse=a&quot; to enable the mouse (in xterm or GUI).
+  Double-click the left mouse button on a tag, e.g. |<u>bars</u>|.
+        Jump back:  Type <b>CTRL-T</b> or <b>CTRL-O</b> (repeat to go further back).
+
+Get specific help:  It is possible to go directly to whatever you want help
+     on, by giving an argument to the |<u>:help</u>| command.
+     It is possible to further specify the context:
+                                         *<u>help-context</u>*
+  <u>WHAT                  PREPEND    EXAMPLE</u>      ~
+  Normal mode command      (nothing)   :help x
+<span style="color: black; background: white">help.txt [Help][RO]                                           1,1            Top</span>
+
+<span style="color: black; background: white">[No Name]                                                     0,0-1          All</span>
+&quot;help.txt&quot; [readonly] 221L, 8239C</pre>
+        <p>The output may look different than vim when ran through, for example, PuTTY, because PuTTY uses <code>xterm</code> as it's shell whereas phpseclib uses <code>vt100</code>.</p>
+      </div>
+  </div>
+  </div>
+  <!-- end .grid_9 -->
+</div>
+<!-- end .container_12 -->
+
+<div id="version" title="Version Identification" style="display: none">
+<div>Which version of phpseclib are you using?</div>
+<div style="margin: 0 auto; text-align: center">
+<select name="version" id="versionsel" style="display: block; margin: 0 auto; text-align: center">
+  <option value="1.0">1.0</option>
+  <option value="2.0">2.0</option>
+</select>
+<button id="versionnext" style="margin-top: 20px; background: #4CAF50; border: none; color: white; padding: 7px 15px">Continue &gt;</button>
+</div>
+</div>
+
+</body>
+</html>

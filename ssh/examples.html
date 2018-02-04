@@ -23,84 +23,13 @@
 <link rel="stylesheet" href="../css/text.css" />
 <link rel="stylesheet" href="../css/960.css" />
 <link rel="stylesheet" href="../css/prettify.css"/>
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 
 <script src="../js/prettify.js"></script>
 <script src="../js/jquery-1.7.2.min.js"></script>
-
-<script>
-var manageSelects = function() {
-  options = $('select option');
-  for (var i = 0; i < options.length; i++) {
-   $('.' + options[i].value).hide();
-  }
-
-  options = $('select option:selected');
-  for (var i = 0; i < options.length; i++) {
-   $('.' + options[i].value).show();
-  }
-};
-
-var highlight = function() {
-  if ($('.' + this.value).closest('#notes').length == 0) {
-    $('.' + this.value).css('background-color', '#ffa');
-  }
-};
-
-var unhighlight = function() {
-  if ($('.' + this.value).closest('#notes').length == 0) {
-    $('.' + this.value).css('background-color', '#f5f4ee');
-  }
-};
-
-var toggleButton = function() {
-  buttons = $('button[value="' + this.value + '"]');
-  buttons.eq(0).toggle();
-  buttons.eq(1).toggle();
-  $('.' + this.value).toggle();
-};
-
-var permLink = function() {
-  attrs = '';
-  selected = $('select option:selected,.disableCode:visible');
-  for (i = 0; i < selected.length; i++) {
-    attrs+= selected[i].value + ',';
-  }
-  hashPos = window.location.href.indexOf('#');
-  newURL = hashPos == -1 ? window.location.href : window.location.href.substring(0, hashPos);
-  window.location.href = newURL + '#' + attrs;
-};
-
-$(document).ready(function() {
-  //$('pre span[id]').hide();
-  //$('#notes div[id]').hide();
-
-  buttons = $('button:visible');
-  for (var i = 0; i < buttons.length; i++) {
-   $('.' + buttons[i].value).hide();
-  }
-
-  options = window.location.href.split('#');
-  options = options.length > 1 ? options[1].split(',') : new Array();
-  for (var i = 0; i < options.length; i++) {
-    options[i] = options[i].replace(/%20/g, ' ');
-    $('select option[value="' + options[i] +'"]').prop('selected', true);
-    button = $('button[value="' + options[i] +'"]');
-    if (button.length) {
-      toggleButton.apply(button[0]);
-    }
-  }
-
-  manageSelects();
-
-  $('select').change(manageSelects);
-  //$('select').change(highlight);
-  $('select').keyup(manageSelects);
-  //$('select').focus(highlight);
-  //$('select').blur(unhighlight);
-  $('button').click(toggleButton);
-  $('#permlink span').click(permLink);
-});
-</script>
+<script src="//cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<script src="../js/common.js"></script>
 
 <style media="screen">
 h1 { text-align: left; margin-bottom: 0 }.red { color: #e11 }
@@ -111,7 +40,10 @@ code { background: #ffa }
 #permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
 .buttonOff { display: none }
 ul { margin-bottom: 0 }
-#pgup { font-size: 10px; margin-bottom: 2em }</style></head>
+#pgup { font-size: 10px; margin-bottom: 2em }
+.ui-widget-overlay { background: black; opacity: .80; filter: Alpha(Opacity=80); }
+</style>
+</head>
 <body onload="prettyPrint()">
 <div class="container_12">
   <div class="grid_12">
@@ -333,5 +265,17 @@ Get specific help:  It is possible to go directly to whatever you want help
   <!-- end .grid_9 -->
 </div>
 <!-- end .container_12 -->
+
+<div id="version" title="Version Identification" style="display: none">
+<div>Which version of phpseclib are you using?</div>
+<div style="margin: 0 auto; text-align: center">
+<select name="version" id="versionsel" style="display: block; margin: 0 auto; text-align: center">
+  <option value="1.0">1.0</option>
+  <option value="2.0">2.0</option>
+</select>
+<button id="versionnext" style="margin-top: 20px; background: #4CAF50; border: none; color: white; padding: 7px 15px">Continue &gt;</button>
+</div>
+</div>
+
 </body>
 </html>

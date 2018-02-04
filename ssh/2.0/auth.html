@@ -18,17 +18,17 @@
 
 </script>
 <title>SSH2 Authentication Examples and Notes | phpseclib</title>
-<link rel="stylesheet" href="../css/reset.css" />
-<link rel="stylesheet" href="../css/text.css" />
-<link rel="stylesheet" href="../css/960.css" />
-<link rel="stylesheet" href="../css/prettify.css"/>
+<link rel="stylesheet" href="../../css/reset.css" />
+<link rel="stylesheet" href="../../css/text.css" />
+<link rel="stylesheet" href="../../css/960.css" />
+<link rel="stylesheet" href="../../css/prettify.css"/>
 <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 
-<script src="../js/prettify.js"></script>
-<script src="../js/jquery-1.7.2.min.js"></script>
+<script src="../../js/prettify.js"></script>
+<script src="../../js/jquery-1.7.2.min.js"></script>
 <script src="//cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-<script src="../js/common.js"></script>
+<script src="../../js/common.js"></script>
 
 <style media="screen">
 h1 { text-align: left; margin-bottom: 0 }.red { color: #e11 }
@@ -47,7 +47,7 @@ ul { margin-bottom: 0 }
 <div class="container_12">
   <div class="grid_12">
     <h1>php<span class="red">sec</span>lib: SSH2 Examples and Notes</h1>
-    <div id="pgup">(return to <a href="intro.html">phpseclib: SSH2 Feature List</a>)</div>
+    <div id="pgup">(return to <a href="/ssh/intro.html">phpseclib: SSH2 Feature List</a>)</div>
   </div>
   <div class="clear"></div>
   <div class="grid_3">
@@ -67,17 +67,19 @@ ul { margin-bottom: 0 }
   <div class="grid_9">
     <div>
 <pre class="prettyprint" style="margin-bottom: 0">&lt;?php
-include('Net/SSH2.php');<span class="rsakey encrsakey">
-include('Crypt/RSA.php');</span>
+require __DIR__ . '/vendor/autoload.php';
 
-$ssh = new Net_SSH2('www.domain.tld');
+use phpseclib\Net\SSH2;<span class="rsakey encrsakey">
+use phpseclib\Crypt\RSA;</span>
+
+$ssh = new SSH2('www.domain.tld');
 <span class="password">if (!$ssh-&gt;login('username', 'password')) {
     exit('Login Failed');
-}</span><span class="rsakey">$key = new Crypt_RSA();
+}</span><span class="rsakey">$key = new RSA();
 $key-&gt;loadKey(file_get_contents('privatekey'));
 if (!$ssh-&gt;login('username', $key)) {
     exit('Login Failed');
-}</span><span class="encrsakey">$key = new Crypt_RSA();
+}</span><span class="encrsakey">$key = new RSA();
 $key-&gt;setPassword('whatever');
 $key-&gt;loadKey(file_get_contents('privatekey'));
 if (!$ssh-&gt;login('username', $key)) {

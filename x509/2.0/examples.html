@@ -18,24 +18,24 @@
 
 </script>
 <title>X.509 Examples | phpseclib</title>
-<link rel="stylesheet" href="../css/reset.css" />
-<link rel="stylesheet" href="../css/text.css" />
-<link rel="stylesheet" href="../css/960.css" />
-<link rel="stylesheet" href="../css/prettify.css"/>
-<link rel="stylesheet" href="../css/jquery.qtip.min.css"/>
-<link rel="stylesheet" href="../css/jquery.treeview.css" />
+<link rel="stylesheet" href="../../css/reset.css" />
+<link rel="stylesheet" href="../../css/text.css" />
+<link rel="stylesheet" href="../../css/960.css" />
+<link rel="stylesheet" href="../../css/prettify.css"/>
+<link rel="stylesheet" href="../../css/jquery.qtip.min.css"/>
+<link rel="stylesheet" href="../../css/jquery.treeview.css" />
 <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 
 
-<script src="../js/prettify.js"></script>
-<script src="../js/jquery-1.7.2.min.js"></script>
-<script src="../js/jquery.qtip.min.js"></script>
-<script src="../js/jquery.cookie.js"></script>
+<script src="../../js/prettify.js"></script>
+<script src="../../js/jquery-1.7.2.min.js"></script>
+<script src="../../js/jquery.qtip.min.js"></script>
+<script src="../../js/jquery.cookie.js"></script>
 
-<script src="../js/jquery.treeview.js"></script>
+<script src="../../js/jquery.treeview.js"></script>
 <script src="//cdn.jsdelivr.net/npm/js-cookie@2/src/js.cookie.min.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-<script src="../js/common.js"></script>
+<script src="../../js/common.js"></script>
 
 
 <script>
@@ -142,7 +142,7 @@ ul { margin-bottom: 0 }
 <div class="container_12">
   <div class="grid_12">
     <h1>php<span class="red">sec</span>lib: X.509 Examples</h1>
-    <div id="pgup">(return to <a href="intro.html">phpseclib: X.509 Feature List</a>)</div>
+    <div id="pgup">(return to <a href="/x509/intro.html">phpseclib: X.509 Feature List</a>)</div>
   </div>
   <div class="clear"></div>
   <div class="grid_3">
@@ -203,9 +203,11 @@ ul { margin-bottom: 0 }
   <div class="grid_9">
     <div>
 <pre class="prettyprint" style="margin-bottom: 0">&lt;?php
-<span class="reading">include('File/X509.php');
+require __DIR__ . '/vendor/autoload.php';
 
-$x509 = new File_X509();
+<span class="reading">use phpseclib\File\X509;
+
+$x509 = new X509();
 $cert = $x509->loadX509('...'); // see <a href="google.txt">google.crt</a>
 <span class="loadx509">
 print_r($cert);</span><span class="getdnprop">
@@ -216,9 +218,9 @@ echo $x509->getPublicKey();</span><span class="getdnstr">
 echo $x509->getDN(true);</span><span class="getissuerdnstr">
 echo $x509->getIssuerDN(true);</span><span class="getissuerdn">
 print_r($x509->getIssuerDN());</span>
-</span><span class="validate">include('File/X509.php');
+</span><span class="validate">use phpseclib\File\X509;
 
-$x509 = new File_X509();
+$x509 = new X509();
 <span class="sig">$x509->loadCA('...'); // see <a href="signer.txt">signer.crt</a>
 </span>$cert = $x509->loadX509('...'); <span class="sig url date customdate">// see <a href="google.txt">google.crt</a></span><span class="selfsign">// see <a href="selfsigned.txt">selfsigned.crt</a></span>
 <span class="sig">echo $x509->validateSignature() ? 'valid' : 'invalid';
@@ -233,23 +235,23 @@ echo $x509->validateURL('https://www.google.com/#q=phpseclib') ?
 </span><span class="customdate">echo $x509->validateDate(strtotime('January 1, 2001')) ?
     'valid' :
     'invalid';
-</span></span><span class="csr">include('File/X509.php');
-include('Crypt/RSA.php');
+</span></span><span class="csr">use phpseclib\File\X509;
+use phpseclib\Crypt\RSA;
 
-$privKey = new Crypt_RSA();
+$privKey = new RSA();
 extract($privKey->createKey());
 $privKey->loadKey($privatekey);
 
-$x509 = new File_X509();
+$x509 = new X509();
 $x509->setPrivateKey($privKey);
 $x509->setDNProp('id-at-organizationName', 'phpseclib demo cert');
 
 $csr = $x509->signCSR();
 
 echo $x509->saveCSR($csr);
-</span><span class="readcsr">include('File/X509.php');
+</span><span class="readcsr">use phpseclib\File\X509;
 
-$x509 = new File_X509();
+$x509 = new X509();
 $csr = $x509->loadCSR('...'); // see <a href="csr.txt">csr.csr</a>
 <span class="csrload">
 print_r($csr);
@@ -258,9 +260,9 @@ print_r($x509->getDNProp('O'));</span><span class="csrgetdn">
 print_r($x509->getDN());</span><span class="csrgetdnstr">
 echo $x509->getDN(true);</span><span class="csrgetpublickey">
 echo $x509->getPublicKey();</span>
-</span><span class="readspkac">include('File/X509.php');
+</span><span class="readspkac">use phpseclib\File\X509;
 
-$x509 = new File_X509();
+$x509 = new X509();
 $spkac = $x509->loadSPKAC('...'); // see <a href="spkac.txt">spkac.spkac</a>
 
 print_r($spkac);
