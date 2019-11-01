@@ -1,9 +1,9 @@
 var ver = Cookies.get('version');
 var parts = window.location.pathname.split('/');
 if (ver == '2.0' && parts[2] != '2.0') {
-  window.location = parts[0] + '/' + parts[1] + '/2.0/' + parts[2];
+  window.location = parts[0] + '/' + parts[1] + '/2.0/' + parts[2] + window.location.hash;
 } else if (ver == '1.0' && parts[2] == '2.0') {
-  window.location = parts[0] + '/' + parts[1] + '/' + parts[3];
+  window.location = parts[0] + '/' + parts[1] + '/' + parts[3] + window.location.hash;
 }
 
 var manageSelects = function() {
@@ -92,9 +92,9 @@ $(document).ready(function() {
     $('#version').dialog('close');
     var parts = window.location.pathname.split('/');
     if (ver == '2.0' && parts[2] != '2.0') {
-      window.location = parts[0] + '/' + parts[1] + '/2.0/' + parts[2];
+      window.location = parts[0] + '/' + parts[1] + '/2.0/' + parts[2] + window.location.hash;
     } else if (ver == '1.0' && parts[2] == '2.0') {
-      window.location = parts[0] + '/' + parts[1] + '/' + parts[3];
+      window.location = parts[0] + '/' + parts[1] + '/' + parts[3] + window.location.hash;
     }
   });
 });
