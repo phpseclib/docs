@@ -101,9 +101,10 @@ set_include_path(get_include_path() . PATH_SEPARATOR . 'phpseclib');
 
 include('Net/SSH2.php');
 ?></pre>
-    <h2>Other Branches: 2.0 and master</h2>
+    <h2>Other Branches: 2.0, 3.0 and master</h2>
     <p>The 2.0 branch has pretty much the exact same API as the 1.0 branch, save for that it is namespaced, uses PHP5-style constructors (thereby avoiding E_DEPRECATED errors) and requires the use of an autoloader. <a href="2.0.html">A few examples</a>.</p>
-    <p>The master branch has an unstable API that is subject to change. The master branch will eventually turn into 3.0, at which point, this website will be re-designed with an emphasis on that version.</p>
+    <p>The 3.0 branch has a vastly different API for public key cryptography. It introduces support for Ed25519 / Ed449, Curve25519, Curve449, ECDSA / ECDH (with support for 66 curves), DSA and DH keys. Symmetric key algorithm support is expanded: ChaCha20, Poly1305 and GCM support are added. SHA3 has been added as well. Documentation can be found at <a href="https://phpseclib.com">phpseclib.com</a>.</p>
+    <p>The master branch has an unstable API that is subject to change. The master branch will eventually turn into 4.0.</p>
   </div>
 
   <div class="grid_24">

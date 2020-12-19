@@ -4,6 +4,8 @@ if (ver == '2.0' && parts[2] != '2.0') {
   window.location = parts[0] + '/' + parts[1] + '/2.0/' + parts[2] + window.location.hash;
 } else if (ver == '1.0' && parts[2] == '2.0') {
   window.location = parts[0] + '/' + parts[1] + '/' + parts[3] + window.location.hash;
+} else if (ver == '3.0') {
+  window.location = 'https://phpseclib.com/';
 }
 
 var manageSelects = function() {
@@ -95,6 +97,8 @@ $(document).ready(function() {
       window.location = parts[0] + '/' + parts[1] + '/2.0/' + parts[2] + window.location.hash;
     } else if (ver == '1.0' && parts[2] == '2.0') {
       window.location = parts[0] + '/' + parts[1] + '/' + parts[3] + window.location.hash;
+    } else if (ver == '3.0') {
+      window.location = 'https://phpseclib.com/';
     }
   });
 });
