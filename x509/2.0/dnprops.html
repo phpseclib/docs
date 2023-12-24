@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="google-site-verification" content="DHz4kg_uhBzFTmMZSrMTtF9lqPofgrUucAmZrsakViI" />
+<meta name="description" content="phpseclib decodes X.509 certificates to an associative array or strings for select attributes" />
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-19770173-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<title>X.509: Distinguished Property Names | phpseclib</title>
+<link rel="stylesheet" href="../css/reset.css" />
+<link rel="stylesheet" href="../css/text.css" />
+<link rel="stylesheet" href="../css/960.css" />
+<link rel="stylesheet" href="../css/prettify.css"/>
+<link rel="stylesheet" href="../css/jquery.qtip.min.css"/>
+<link rel="stylesheet" href="../css/jquery.treeview.css" />
+
+
+<script src="../js/prettify.js"></script>
+<script src="../js/jquery-1.7.2.min.js"></script>
+<script src="../js/jquery.qtip.min.js"></script>
+<script src="../js/jquery.cookie.js"></script>
+
+<script src="../js/jquery.treeview.js"></script>
+
+
+<script>
+var certFlag = false;
+
+var manageSelects = function() {
+  options = $('select option');
+  for (var i = 0; i < options.length; i++) {
+   $('.' + options[i].value).hide();
+  }
+
+  options = $('select option:selected');
+  for (var i = 0; i < options.length; i++) {
+   $('.' + options[i].value).show();
+  }
+};
+
+var highlight = function() {
+  if ($('.' + this.value).closest('#notes').length == 0) {
+    $('.' + this.value).css('background-color', '#ffa');
+  }
+};
+
+var unhighlight = function() {
+  if ($('.' + this.value).closest('#notes').length == 0) {
+    $('.' + this.value).css('background-color', '#f5f4ee');
+  }
+};
+
+var toggleButton = function() {
+  buttons = $('button[value="' + this.value + '"]');
+  buttons.eq(0).toggle();
+  buttons.eq(1).toggle();
+  $('.' + this.value).toggle();
+};
+
+var permLink = function() {
+  attrs = '';
+  selected = $('select option:selected,.disableCode:visible');
+  for (i = 0; i < selected.length; i++) {
+    attrs+= selected[i].value + ',';
+  }
+  hashPos = window.location.href.indexOf('#');
+  newURL = hashPos == -1 ? window.location.href : window.location.href.substring(0, hashPos);
+  window.location.href = newURL + '#' + attrs;
+};
+
+var handleCert = function(event) {
+  e = event.relatedTarget || event.toElement;
+  if (e.id != 'cert2') {
+    $('#cert2').hide();
+  }
+}
+
+var showPath = function() {
+
+  path = '';
+
+  parents = $(this).parents('li:visible');
+
+  for (var i = parents.length - 1; i >= 0; i--) {
+
+    name = $('.name', parents[i])[0].textContent;
+
+    delimiter = isNaN(name) ? '\'' : '';
+
+    path+= '[' + delimiter + name + delimiter + ']';
+
+  }
+
+  $('#path').html('<code id="path">$cert' + path + '</code>:');
+
+};
+
+
+$(document).ready(function() {
+  //$('pre span[id]').hide();
+  //$('#notes div[id]').hide();
+
+  $('.printr').treeview({
+
+    persist: "location",
+
+    collapsed: true,
+
+    unique: true
+
+  });
+
+  buttons = $('button:visible');
+  for (var i = 0; i < buttons.length; i++) {
+   $('.' + buttons[i].value).hide();
+  }
+
+  options = window.location.href.split('#');
+  options = options.length > 1 ? options[1].split(',') : new Array();
+  for (var i = 0; i < options.length; i++) {
+    options[i] = options[i].replace(/%20/g, ' ');
+    $('select option[value="' + options[i] +'"]').prop('selected', true);
+    button = $('button[value="' + options[i] +'"]');
+    if (button.length) {
+      toggleButton.apply(button[0]);
+    }
+  }
+
+  manageSelects();
+
+  $('#cert').qtip();
+
+  $('.name,.hitarea').click(showPath);
+
+  $('select').change(manageSelects);
+  //$('select').change(highlight);
+  $('select').keyup(manageSelects);
+  //$('select').focus(highlight);
+  //$('select').blur(unhighlight);
+  $('button').click(toggleButton);
+  $('#permlink span').click(permLink);
+});
+</script>
+
+<style media="screen">
+h1 { text-align: left; margin-bottom: 0 }.red { color: #e11 }
+.prettyprint, .pre { background: #f5f4ee; max-height: 350px; overflow: scroll }
+h2 { font-size: 15px }
+code { background: #ffa }
+#permlink { text-align: right }
+#permlink span { font-size: 10px; color: blue; text-decoration: underline; cursor: pointer }
+.buttonOff { display: none }
+ul { margin-bottom: 0 }
+#pgup { font-size: 10px; margin-bottom: 2em }
+#cert:hover { cursor: hand }
+</style></head>
+<body onload="prettyPrint()">
+<div class="container_12">
+  <div class="grid_12">
+    <h1>php<span class="red">sec</span>lib: X.509: Distinguished Property Names</h1>
+    <div id="pgup">(return to <a href="guide.html">phpseclib: X.509 Creation Guide</a>)</div>
+  </div>
+  <div class="clear"></div>
+  <div class="grid_3">
+    &nbsp;
+  </div>
+  <!-- end .grid_3 -->
+  <div class="grid_9">
+    <h2>Valid Distinguished Name Property Names</h2>
+    <p>The property names are intended to be self-explanatory and are grouped together by they're aliases.  They are case insensitive.</p>
+    <ul>
+      <li>id-at-countryName<br />
+      countryName<br />
+      C</li>
+      <li>id-at-organizationName<br />
+      organizationName<br />
+      O</li>
+      <li>id-at-dnQualifier<br />
+      dnQualifier</li>
+      <li>id-at-commonName<br />
+      commonName<br />
+      CN</li>
+      <li>id-at-stateOrProvinceName<br />
+      state<br />
+      province<br />
+      provincename<br />
+      ST</li>
+      <li>id-at-localityName<br />
+      localityName<br />
+      L</li>
+      <li>id-emailAddress<br />
+      emailAddress</li>
+      <li>id-at-serialNumber<br />
+      serialNumber</li>
+      <li>id-at-postalCode<br />
+      postalCode</li>
+      <li>id-at-streetAddress<br />
+      streetAddress</li>
+      <li>id-at-name<br />
+      name</li>
+      <li>id-at-givenName<br />
+      givenName</li>
+      <li>id-at-surname<br />
+      surname</li>
+      <li>id-at-initials<br />
+      initials</li>
+      <li>id-at-generationQualifier<br />
+      generationQualifier</li>
+      <li>id-at-organizationalUnitName<br />
+      organizationalUnitName<br />
+      OU</li>
+      <li>id-at-pseudonym<br />
+      pseudonym</li>
+      <li>id-at-title<br />
+      title</li>
+      <li>id-at-description<br />
+      description</li>
+      <li>id-at-role<br />
+      role</li>
+      <li>id-at-uniqueidentifier<br />
+      uniqueidentifier<br />
+      x500uniqueidentifier</li>
+    </ul>
+  </div>
+  <!-- end .grid_9 -->
+</div>
+<!-- end .container_12 -->
+</body>
+</html>
